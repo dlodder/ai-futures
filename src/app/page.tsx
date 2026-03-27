@@ -13,7 +13,7 @@ const SectionHeader = ({ label }) => (
   </div>
 );
 
-const Card = ({ children, style }) => (
+const Card = ({ children, style = {} }) => (
   <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.1)", borderRadius: 12, padding: 24, ...style }}>
     {children}
   </div>
