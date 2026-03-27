@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from "react";
 
 // ============================================================
@@ -7,24 +7,24 @@ import { useState } from "react";
 
 const FONT_LINK = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap";
 
-const SectionHeader = ({ label }) => (
+const SectionHeader = ({ label }: { label: string }) => (
   <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#94A3B8", marginBottom: 16 }}>
     {label}
   </div>
 );
 
-const Card = ({ children, style = {} }) => (
+const Card = ({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) => (
   <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.1)", borderRadius: 12, padding: 24, ...style }}>
     {children}
   </div>
 );
 
-const Card = ({ children, style = {} }) => (
+const DotList = ({ items, color, dimColor = "#CBD5E1" }: { items: string[]; color?: string; dimColor?: string }) => (
   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
     {items.map((item, i) => (
       <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
         <div style={{ width: 6, height: 6, borderRadius: "50%", background: color || "#94A3B8", marginTop: 7, flexShrink: 0, boxShadow: color ? `0 0 6px ${color}40` : "none" }} />
-        <span style={{ fontSize: 15, color: dimColor || "#CBD5E1", lineHeight: 1.55 }}>{item}</span>
+        <span style={{ fontSize: 15, color: dimColor, lineHeight: 1.55 }}>{item}</span>
       </div>
     ))}
   </div>
@@ -156,70 +156,42 @@ const projects = [
 // ============================================================
 
 function GlideStackPage() {
-  const [activeProject, setActiveProject] = useState(null);
-  const [activeDataBucket, setActiveDataBucket] = useState(null);
+  const [activeProject, setActiveProject] = useState<number | null>(null);
+  const [activeDataBucket, setActiveDataBucket] = useState<number | null>(null);
 
   const selectedProject = activeProject !== null ? projects[activeProject] : null;
   const selectedBucket = activeDataBucket !== null ? dataLayer[activeDataBucket] : null;
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      {/* Page header */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
         <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#3B82F6", boxShadow: "0 0 12px #3B82F6" }} />
-        <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", color: "#64748B" }}>
-          Platform Architecture
-        </span>
+        <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", color: "#64748B" }}>Platform Architecture</span>
       </div>
-      <h1 style={{ fontSize: 42, fontWeight: 700, color: "#F1F5F9", margin: "0 0 8px", lineHeight: 1.15 }}>
-        The Glide Stack
-      </h1>
+      <h1 style={{ fontSize: 42, fontWeight: 700, color: "#F1F5F9", margin: "0 0 8px", lineHeight: 1.15 }}>The Glide Stack</h1>
       <p style={{ fontSize: 17, color: "#94A3B8", margin: "0 0 48px", maxWidth: 660, lineHeight: 1.6 }}>
         Specialty oncology distribution · AI platform architecture. Click any project or data bucket to explore.
       </p>
 
-      {/* ── APPLICATIONS LAYER ── */}
       <SectionHeader label="Applications" />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
         {projects.map((p, i) => (
-          <div
-            key={p.id}
-            onClick={() => setActiveProject(activeProject === i ? null : i)}
-            style={{
-              background: activeProject === i ? `${p.color}14` : "rgba(15,23,42,0.6)",
-              border: `1px solid ${activeProject === i ? p.color + "40" : "rgba(148,163,184,0.12)"}`,
-              borderRadius: 12, padding: "20px 18px", cursor: "pointer",
-              transition: "all 0.2s ease", position: "relative", overflow: "hidden",
-            }}
-          >
+          <div key={p.id} onClick={() => setActiveProject(activeProject === i ? null : i)}
+            style={{ background: activeProject === i ? `${p.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeProject === i ? p.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: p.color, opacity: activeProject === i ? 1 : 0.4 }} />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
               <span style={{ fontSize: 17, fontWeight: 700, color: p.color }}>{p.name}</span>
-              <span style={{
-                fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 600,
-                color: p.statusColor, background: `${p.statusColor}15`,
-                border: `1px solid ${p.statusColor}30`, borderRadius: 4,
-                padding: "2px 7px", letterSpacing: 0.5, whiteSpace: "nowrap",
-              }}>
-                {p.status}
-              </span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 600, color: p.statusColor, background: `${p.statusColor}15`, border: `1px solid ${p.statusColor}30`, borderRadius: 4, padding: "2px 7px", letterSpacing: 0.5, whiteSpace: "nowrap" }}>{p.status}</span>
             </div>
             <div style={{ fontSize: 13, color: "#94A3B8" }}>{p.tagline}</div>
           </div>
         ))}
       </div>
 
-      {/* Project detail panel */}
       {selectedProject && (
-        <div style={{
-          margin: "12px 0 0", background: `${selectedProject.color}08`,
-          border: `1px solid ${selectedProject.color}20`, borderRadius: 12,
-          padding: "28px 28px 24px", animation: "fadeIn 0.2s ease",
-        }}>
+        <div style={{ margin: "12px 0 0", background: `${selectedProject.color}08`, border: `1px solid ${selectedProject.color}20`, borderRadius: 12, padding: "28px 28px 24px", animation: "fadeIn 0.2s ease" }}>
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedProject.color, marginBottom: 6 }}>
-              Project overview
-            </div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedProject.color, marginBottom: 6 }}>Project overview</div>
             <p style={{ fontSize: 15, color: "#CBD5E1", margin: 0, lineHeight: 1.65 }}>{selectedProject.description}</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
@@ -263,14 +235,12 @@ function GlideStackPage() {
         </div>
       )}
 
-      {/* Connector */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "20px 40px" }}>
         <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#475569", whiteSpace: "nowrap" }}>builds on</span>
         <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
       </div>
 
-      {/* ── INTELLIGENCE LAYER ── */}
       <SectionHeader label="Intelligence layer" />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
         {intelligenceLayer.map((layer) => (
@@ -300,54 +270,33 @@ function GlideStackPage() {
         ))}
       </div>
 
-      {/* Connector */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "20px 40px" }}>
         <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#475569", whiteSpace: "nowrap" }}>powered by</span>
         <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
       </div>
 
-      {/* ── DATA LAYER ── */}
       <SectionHeader label="Data layer" />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
         {dataLayer.map((bucket, i) => (
-          <div
-            key={bucket.id}
-            onClick={() => setActiveDataBucket(activeDataBucket === i ? null : i)}
-            style={{
-              background: activeDataBucket === i ? `${bucket.color}14` : "rgba(15,23,42,0.6)",
-              border: `1px solid ${activeDataBucket === i ? bucket.color + "40" : "rgba(148,163,184,0.12)"}`,
-              borderRadius: 12, padding: "16px", cursor: "pointer",
-              transition: "all 0.2s ease", position: "relative", overflow: "hidden",
-            }}
-          >
+          <div key={bucket.id} onClick={() => setActiveDataBucket(activeDataBucket === i ? null : i)}
+            style={{ background: activeDataBucket === i ? `${bucket.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeDataBucket === i ? bucket.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: bucket.color, opacity: activeDataBucket === i ? 1 : 0.35 }} />
-            <div style={{ fontSize: 13, fontWeight: 600, color: bucket.color, marginBottom: 10, lineHeight: 1.3, minHeight: 34 }}>
-              {bucket.title}
-            </div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: bucket.color, marginBottom: 10, lineHeight: 1.3, minHeight: 34 }}>{bucket.title}</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
               {bucket.items.slice(0, 3).map((item, j) => (
-                <span key={j} style={{ fontSize: 11, color: "#64748B", background: "rgba(148,163,184,0.06)", border: "1px solid rgba(148,163,184,0.1)", borderRadius: 4, padding: "2px 7px" }}>
-                  {item}
-                </span>
+                <span key={j} style={{ fontSize: 11, color: "#64748B", background: "rgba(148,163,184,0.06)", border: "1px solid rgba(148,163,184,0.1)", borderRadius: 4, padding: "2px 7px" }}>{item}</span>
               ))}
               {bucket.items.length > 3 && (
-                <span style={{ fontSize: 11, color: "#475569", padding: "2px 4px" }}>
-                  +{bucket.items.length - 3} more
-                </span>
+                <span style={{ fontSize: 11, color: "#475569", padding: "2px 4px" }}>+{bucket.items.length - 3} more</span>
               )}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Data bucket detail panel */}
       {selectedBucket && (
-        <div style={{
-          margin: "12px 0 0", background: `${selectedBucket.color}08`,
-          border: `1px solid ${selectedBucket.color}20`, borderRadius: 12,
-          padding: "24px 28px", animation: "fadeIn 0.2s ease",
-        }}>
+        <div style={{ margin: "12px 0 0", background: `${selectedBucket.color}08`, border: `1px solid ${selectedBucket.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
           <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedBucket.color, marginBottom: 16 }}>
             {selectedBucket.title} — full data inventory
           </div>
@@ -361,7 +310,6 @@ function GlideStackPage() {
           </div>
         </div>
       )}
-
       <div style={{ height: 64 }} />
     </div>
   );
@@ -380,12 +328,12 @@ const eras = [
     limitations: ["Frequent hallucination — confidently wrong answers", "No internet access or real-time information", "Text-only — couldn't process images or documents", "Short context windows (~8K tokens, a few pages)"],
     milestones: [
       { date: "Nov 2022", event: "ChatGPT launches (GPT-3.5)", highlight: true },
-      { date: "Feb 2023", event: "Microsoft integrates GPT into Bing" },
+      { date: "Feb 2023", event: "Microsoft integrates GPT into Bing", highlight: false },
       { date: "Mar 2023", event: "GPT-4 releases — major reasoning leap", highlight: true },
-      { date: "Mar 2023", event: "Anthropic launches Claude 1" },
-      { date: "Mar 2023", event: "Google launches Bard" },
+      { date: "Mar 2023", event: "Anthropic launches Claude 1", highlight: false },
+      { date: "Mar 2023", event: "Google launches Bard", highlight: false },
       { date: "Jul 2023", event: "Meta releases Llama 2 (open source)", highlight: true },
-      { date: "Nov 2023", event: "OpenAI launches custom GPTs" },
+      { date: "Nov 2023", event: "OpenAI launches custom GPTs", highlight: false },
     ],
     enterprise: "Most adoption was experimental — individuals trying ChatGPT for emails and brainstorming. No organizational AI strategy existed yet. This was the 'try it and see' era.",
   },
@@ -397,12 +345,12 @@ const eras = [
     limitations: ["Reasoning models were slow and expensive", "Computer use was experimental and error-prone", "Still primarily a Q&A tool, not an action-taker", "Enterprise integration remained difficult"],
     milestones: [
       { date: "Feb 2024", event: "Gemini 1.5 Pro — 1M token context window", highlight: true },
-      { date: "Mar 2024", event: "Claude 3 launches (Opus, Sonnet, Haiku)" },
-      { date: "May 2024", event: "GPT-4o — text, image, audio, video in one model" },
+      { date: "Mar 2024", event: "Claude 3 launches (Opus, Sonnet, Haiku)", highlight: false },
+      { date: "May 2024", event: "GPT-4o — text, image, audio, video in one model", highlight: false },
       { date: "Jun 2024", event: "Claude 3.5 Sonnet — cheaper beats bigger", highlight: true },
       { date: "Sep 2024", event: "OpenAI o1 — first dedicated reasoning model", highlight: true },
-      { date: "Oct 2024", event: "Claude 3.5 Sonnet v2 with Computer Use" },
-      { date: "Dec 2024", event: "Gemini 2.0 Flash with agentic features" },
+      { date: "Oct 2024", event: "Claude 3.5 Sonnet v2 with Computer Use", highlight: false },
+      { date: "Dec 2024", event: "Gemini 2.0 Flash with agentic features", highlight: false },
     ],
     enterprise: "Organizations moved from experimentation to pilot programs. AI could now process documents and reason through complex workflows — making it relevant for healthcare, finance, and legal applications.",
   },
@@ -414,14 +362,14 @@ const eras = [
     limitations: ["Still single-agent — one AI doing everything", "Complex integrations required significant human guidance", "Production quality varied — good for prototypes, risky for critical systems", "Non-developers still largely excluded from building"],
     milestones: [
       { date: "Feb 2025", event: "Claude Code launches (research preview)", highlight: true },
-      { date: "Feb 2025", event: "Claude 3.7 Sonnet — extended thinking" },
+      { date: "Feb 2025", event: "Claude 3.7 Sonnet — extended thinking", highlight: false },
       { date: "May 2025", event: "Claude 4 launches — professional-grade coding", highlight: true },
       { date: "May 2025", event: "OpenAI Codex launches as cloud coding agent", highlight: true },
-      { date: "Aug 2025", event: "GPT-5 launches — unified reasoning + intelligence" },
-      { date: "Oct 2025", event: "Claude Sonnet 4.5 — best cost-to-performance ratio" },
-      { date: "Nov 2025", event: "Claude Code hits $1B annualized revenue" },
-      { date: "Nov 2025", event: "Claude Opus 4.5 — reclaims coding benchmark lead" },
-      { date: "Dec 2025", event: "GPT-5.2 launches — 400K context, three modes" },
+      { date: "Aug 2025", event: "GPT-5 launches — unified reasoning + intelligence", highlight: false },
+      { date: "Oct 2025", event: "Claude Sonnet 4.5 — best cost-to-performance ratio", highlight: false },
+      { date: "Nov 2025", event: "Claude Code hits $1B annualized revenue", highlight: false },
+      { date: "Nov 2025", event: "Claude Opus 4.5 — reclaims coding benchmark lead", highlight: false },
+      { date: "Dec 2025", event: "GPT-5.2 launches — 400K context, three modes", highlight: false },
     ],
     enterprise: "The developer workflow fundamentally shifted. Plan with AI → generate with a coding agent → review → deploy. People who couldn't code were building functional applications. AI became a building tool, not just a writing assistant.",
   },
@@ -433,13 +381,13 @@ const eras = [
     limitations: ["Multi-agent coordination can fail on complex dependencies", "Autonomous agents in regulated environments require governance", "Costs scale with complexity — multi-agent runs aren't cheap", "Organizational readiness still lags tool capabilities"],
     milestones: [
       { date: "Jan 2026", event: "Claude Cowork launches — GUI agent for non-developers", highlight: true },
-      { date: "Jan 2026", event: "GPT-5.2-Codex — agentic coding with context compaction" },
+      { date: "Jan 2026", event: "GPT-5.2-Codex — agentic coding with context compaction", highlight: false },
       { date: "Feb 2026", event: "Claude Opus 4.6 — 1M context, Agent Teams", highlight: true },
-      { date: "Feb 2026", event: "Claude Sonnet 4.6 — matches prior Opus at ¼ cost" },
-      { date: "Feb 2026", event: "Codex desktop app — multi-agent management" },
+      { date: "Feb 2026", event: "Claude Sonnet 4.6 — matches prior Opus at ¼ cost", highlight: false },
+      { date: "Feb 2026", event: "Codex desktop app — multi-agent management", highlight: false },
       { date: "Mar 2026", event: "GPT-5.4 launches — Codex surpasses 2M weekly users", highlight: true },
-      { date: "Mar 2026", event: "Claude Agent SDK — build production agents as a library" },
-      { date: "Mar 2026", event: "MCP ecosystem matures — connects AI to everything" },
+      { date: "Mar 2026", event: "Claude Agent SDK — build production agents as a library", highlight: false },
+      { date: "Mar 2026", event: "MCP ecosystem matures — connects AI to everything", highlight: false },
     ],
     enterprise: "The competitive advantage is no longer access to better AI — everyone has frontier models. It's how fast an organization adopts AI into workflows. Data quality is the bottleneck, not model quality. McKesson's data moat (Ontada, Compile, distribution) is the differentiator.",
   },
@@ -523,7 +471,7 @@ const roleMapping = [
 // ============================================================
 
 function TimelinePage() {
-  const [activeEra, setActiveEra] = useState(null);
+  const [activeEra, setActiveEra] = useState<number | null>(null);
   const selected = activeEra !== null ? eras[activeEra] : null;
 
   return (
@@ -535,22 +483,12 @@ function TimelinePage() {
         </div>
         <h1 style={{ fontSize: 42, fontWeight: 700, color: "#F1F5F9", margin: "0 0 8px", lineHeight: 1.15 }}>The Evolution of AI</h1>
         <p style={{ fontSize: 17, color: "#94A3B8", margin: "0 0 48px", maxWidth: 660, lineHeight: 1.6 }}>
-          From ChatGPT's launch to the orchestration era — how AI transformed from a curiosity to a production platform in four years.
+          From ChatGPT&apos;s launch to the orchestration era — how AI transformed from a curiosity to a production platform in four years.
         </p>
-
-        {/* Era cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
           {eras.map((era, i) => (
-            <div
-              key={era.id}
-              onClick={() => setActiveEra(activeEra === i ? null : i)}
-              style={{
-                background: activeEra === i ? `${era.color}14` : "rgba(15,23,42,0.6)",
-                border: `1px solid ${activeEra === i ? era.color + "40" : "rgba(148,163,184,0.12)"}`,
-                borderRadius: 12, padding: "20px 18px", cursor: "pointer",
-                transition: "all 0.2s ease", position: "relative", overflow: "hidden",
-              }}
-            >
+            <div key={era.id} onClick={() => setActiveEra(activeEra === i ? null : i)}
+              style={{ background: activeEra === i ? `${era.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeEra === i ? era.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: era.color, opacity: activeEra === i ? 1 : 0.4 }} />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: era.color }}>{era.years}</span>
@@ -571,7 +509,7 @@ function TimelinePage() {
                 <DotList items={selected.capabilities} color={selected.color} />
               </Card>
               <Card>
-                <SectionHeader label="What It Couldn't Do Yet" />
+                <SectionHeader label="What It Couldn&apos;t Do Yet" />
                 <DotList items={selected.limitations} dimColor="#94A3B8" />
               </Card>
             </div>
@@ -597,12 +535,11 @@ function TimelinePage() {
         )}
       </div>
 
-      {/* Stats */}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "52px 24px 0" }}>
         <SectionHeader label="The Numbers Tell the Story" />
         <Card style={{ padding: 0, overflow: "hidden" }}>
           <div style={{ display: "grid", gridTemplateColumns: "200px repeat(4, 1fr)", borderBottom: "1px solid rgba(148,163,184,0.1)", padding: "14px 20px" }}>
-            <span style={{ fontSize: 12, color: "#64748B" }} />
+            <span />
             {eras.map((era, i) => (
               <span key={era.id} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: activeEra === i ? era.color : "#94A3B8", textAlign: "center", transition: "color 0.2s ease" }}>{era.years}</span>
             ))}
@@ -627,7 +564,7 @@ function TimelinePage() {
 // ============================================================
 
 function FrameworkPage() {
-  const [activeLevel, setActiveLevel] = useState(null);
+  const [activeLevel, setActiveLevel] = useState<number | null>(null);
   const selected = activeLevel !== null ? levels[activeLevel] : null;
 
   return (
@@ -641,20 +578,10 @@ function FrameworkPage() {
         <p style={{ fontSize: 17, color: "#94A3B8", margin: "0 0 48px", maxWidth: 660, lineHeight: 1.6 }}>
           A five-level framework for assessing AI literacy — from effective prompting to LLM customization.
         </p>
-
-        {/* Level cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12, marginBottom: 4 }}>
           {levels.map((l, i) => (
-            <div
-              key={l.level}
-              onClick={() => setActiveLevel(activeLevel === i ? null : i)}
-              style={{
-                background: activeLevel === i ? `${l.color}14` : "rgba(15,23,42,0.6)",
-                border: `1px solid ${activeLevel === i ? l.color + "40" : "rgba(148,163,184,0.12)"}`,
-                borderRadius: 12, padding: "20px 18px", cursor: "pointer",
-                transition: "all 0.2s ease", position: "relative", overflow: "hidden",
-              }}
-            >
+            <div key={l.level} onClick={() => setActiveLevel(activeLevel === i ? null : i)}
+              style={{ background: activeLevel === i ? `${l.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeLevel === i ? l.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: l.color, opacity: activeLevel === i ? 1 : 0.4 }} />
               <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: l.color, fontWeight: 600, marginBottom: 6 }}>Level {l.level}</div>
               <div style={{ fontSize: 14, fontWeight: 700, color: "#F1F5F9", marginBottom: 4, lineHeight: 1.3 }}>{l.title}</div>
@@ -691,7 +618,6 @@ function FrameworkPage() {
         )}
       </div>
 
-      {/* Role mapping */}
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "52px 24px 0" }}>
         <SectionHeader label="Target Levels by Role" />
         <Card style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -700,7 +626,7 @@ function FrameworkPage() {
               <span style={{ fontSize: 14, color: "#CBD5E1" }}>{r.role}</span>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#E2E8F0", fontWeight: 600 }}>{r.levels}</span>
               <div style={{ height: 6, borderRadius: 3, background: "rgba(148,163,184,0.08)", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${(r.bar / 5) * 100}%`, borderRadius: 3, background: `linear-gradient(90deg, ${levels[0].color}, ${levels[Math.min(Math.round(r.bar) - 1, 4)].color})`, opacity: 0.7, transition: "width 0.5s ease" }} />
+                <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${(r.bar / 5) * 100}%`, borderRadius: 3, background: `linear-gradient(90deg, ${levels[0].color}, ${levels[Math.min(Math.round(r.bar) - 1, 4)].color})`, opacity: 0.7 }} />
               </div>
             </div>
           ))}
@@ -739,12 +665,7 @@ export default function App() {
         * { box-sizing: border-box; }
       `}</style>
 
-      {/* Navigation bar */}
-      <nav style={{
-        position: "sticky", top: 0, zIndex: 100,
-        background: "rgba(11,15,26,0.9)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
-        borderBottom: "1px solid rgba(148,163,184,0.08)",
-      }}>
+      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(11,15,26,0.9)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(148,163,184,0.08)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#3B82F6", boxShadow: "0 0 10px #3B82F6" }} />
@@ -754,31 +675,20 @@ export default function App() {
             {pages.map((page) => {
               const isActive = activePage === page.id;
               return (
-                <button
-                  key={page.id}
-                  onClick={() => setActivePage(page.id)}
-                  style={{
-                    background: isActive ? "rgba(59,130,246,0.12)" : "transparent",
-                    border: isActive ? "1px solid rgba(59,130,246,0.25)" : "1px solid transparent",
-                    borderRadius: 8, padding: "8px 16px", cursor: "pointer", outline: "none",
-                    display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s ease",
-                  }}
+                <button key={page.id} onClick={() => setActivePage(page.id)}
+                  style={{ background: isActive ? "rgba(59,130,246,0.12)" : "transparent", border: isActive ? "1px solid rgba(59,130,246,0.25)" : "1px solid transparent", borderRadius: 8, padding: "8px 16px", cursor: "pointer", outline: "none", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s ease" }}
                   onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(148,163,184,0.06)"; }}
-                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
-                >
+                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
                   <span style={{ fontSize: 13, color: isActive ? "#3B82F6" : "#64748B" }}>{page.icon}</span>
                   <span style={{ fontSize: 13, fontWeight: isActive ? 600 : 500, color: isActive ? "#E2E8F0" : "#94A3B8", transition: "color 0.2s ease" }}>{page.label}</span>
                 </button>
               );
             })}
           </div>
-          <span style={{ fontSize: 11, color: "#475569", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.5 }}>
-            Dan Lodder · March 2026
-          </span>
+          <span style={{ fontSize: 11, color: "#475569", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.5 }}>Dan Lodder · March 2026</span>
         </div>
       </nav>
 
-      {/* Page content */}
       <div key={activePage} style={{ animation: "fadeIn 0.3s ease" }}>
         {activePage === "glide" && <GlideStackPage />}
         {activePage === "timeline" && <TimelinePage />}
