@@ -19,7 +19,7 @@ const Card = ({ children, style = {} }) => (
   </div>
 );
 
-const DotList = ({ items, color, dimColor }) => (
+const Card = ({ children, style = {} }) => (
   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
     {items.map((item, i) => (
       <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
