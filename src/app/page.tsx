@@ -878,7 +878,7 @@ export default function App() {
       `}</style>
 
       <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(11,15,26,0.9)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(148,163,184,0.08)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "center", height: 56 }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
           <div style={{ display: "flex", gap: 4 }}>
             {pages.map((page) => {
               const isActive = activePage === page.id;
@@ -893,6 +893,7 @@ export default function App() {
               );
             })}
           </div>
+          <span style={{ fontSize: 12, color: "#94A3B8", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.3 }}>Dan Lodder &middot; March 2026</span>
         </div>
       </nav>
 
