@@ -132,13 +132,13 @@ const projects = [
     impact: "$6–12M upside through improved pricing efficiency. Compresses analyst time per deal and systematically protects margin on every renewal.",
   },
   {
-    id: "xray", name: "X-Ray", tagline: "Net price dashboard",
+    id: "xray", name: "X-Ray", tagline: "Drug pricing transparency",
     color: "#3B82F6", status: "Building", statusColor: "#F59E0B",
-    description: "Unifies the drug pricing silos into one net price / cost recovery view. Forces the data access and governance decisions that Nova 2.0 Phase II requires — rebate feeds, buy-side fees, and a single source of truth. The data backbone for the entire pricing platform.",
-    capabilities: ["WAC − OID − rebate = net cost recovery", "Unified pricing silo dashboard", "Economics waterfall visualization", "Internal + potential customer-facing views", "Real-time rebate feed integration"],
+    description: "Customer-facing solution delivering full drug pricing transparency and net cost recovery visibility to practices. Shows the complete cost walk from WAC through discounts and rebates to net price, then layers in reimbursement to reveal per-drug NCR. Built on the same shared data infrastructure as Nova.",
+    capabilities: ["WAC-to-net-price cost walk per drug", "Net cost recovery (NCR) calculation", "Reimbursement vs. net price comparison", "Customer-facing and field rep views", "Real-time rebate feed integration"],
     dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates"],
     intelligenceUsed: ["Machine Learning", "AI Prompting Tools", "Agents"],
-    impact: "Drives competitive market response and provides customer pricing clarity. Foundation that Nova 2.0 is built on — without X-Ray, there is no pricing engine.",
+    impact: "Gives practices and field reps full visibility into drug economics — pricing transparency that drives competitive market response and enables data-driven drug decisions at the point of care.",
   },
   {
     id: "skynet", name: "Skynet", tagline: "Dynamic QBR portal",
@@ -862,16 +862,16 @@ function FrameworkPage() {
 
 const novaXrayProjects = [
   {
-    id: "xray", name: "X-Ray", tagline: "Net price dashboard — the data backbone",
+    id: "xray", name: "X-Ray", tagline: "Customer-facing drug pricing transparency",
     color: "#3B82F6", status: "Building", statusColor: "#F59E0B",
-    description: "Unifies drug pricing silos into a single net price / cost recovery view. Forces the data access and governance decisions that Nova 2.0 requires — rebate feeds, buy-side fees, and a single source of truth for economics. Internal-first with a potential path to customer-facing pending legal review.",
-    capabilities: ["Unified net cost recovery dashboard", "Economics waterfall visualization", "Real-time rebate feed integration", "Internal + potential customer-facing views", "Governance foundation for all pricing data"],
+    description: "Customer-facing solution that delivers full drug pricing transparency and net cost recovery visibility to practices. Shows the complete cost walk from WAC through discounts and rebates to net price, then layers in reimbursement to reveal per-drug NCR. Built on the same shared data infrastructure as Nova.",
+    capabilities: ["WAC-to-net-price cost walk per drug", "Net cost recovery (NCR) calculation", "Reimbursement vs. net price comparison", "Real-time rebate feed integration", "Customer-facing and field rep views", "Designed for practice-level conversations"],
     dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates"],
     intelligenceUsed: ["Machine Learning", "AI Prompting Tools", "Agents"],
-    impact: "Drives competitive market response and provides customer pricing clarity. Without X-Ray, there is no pricing engine — it is the shared data plumbing that Nova 2.0 is built on.",
+    impact: "Gives practices and field reps full visibility into drug economics \u2014 pricing transparency that drives competitive market response and enables data-driven drug decisions at the point of care.",
   },
   {
-    id: "nova", name: "Nova 2.0", tagline: "AI pricing engine — $6\u201312M identified upside",
+    id: "nova", name: "Nova 2.0", tagline: "Internal pricing intelligence engine — $6\u201312M identified upside",
     color: "#10B981", status: "In dev", statusColor: "#3B82F6",
     description: "Replaces the Excel-based pricing model end-to-end. Automates buy/sell economics across WAC, contract price, VCD, FFS, GPO admin fees, and OIDs. Phase 1 (competitive bid comparison) is live. Phase 3 adds AI deal recommendations. Phase 4 deploys small-account autonomy and field enablement.",
     capabilities: ["System of record for pricing — replaces Excel", "Automated buy/sell economics (WAC, VCD, FFS, OIDs)", "Real-time what-if scenario modeling", "SOX-compliant approval workflows", "Drug-level and account-level P&L", "AI deal recommendations (Phase 3)", "LLM pricing guidance chat (Phase 3)"],
@@ -967,6 +967,7 @@ function NovaXrayPage() {
   const [activeProject, setActiveProject] = useState<number | null>(null);
   const [activePhase, setActivePhase] = useState<number | null>(null);
   const [activeDataBucket, setActiveDataBucket] = useState<number | null>(null);
+  const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
 
   const selectedProject = activeProject !== null ? novaXrayProjects[activeProject] : null;
   const selectedPhase = activePhase !== null ? phases[activePhase] : null;
@@ -976,10 +977,10 @@ function NovaXrayPage() {
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
       <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: "0 0 8px", lineHeight: 1.15 }}>Nova + X-Ray</h1>
       <p style={{ fontSize: 17, color: "#C4D0DE", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>
-        The Pricing Intelligence Platform &mdash; from unified data to AI-guided deal strategy
+        Two applications, one shared data foundation
       </p>
       <p style={{ fontSize: 15, color: "#C4D0DE", margin: "0 0 48px", lineHeight: 1.6 }}>
-        X-Ray builds the data foundation. Nova turns it into a pricing engine. Together they replace Excel with an intelligent, auditable system of record.
+        Nova and X-Ray are built on the same underlying data infrastructure. X-Ray delivers drug pricing transparency and net cost recovery visibility to customers. Nova powers internal pricing intelligence for analysts and field teams.
       </p>
 
       {/* ---- PROJECTS ---- */}
@@ -1062,10 +1063,10 @@ function NovaXrayPage() {
         <div style={{ display: "grid", gridTemplateColumns: "260px 1fr 1fr", gap: 0, background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.12)", borderTop: "none", borderRadius: "0 0 12px 12px", overflow: "hidden" }}>
 
           {/* Column 1: Drug Info + Contract Details */}
-          <div style={{ padding: "20px", borderRight: "1px solid rgba(148,163,184,0.08)" }}>
+          <div style={{ padding: "24px", borderRight: "1px solid rgba(148,163,184,0.08)" }}>
             <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#3B82F6" }}>&bull; Drug Information</div>
-              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#F59E0B" }}>&bull; Contract Details</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#3B82F6" }}>&bull; Drug Information</div>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#F59E0B" }}>&bull; Contract Details</div>
             </div>
             {[
               { label: "Drug Name", value: "KEYTRUDA 25MG/ML 4ML SDV 2/PAC", color: "#E2EAF2" },
@@ -1077,8 +1078,8 @@ function NovaXrayPage() {
               { label: "CMS Units Per Package", value: "200", color: "#E2EAF2" },
             ].map((row, i) => (
               <div key={i} style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC" }}>{row.label}</div>
-                <div style={{ fontSize: 13, color: row.color, fontWeight: 500, marginTop: 1 }}>{row.value}</div>
+                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC" }}>{row.label}</div>
+                <div style={{ fontSize: 14, color: row.color, fontWeight: 500, marginTop: 2 }}>{row.value}</div>
               </div>
             ))}
             <div style={{ borderTop: "1px solid rgba(148,163,184,0.1)", paddingTop: 12, marginTop: 4 }}>
@@ -1089,28 +1090,28 @@ function NovaXrayPage() {
                 { label: "GPO Rebate Basis", value: "Contract Price" },
               ].map((row, i) => (
                 <div key={i} style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC" }}>{row.label}</div>
-                  <div style={{ fontSize: 13, color: "#E2EAF2", fontWeight: 500, marginTop: 1 }}>{row.value}</div>
+                  <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC" }}>{row.label}</div>
+                  <div style={{ fontSize: 14, color: "#E2EAF2", fontWeight: 500, marginTop: 2 }}>{row.value}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Column 2: Net Price Breakdown (Donut) */}
-          <div style={{ padding: "20px", borderRight: "1px solid rgba(148,163,184,0.08)", display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", alignSelf: "flex-start", marginBottom: 16 }}>&bull; Net Price Breakdown</div>
+          {/* Column 2: Net Price Breakdown (Donut) — Interactive */}
+          <div style={{ padding: "24px", borderRight: "1px solid rgba(148,163,184,0.08)", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", alignSelf: "flex-start", marginBottom: 16 }}>&bull; Net Price Breakdown</div>
 
-            {/* Donut chart via SVG */}
-            <div style={{ position: "relative", width: 200, height: 200, margin: "8px 0 20px" }}>
-              <svg viewBox="0 0 200 200" style={{ width: "100%", height: "100%" }}>
+            {/* Donut chart via SVG with hover */}
+            <div style={{ position: "relative", width: 220, height: 220, margin: "8px 0 20px" }}>
+              <svg viewBox="0 0 200 200" style={{ width: "100%", height: "100%", overflow: "visible" }}>
                 {(() => {
-                  const cx = 100, cy = 100, r = 80, r2 = 55;
+                  const cxD = 100, cyD = 100, r = 80, r2 = 55;
                   const total = 12272;
                   const segments = [
-                    { value: 11320.98, color: "#1E3A5F", label: "Net Price" },
-                    { value: 369.39, color: "#F59E0B", label: "Contract Discount" },
-                    { value: 59.51, color: "#3B82F6", label: "Distributor Discount" },
-                    { value: 522.12, color: "#10B981", label: "Rebates & Incentives" },
+                    { value: 11320.98, color: "#1E3A5F", label: "Net Price", pct: "92.25%" },
+                    { value: 369.39, color: "#F59E0B", label: "Contract Discount", pct: "3.01%" },
+                    { value: 59.51, color: "#3B82F6", label: "Distributor Discount", pct: "0.48%" },
+                    { value: 522.12, color: "#10B981", label: "Rebates & Incentives", pct: "4.25%" },
                   ];
                   let angle = -90;
                   return segments.map((seg, i) => {
@@ -1118,28 +1119,50 @@ function NovaXrayPage() {
                     const startRad = (angle * Math.PI) / 180;
                     const endRad = ((angle + sweep) * Math.PI) / 180;
                     const largeArc = sweep > 180 ? 1 : 0;
-                    const x1o = cx + r * Math.cos(startRad);
-                    const y1o = cy + r * Math.sin(startRad);
-                    const x2o = cx + r * Math.cos(endRad);
-                    const y2o = cy + r * Math.sin(endRad);
-                    const x1i = cx + r2 * Math.cos(endRad);
-                    const y1i = cy + r2 * Math.sin(endRad);
-                    const x2i = cx + r2 * Math.cos(startRad);
-                    const y2i = cy + r2 * Math.sin(startRad);
+                    const x1o = cxD + r * Math.cos(startRad);
+                    const y1o = cyD + r * Math.sin(startRad);
+                    const x2o = cxD + r * Math.cos(endRad);
+                    const y2o = cyD + r * Math.sin(endRad);
+                    const x1i = cxD + r2 * Math.cos(endRad);
+                    const y1i = cyD + r2 * Math.sin(endRad);
+                    const x2i = cxD + r2 * Math.cos(startRad);
+                    const y2i = cyD + r2 * Math.sin(startRad);
                     const d = `M ${x1o} ${y1o} A ${r} ${r} 0 ${largeArc} 1 ${x2o} ${y2o} L ${x1i} ${y1i} A ${r2} ${r2} 0 ${largeArc} 0 ${x2i} ${y2i} Z`;
+                    const isHovered = hoveredSegment === i;
                     angle += sweep;
-                    return <path key={i} d={d} fill={seg.color} />;
+                    return <path key={i} d={d} fill={seg.color}
+                      opacity={hoveredSegment !== null && !isHovered ? 0.4 : 1}
+                      style={{ transition: "opacity 0.2s ease, transform 0.2s ease", cursor: "pointer", transformOrigin: "100px 100px", transform: isHovered ? "scale(1.04)" : "scale(1)" }}
+                      onMouseEnter={() => setHoveredSegment(i)}
+                      onMouseLeave={() => setHoveredSegment(null)} />;
                   });
                 })()}
               </svg>
-              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
-                <div style={{ fontSize: 10, color: "#A8B8CC", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.5 }}>NET PRICE</div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: "#FFFFFF", marginTop: 2 }}>$11,320.98</div>
-                <div style={{ fontSize: 10, color: "#A8B8CC" }}>per unit</div>
+              {/* Center text — shows hovered segment or default */}
+              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center", pointerEvents: "none", transition: "all 0.2s ease" }}>
+                {hoveredSegment !== null ? (
+                  <>
+                    <div style={{ fontSize: 10, color: [{ c: "#1E3A5F" }, { c: "#F59E0B" }, { c: "#3B82F6" }, { c: "#10B981" }][hoveredSegment].c, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.5, fontWeight: 600 }}>
+                      {["Net Price", "Contract Discount", "Distributor Discount", "Rebates & Incentives"][hoveredSegment]}
+                    </div>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: "#FFFFFF", marginTop: 2 }}>
+                      {["$11,320.98", "-$369.39", "-$59.51", "-$522.12"][hoveredSegment]}
+                    </div>
+                    <div style={{ fontSize: 10, color: "#A8B8CC" }}>
+                      {["92.25%", "3.01%", "0.48%", "4.25%"][hoveredSegment]} of WAC
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: 10, color: "#A8B8CC", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.5 }}>NET PRICE</div>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: "#FFFFFF", marginTop: 2 }}>$11,320.98</div>
+                    <div style={{ fontSize: 10, color: "#A8B8CC" }}>per unit</div>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Legend */}
+            {/* Legend — also interactive */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", padding: "0 8px" }}>
               {[
                 { color: "#1E3A5F", label: "WAC (Base)", value: "$12,272" },
@@ -1147,103 +1170,106 @@ function NovaXrayPage() {
                 { color: "#3B82F6", label: "Distributor Discount", value: "-$59.51" },
                 { color: "#10B981", label: "Rebates & Incentives", value: "-$522.12" },
               ].map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div key={i}
+                  onMouseEnter={() => setHoveredSegment(i)}
+                  onMouseLeave={() => setHoveredSegment(null)}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", padding: "4px 6px", borderRadius: 6, background: hoveredSegment === i ? `${item.color}18` : "transparent", transition: "background 0.2s ease" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div style={{ width: 10, height: 10, borderRadius: 2, background: item.color, flexShrink: 0 }} />
-                    <span style={{ fontSize: 12, color: "#C4D0DE" }}>{item.label}</span>
+                    <span style={{ fontSize: 13, color: hoveredSegment === i ? "#FFFFFF" : "#C4D0DE", transition: "color 0.2s ease" }}>{item.label}</span>
                   </div>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "#E2EAF2", fontFamily: "'JetBrains Mono', monospace" }}>{item.value}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#E2EAF2", fontFamily: "'JetBrains Mono', monospace" }}>{item.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Column 3: Price Waterfall — Cost Walk to Net Price */}
-          <div style={{ padding: "20px" }}>
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", marginBottom: 16 }}>&bull; Price Waterfall &mdash; Cost Walk to Net Price</div>
+          <div style={{ padding: "24px" }}>
+            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", marginBottom: 16 }}>&bull; Price Waterfall &mdash; Cost Walk to Net Price</div>
 
             {/* Waterfall rows */}
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
               {/* WAC Price */}
-              <div style={{ padding: "10px 14px", background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: "8px 8px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: "8px 8px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>WAC Price</div>
-                  <div style={{ fontSize: 10, color: "#A8B8CC", marginTop: 1 }}>Wholesale Acquisition Cost &mdash; starting point</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>WAC Price</div>
+                  <div style={{ fontSize: 11, color: "#A8B8CC", marginTop: 2 }}>Wholesale Acquisition Cost &mdash; starting point</div>
                 </div>
-                <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$12,272</span>
+                <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$12,272</span>
               </div>
 
               {/* Contract Price */}
-              <div style={{ padding: "10px 14px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", borderTop: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", borderTop: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>Contract Price</div>
-                  <div style={{ fontSize: 10, color: "#A8B8CC", marginTop: 1 }}>GPO / McKesson negotiated price</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>Contract Price</div>
+                  <div style={{ fontSize: 11, color: "#A8B8CC", marginTop: 2 }}>GPO / McKesson negotiated price</div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$11,902.61</span>
-                  <div style={{ fontSize: 10, color: "#F59E0B", fontFamily: "'JetBrains Mono', monospace" }}>3.01%</div>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$11,902.61</span>
+                  <div style={{ fontSize: 11, color: "#F59E0B", fontFamily: "'JetBrains Mono', monospace" }}>3.01%</div>
                 </div>
               </div>
 
               {/* Distributor Pricing header */}
-              <div style={{ padding: "6px 14px", background: "rgba(236,72,153,0.06)", borderLeft: "2px solid #EC4899", marginTop: 8 }}>
-                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: "#EC4899" }}>Distributor Pricing</span>
+              <div style={{ padding: "6px 16px", background: "rgba(236,72,153,0.06)", borderLeft: "2px solid #EC4899", marginTop: 8 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: "#EC4899" }}>Distributor Pricing</span>
               </div>
 
               {/* Distributor Discount */}
-              <div style={{ padding: "10px 14px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>Distributor Discount</div>
-                  <div style={{ fontSize: 10, color: "#A8B8CC", marginTop: 1 }}>Invoice markdown applied at distribution</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>Distributor Discount</div>
+                  <div style={{ fontSize: 11, color: "#A8B8CC", marginTop: 2 }}>Invoice markdown applied at distribution</div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$59.51</span>
-                  <div style={{ fontSize: 10, color: "#A8B8CC", fontFamily: "'JetBrains Mono', monospace" }}>0.50%</div>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$59.51</span>
+                  <div style={{ fontSize: 11, color: "#A8B8CC", fontFamily: "'JetBrains Mono', monospace" }}>0.50%</div>
                 </div>
               </div>
 
               {/* Invoice Price */}
-              <div style={{ padding: "10px 14px", background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>Invoice Price</div>
-                  <div style={{ fontSize: 10, color: "#A8B8CC", marginTop: 1 }}>As billed on invoice</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>Invoice Price</div>
+                  <div style={{ fontSize: 11, color: "#A8B8CC", marginTop: 2 }}>As billed on invoice</div>
                 </div>
-                <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$11,843.1</span>
+                <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$11,843.1</span>
               </div>
 
               {/* Rebates & Incentives header */}
-              <div style={{ padding: "6px 14px", background: "rgba(245,158,11,0.06)", borderLeft: "2px solid #F59E0B", marginTop: 8 }}>
-                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: "#F59E0B" }}>Rebates & Incentives</span>
+              <div style={{ padding: "6px 16px", background: "rgba(245,158,11,0.06)", borderLeft: "2px solid #F59E0B", marginTop: 8 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: "#F59E0B" }}>Rebates & Incentives</span>
               </div>
 
               {/* Distributor Rebate */}
-              <div style={{ padding: "10px 14px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>Distributor Rebate</div>
-                  <div style={{ fontSize: 10, color: "#A8B8CC", marginTop: 1 }}>Annual rebate value</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>Distributor Rebate</div>
+                  <div style={{ fontSize: 11, color: "#A8B8CC", marginTop: 2 }}>Annual rebate value</div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$171.72</span>
-                  <div style={{ fontSize: 10, color: "#A8B8CC", fontFamily: "'JetBrains Mono', monospace" }}>1.45%</div>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$171.72</span>
+                  <div style={{ fontSize: 11, color: "#A8B8CC", fontFamily: "'JetBrains Mono', monospace" }}>1.45%</div>
                 </div>
               </div>
 
               {/* GPO Rebate */}
-              <div style={{ padding: "10px 14px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", borderTop: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", borderTop: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>GPO Rebate / Value</div>
-                  <div style={{ fontSize: 10, color: "#A8B8CC", marginTop: 1 }}>Quarterly rebate distribution</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>GPO Rebate / Value</div>
+                  <div style={{ fontSize: 11, color: "#A8B8CC", marginTop: 2 }}>Quarterly rebate distribution</div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$350.39</span>
-                  <div style={{ fontSize: 10, color: "#A8B8CC", fontFamily: "'JetBrains Mono', monospace" }}>2.94%</div>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$350.39</span>
+                  <div style={{ fontSize: 11, color: "#A8B8CC", fontFamily: "'JetBrains Mono', monospace" }}>2.94%</div>
                 </div>
               </div>
 
               {/* Net Price / Unit result */}
-              <div style={{ padding: "12px 14px", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: "0 0 8px 8px", marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#10B981", letterSpacing: 0.5 }}>NET PRICE / UNIT</span>
-                <span style={{ fontSize: 20, fontWeight: 700, color: "#10B981", fontFamily: "'JetBrains Mono', monospace" }}>$11,320.98</span>
+              <div style={{ padding: "14px 16px", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: "0 0 8px 8px", marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#10B981", letterSpacing: 0.5 }}>NET PRICE / UNIT</span>
+                <span style={{ fontSize: 22, fontWeight: 700, color: "#10B981", fontFamily: "'JetBrains Mono', monospace" }}>$11,320.98</span>
               </div>
             </div>
           </div>
@@ -1257,18 +1283,18 @@ function NovaXrayPage() {
             { label: "NET COST RECOVERY", value: "$624.22", sub: "Reimbursement minus net price", color: "#10B981", bg: "rgba(16,185,129,0.08)" },
             { label: "EFFECTIVE DISCOUNT VS WAC", value: "7.75%", sub: "Combined discount rate", color: "#FFFFFF", bg: "rgba(15,23,42,0.6)" },
           ].map((kpi, i) => (
-            <div key={i} style={{ background: kpi.bg, border: `1px solid ${kpi.color === "#10B981" ? "rgba(16,185,129,0.2)" : "rgba(148,163,184,0.12)"}`, borderRadius: 10, padding: "16px 18px" }}>
-              <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: kpi.color === "#10B981" ? "#10B981" : "#A8B8CC", marginBottom: 8 }}>{kpi.label}</div>
-              <div style={{ fontSize: 26, fontWeight: 700, color: kpi.color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{kpi.value}</div>
-              <div style={{ fontSize: 11, color: "#A8B8CC", marginTop: 6 }}>{kpi.sub}</div>
+            <div key={i} style={{ background: kpi.bg, border: `1px solid ${kpi.color === "#10B981" ? "rgba(16,185,129,0.2)" : "rgba(148,163,184,0.12)"}`, borderRadius: 10, padding: "18px 20px" }}>
+              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: kpi.color === "#10B981" ? "#10B981" : "#A8B8CC", marginBottom: 8 }}>{kpi.label}</div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: kpi.color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{kpi.value}</div>
+              <div style={{ fontSize: 12, color: "#A8B8CC", marginTop: 6 }}>{kpi.sub}</div>
             </div>
           ))}
         </div>
 
         <div style={{ marginTop: 12, padding: "12px 16px", background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 10 }}>
-          <span style={{ color: "#3B82F6", fontSize: 13, marginTop: 1 }}>&#9670;</span>
-          <span style={{ fontSize: 13, color: "#E2EAF2", lineHeight: 1.6 }}>
-            This is a live view from the X-Ray POC showing real Keytruda economics for a single account. Nova consumes this same data layer to generate AI pricing recommendations across the full book of business.
+          <span style={{ color: "#3B82F6", fontSize: 14, marginTop: 1 }}>&#9670;</span>
+          <span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.6 }}>
+            X-Ray POC &mdash; real Keytruda economics for a single account. Both X-Ray and Nova are built on the same shared data infrastructure. X-Ray surfaces this view for customers and field reps. Nova consumes the same foundation to generate internal pricing intelligence across the full book of business.
           </span>
         </div>
       </div>
