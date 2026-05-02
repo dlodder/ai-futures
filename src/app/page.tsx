@@ -868,10 +868,9 @@ function MeridianPage() {
 }
 
 // ============================================================
-// SKYNET DATA — paste above SkynetPage function
+// SKYNET DATA
 // ============================================================
 
-// QBR sections — the 8 tabs visible in the actual Skynet UI
 const skynetSections = [
   { id: "overview", label: "Distribution Overview", color: "#3B82F6", description: "Quarterly performance KPIs, purchase volume trajectory, portfolio distribution by therapeutic area, service excellence metrics, and policy & market intelligence from Titan." },
   { id: "clinic", label: "Clinic", color: "#8B5CF6", description: "Total IV drug spend and NCR trends by quarter, top 10 infusion drugs by spend with QoQ change, and CMS ASP pricing file references for reimbursement benchmarking." },
@@ -883,7 +882,6 @@ const skynetSections = [
   { id: "value", label: "Value Delivered", color: "#EF4444", description: "Aggregated McKesson partnership value \u2014 total savings across rebates and discounts, service delivery metrics, technology adoption tracking, and quarterly ROI summary across all QBR dimensions." },
 ];
 
-// KPI cards from the Quarterly Performance Summary
 const skynetKPIs = [
   { label: "Revenue Growth", value: "+12.8%", sub: "vs. last quarter", color: "#10B981" },
   { label: "GPO Benefits", value: "$58.2K", sub: "this quarter", color: "#F59E0B" },
@@ -891,7 +889,6 @@ const skynetKPIs = [
   { label: "Site Visits", value: "12", sub: "this quarter", color: "#8B5CF6" },
 ];
 
-// Top 10 drugs by combined spend
 const skynetTopDrugs = [
   { rank: 1, name: "Keytruda", type: "IV", category: "Immunotherapy", spend: "$542,800", units: 218, change: "+15%" },
   { rank: 2, name: "Darzalex IV", type: "IV", category: "Immunotherapy", spend: "$428,500", units: 187, change: "+8%" },
@@ -905,14 +902,12 @@ const skynetTopDrugs = [
   { rank: 10, name: "Zytiga", type: "MID", category: "Hormone Therapy", spend: "$152,300", units: 164, change: "-2%" },
 ];
 
-// Portfolio distribution
 const skynetPortfolio = [
   { area: "Oncology \u2014 Infusion", pct: 45, value: "$381.1K", color: "#3B82F6" },
   { area: "Oncology \u2014 Oral", pct: 30, value: "$254.1K", color: "#8B5CF6" },
   { area: "Rheumatology", pct: 25, value: "$211.8K", color: "#A8B8CC" },
 ];
 
-// GPO savings
 const skynetGPO = [
   { category: "All Purchase Discounts", value: "$4.73M+", prior: "$4.71M+" },
   { category: "Performance Rebates", value: "$858K+", prior: "$912K" },
@@ -920,7 +915,6 @@ const skynetGPO = [
   { category: "Performance Discounts", value: "$59K+", prior: "$105K+" },
 ];
 
-// Data sources feeding Skynet
 const skynetDataSources = [
   { name: "Distribution Purchases", color: "#3B82F6", desc: "McKesson invoice and shipment data \u2014 drug-level purchase history, order patterns, delivery performance", refresh: "Daily" },
   { name: "GPO Rebate Feeds", color: "#F59E0B", desc: "Onmark, GVI, and manufacturer rebate files \u2014 performance rebates, purchase rebates, tier qualification", refresh: "Monthly" },
@@ -930,7 +924,6 @@ const skynetDataSources = [
   { name: "Payer Policies (Titan)", color: "#A78BFA", desc: "Titan-powered coverage intelligence \u2014 formulary changes, step therapy updates, prior auth requirements", refresh: "Real-time" },
 ];
 
-// Before → After comparison
 const skynetBeforeAfter = [
   { dimension: "Data collection", before: "Manual pull from 5+ dashboards", after: "Automated aggregation into unified schema" },
   { dimension: "Update frequency", before: "Quarterly snapshot", after: "Real-time, always current" },
@@ -947,227 +940,300 @@ const skynetBeforeAfter = [
 function SkynetPage() {
   const [activeSection, setActiveSection] = useState<number | null>(null);
   const [activeSource, setActiveSource] = useState<number | null>(null);
-
   const selectedSection = activeSection !== null ? skynetSections[activeSection] : null;
   const selectedSource = activeSource !== null ? skynetDataSources[activeSource] : null;
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      {/* ---- HERO ---- */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
         <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Skynet</h1>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#A8B8CC", background: "rgba(168,184,204,0.12)", border: "1px solid rgba(168,184,204,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Planning</span>
       </div>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>
-        Dynamic QBR Portal
-      </p>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>
-        Replaces the static PowerPoint QBR with a live, interactive customer portal. Pulls data from 6+ disparate sources into a unified schema. Sales reps and customers ask any question in natural language &mdash; converted to SQL on the fly against a live database.
-      </p>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>Dynamic QBR Portal</p>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>Replaces the static PowerPoint QBR with a live, interactive customer portal. Pulls data from 6+ disparate sources into a unified schema. Sales reps and customers ask any question in natural language &mdash; converted to SQL on the fly against a live database.</p>
       <div style={{ display: "flex", gap: 16, marginBottom: 48 }}>
-        {[
-          { label: "QBR sections", value: "8" },
-          { label: "Data sources", value: "6+" },
-          { label: "Query engine", value: "NL \u2192 SQL" },
-          { label: "Accounts", value: "200+" },
-        ].map((stat, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span>
-            <span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span>
-          </div>
-        ))}
+        {[{ label: "QBR sections", value: "8" }, { label: "Data sources", value: "6+" }, { label: "Query engine", value: "NL \u2192 SQL" }, { label: "Accounts", value: "200+" }].map((stat, i) => (<div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span><span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span></div>))}
       </div>
 
-      {/* ---- DASHBOARD MOCKUP ---- */}
       <SectionHeader label="Dashboard Preview" />
-
-      {/* Practice header */}
       <div style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "12px 12px 0 0", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF" }}>Springfield Medical Center</div>
-          <div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Q1 2026 &middot; Powered by your McKesson partnership</div>
-        </div>
+        <div><div style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF" }}>Springfield Medical Center</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Q1 2026 &middot; Powered by your McKesson partnership</div></div>
         <span style={{ fontSize: 12, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>Data Last Refreshed: Feb 28, 2026</span>
       </div>
-
-      {/* KPI Row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }}>
-        {skynetKPIs.map((kpi, i) => (
-          <div key={i} style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", padding: "20px", borderLeft: i === 0 ? "1px solid rgba(148,163,184,0.12)" : "none", borderRight: "1px solid rgba(148,163,184,0.12)" }}>
-            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 8 }}>{kpi.label}</div>
-            <div style={{ fontSize: 28, fontWeight: 700, color: kpi.color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{kpi.value}</div>
-            <div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 6 }}>{kpi.sub}</div>
-          </div>
-        ))}
+        {skynetKPIs.map((kpi, i) => (<div key={i} style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", padding: "20px", borderLeft: i === 0 ? "1px solid rgba(148,163,184,0.12)" : "none", borderRight: "1px solid rgba(148,163,184,0.12)" }}><div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 8 }}>{kpi.label}</div><div style={{ fontSize: 28, fontWeight: 700, color: kpi.color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{kpi.value}</div><div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 6 }}>{kpi.sub}</div></div>))}
       </div>
-
-      {/* QBR section tab strip */}
       <div style={{ display: "flex", gap: 0, background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "0 0 12px 12px", overflow: "hidden", marginBottom: 4 }}>
-        {skynetSections.map((sec, i) => (
-          <button key={sec.id} onClick={() => setActiveSection(activeSection === i ? null : i)}
-            style={{ flex: 1, padding: "12px 4px", background: activeSection === i ? `${sec.color}12` : "transparent", border: "none", borderBottom: activeSection === i ? `2px solid ${sec.color}` : "2px solid transparent", cursor: "pointer", outline: "none", transition: "all 0.2s ease" }}>
-            <span style={{ fontSize: 12, fontWeight: activeSection === i ? 600 : 500, color: activeSection === i ? sec.color : "#B8C8DA", letterSpacing: 0.3 }}>{sec.label}</span>
-          </button>
-        ))}
+        {skynetSections.map((sec, i) => (<button key={sec.id} onClick={() => setActiveSection(activeSection === i ? null : i)} style={{ flex: 1, padding: "12px 4px", background: activeSection === i ? `${sec.color}12` : "transparent", border: "none", borderBottom: activeSection === i ? `2px solid ${sec.color}` : "2px solid transparent", cursor: "pointer", outline: "none", transition: "all 0.2s ease" }}><span style={{ fontSize: 12, fontWeight: activeSection === i ? 600 : 500, color: activeSection === i ? sec.color : "#B8C8DA", letterSpacing: 0.3 }}>{sec.label}</span></button>))}
       </div>
+      {selectedSection && (<div style={{ margin: "12px 0 0", background: `${selectedSection.color}08`, border: `1px solid ${selectedSection.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}><div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 20, background: `${selectedSection.color}15`, border: `1px solid ${selectedSection.color}30`, marginBottom: 16 }}><span style={{ fontSize: 13, color: selectedSection.color }}>{"\u25C8"}</span><span style={{ fontSize: 13, color: selectedSection.color, fontWeight: 500 }}>{selectedSection.label}</span></div><p style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.65, margin: 0 }}>{selectedSection.description}</p></div>)}
 
-      {selectedSection && (
-        <div style={{ margin: "12px 0 0", background: `${selectedSection.color}08`, border: `1px solid ${selectedSection.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 20, background: `${selectedSection.color}15`, border: `1px solid ${selectedSection.color}30`, marginBottom: 16 }}>
-            <span style={{ fontSize: 13, color: selectedSection.color }}>{"\u25C8"}</span>
-            <span style={{ fontSize: 13, color: selectedSection.color, fontWeight: 500 }}>{selectedSection.label}</span>
-          </div>
-          <p style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.65, margin: 0 }}>{selectedSection.description}</p>
-        </div>
-      )}
-
-      {/* ---- PURCHASE VOLUME + PORTFOLIO ---- */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 28 }}>
-        {/* Purchase Volume Trajectory */}
         <Card>
           <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 4 }}>Purchase Volume Trajectory</div>
           <div style={{ fontSize: 14, color: "#B8C8DA", marginBottom: 20 }}>6-month trend with McKesson partnership</div>
           <svg viewBox="0 0 420 140" style={{ width: "100%", height: 140 }}>
-            {[0, 1, 2, 3].map(i => (
-              <line key={i} x1={40} y1={10 + i * 40} x2={400} y2={10 + i * 40} stroke="rgba(148,163,184,0.08)" strokeWidth={1} />
-            ))}
+            {[0, 1, 2, 3].map(i => (<line key={i} x1={40} y1={10 + i * 40} x2={400} y2={10 + i * 40} stroke="rgba(148,163,184,0.08)" strokeWidth={1} />))}
             <text x={35} y={15} fill="#B8C8DA" fontSize={10} textAnchor="end" fontFamily="JetBrains Mono">$1M</text>
             <text x={35} y={55} fill="#B8C8DA" fontSize={10} textAnchor="end" fontFamily="JetBrains Mono">$750K</text>
             <text x={35} y={95} fill="#B8C8DA" fontSize={10} textAnchor="end" fontFamily="JetBrains Mono">$500K</text>
             <text x={35} y={135} fill="#B8C8DA" fontSize={10} textAnchor="end" fontFamily="JetBrains Mono">$250K</text>
-            {["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"].map((m, i) => (
-              <text key={m} x={70 + i * 62} y={135} fill="#B8C8DA" fontSize={10} textAnchor="middle" fontFamily="JetBrains Mono">{m}</text>
-            ))}
-            {/* Expected (dashed) */}
+            {["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"].map((m, i) => (<text key={m} x={70 + i * 62} y={135} fill="#B8C8DA" fontSize={10} textAnchor="middle" fontFamily="JetBrains Mono">{m}</text>))}
             <polyline points="70,42 132,40 194,37 256,34 318,32 380,30" fill="none" stroke="#B8C8DA" strokeWidth={1.5} strokeDasharray="4,4" opacity={0.5} />
-            {/* Actual */}
             <polyline points="70,44 132,40 194,42 256,34 318,30 380,26" fill="none" stroke="#3B82F6" strokeWidth={2} />
-            {[[70, 44], [132, 40], [194, 42], [256, 34], [318, 30], [380, 26]].map(([cx, cy], i) => (
-              <circle key={i} cx={cx} cy={cy} r={4} fill="#3B82F6" stroke="#141B2D" strokeWidth={2} />
-            ))}
+            {[[70, 44], [132, 40], [194, 42], [256, 34], [318, 30], [380, 26]].map(([cx, cy], i) => (<circle key={i} cx={cx} cy={cy} r={4} fill="#3B82F6" stroke="#141B2D" strokeWidth={2} />))}
           </svg>
           <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}><div style={{ width: 16, height: 2, background: "#3B82F6", borderRadius: 1 }} /><span style={{ fontSize: 12, color: "#B8C8DA" }}>Actual</span></div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}><div style={{ width: 16, height: 2, background: "#B8C8DA", borderRadius: 1, opacity: 0.5 }} /><span style={{ fontSize: 12, color: "#B8C8DA" }}>Expected</span></div>
           </div>
         </Card>
-
-        {/* Portfolio Distribution */}
         <Card>
           <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 4 }}>Portfolio Distribution</div>
           <div style={{ fontSize: 14, color: "#B8C8DA", marginBottom: 20 }}>Product mix by therapeutic area</div>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
             <svg viewBox="0 0 120 120" style={{ width: 120, height: 120, flexShrink: 0, transform: "rotate(-90deg)" }}>
-              {/* Infusion 45% */}
               <circle cx={60} cy={60} r={48} fill="none" stroke="#3B82F6" strokeWidth={18} strokeDasharray={`${0.45 * 301.59} ${0.55 * 301.59}`} strokeDashoffset={0} />
-              {/* Oral 30% */}
               <circle cx={60} cy={60} r={48} fill="none" stroke="#8B5CF6" strokeWidth={18} strokeDasharray={`${0.30 * 301.59} ${0.70 * 301.59}`} strokeDashoffset={`${-0.45 * 301.59}`} />
-              {/* Rheumatology 25% */}
               <circle cx={60} cy={60} r={48} fill="none" stroke="#A8B8CC" strokeWidth={18} strokeDasharray={`${0.25 * 301.59} ${0.75 * 301.59}`} strokeDashoffset={`${-0.75 * 301.59}`} />
             </svg>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
-              {skynetPortfolio.map((p, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: p.color }} />
-                    <span style={{ fontSize: 14, color: "#E2EAF2" }}>{p.area}</span>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{p.value}</span>
-                    <span style={{ fontSize: 12, color: "#B8C8DA", marginLeft: 8 }}>{p.pct}%</span>
-                  </div>
-                </div>
-              ))}
+              {skynetPortfolio.map((p, i) => (<div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><div style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: p.color }} /><span style={{ fontSize: 14, color: "#E2EAF2" }}>{p.area}</span></div><div style={{ textAlign: "right" }}><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{p.value}</span><span style={{ fontSize: 12, color: "#B8C8DA", marginLeft: 8 }}>{p.pct}%</span></div></div>))}
             </div>
           </div>
         </Card>
       </div>
 
-      {/* ---- TOP 10 DRUGS TABLE ---- */}
       <div style={{ marginTop: 28 }}>
         <SectionHeader label="Top 10 Drugs by Spend" />
         <Card style={{ padding: 0, overflow: "hidden" }}>
           <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 60px 20px 1fr 100px 70px 80px", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.3)" }}>
-            {["#", "Drug Name", "Type", "", "Category", "Q3 Spend", "Units", "vs Prior"].map((h, i) => (
-              <span key={i} style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>{h}</span>
-            ))}
+            {["#", "Drug Name", "Type", "", "Category", "Q3 Spend", "Units", "vs Prior"].map((h, i) => (<span key={i} style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>{h}</span>))}
           </div>
-          {skynetTopDrugs.map((drug, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "40px 1fr 60px 20px 1fr 100px 70px 80px", padding: "12px 20px", borderBottom: i < 9 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA" }}>{drug.rank}</span>
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{drug.name}</span>
-              <span style={{ fontSize: 12, color: drug.type === "IV" ? "#3B82F6" : "#10B981", background: drug.type === "IV" ? "rgba(59,130,246,0.12)" : "rgba(16,185,129,0.12)", border: `1px solid ${drug.type === "IV" ? "rgba(59,130,246,0.25)" : "rgba(16,185,129,0.25)"}`, borderRadius: 4, padding: "2px 8px", textAlign: "center", fontWeight: 600 }}>{drug.type}</span>
-              <span />
-              <span style={{ fontSize: 13, color: "#D0DAE6" }}>{drug.category}</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>{drug.spend}</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA" }}>{drug.units}</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: drug.change.startsWith("+") ? "#10B981" : "#EF4444" }}>{drug.change}</span>
-            </div>
-          ))}
-          <div style={{ padding: "14px 20px", background: "rgba(59,130,246,0.06)", borderTop: "1px solid rgba(59,130,246,0.12)", display: "flex", alignItems: "flex-start", gap: 10 }}>
-            <span style={{ color: "#3B82F6", fontSize: 14, marginTop: 1 }}>{"\u25C6"}</span>
-            <span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.6 }}>
-              <strong style={{ color: "#FFFFFF" }}>Portfolio Insight:</strong> Top 10 drugs account for $2.86M in quarterly spend. Immunotherapy drugs (Keytruda, Opdivo) represent 36% of top 10 spend, reflecting this practice&apos;s specialty focus.
-            </span>
-          </div>
+          {skynetTopDrugs.map((drug, i) => (<div key={i} style={{ display: "grid", gridTemplateColumns: "40px 1fr 60px 20px 1fr 100px 70px 80px", padding: "12px 20px", borderBottom: i < 9 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA" }}>{drug.rank}</span><span style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{drug.name}</span><span style={{ fontSize: 12, color: drug.type === "IV" ? "#3B82F6" : "#10B981", background: drug.type === "IV" ? "rgba(59,130,246,0.12)" : "rgba(16,185,129,0.12)", border: `1px solid ${drug.type === "IV" ? "rgba(59,130,246,0.25)" : "rgba(16,185,129,0.25)"}`, borderRadius: 4, padding: "2px 8px", textAlign: "center", fontWeight: 600 }}>{drug.type}</span><span /><span style={{ fontSize: 13, color: "#D0DAE6" }}>{drug.category}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>{drug.spend}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA" }}>{drug.units}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: drug.change.startsWith("+") ? "#10B981" : "#EF4444" }}>{drug.change}</span></div>))}
+          <div style={{ padding: "14px 20px", background: "rgba(59,130,246,0.06)", borderTop: "1px solid rgba(59,130,246,0.12)", display: "flex", alignItems: "flex-start", gap: 10 }}><span style={{ color: "#3B82F6", fontSize: 14, marginTop: 1 }}>{"\u25C6"}</span><span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>Portfolio Insight:</strong> Top 10 drugs account for $2.86M in quarterly spend. Immunotherapy drugs (Keytruda, Opdivo) represent 36% of top 10 spend, reflecting this practice&apos;s specialty focus.</span></div>
         </Card>
       </div>
 
-      {/* ---- GPO SAVINGS ---- */}
       <div style={{ marginTop: 28 }}>
         <SectionHeader label="GPO Savings Overview" />
         <Card>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 32, fontWeight: 700, color: "#F59E0B" }}>$5.8M+</span>
-            <span style={{ fontSize: 15, color: "#D0DAE6" }}>Performance rebates, purchase rebates, and discounts</span>
-          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 32, fontWeight: 700, color: "#F59E0B" }}>$5.8M+</span><span style={{ fontSize: 15, color: "#D0DAE6" }}>Performance rebates, purchase rebates, and discounts</span></div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-            {skynetGPO.map((g, i) => (
-              <div key={i} style={{ background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: 10, padding: "16px" }}>
-                <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 8, lineHeight: 1.3 }}>{g.category}</div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, color: "#F59E0B", lineHeight: 1 }}>{g.value}</div>
-                <div style={{ fontSize: 12, color: "#B8C8DA", marginTop: 6 }}>vs Q2 &apos;25: {g.prior}</div>
-              </div>
-            ))}
+            {skynetGPO.map((g, i) => (<div key={i} style={{ background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: 10, padding: "16px" }}><div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 8, lineHeight: 1.3 }}>{g.category}</div><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, color: "#F59E0B", lineHeight: 1 }}>{g.value}</div><div style={{ fontSize: 12, color: "#B8C8DA", marginTop: 6 }}>vs Q2 &apos;25: {g.prior}</div></div>))}
           </div>
         </Card>
       </div>
 
-      {/* ---- NATURAL LANGUAGE QUERY ENGINE ---- */}
       <div style={{ marginTop: 28 }}>
         <SectionHeader label="Natural Language Query Engine" />
         <div style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 12, padding: "28px 28px 24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.18)", borderRadius: 10, marginBottom: 20 }}>
-            <span style={{ fontSize: 16, color: "#EF4444" }}>{"\u2756"}</span>
-            <span style={{ fontSize: 15, color: "#B8C8DA", fontStyle: "italic" }}>Ask anything &mdash; &quot;Show me Keytruda spend trend over the last 4 quarters&quot;</span>
-          </div>
-          <div style={{ fontSize: 15, color: "#D0DAE6", lineHeight: 1.65, marginBottom: 16 }}>
-            The customer or sales rep types a plain-English question. An LLM trained on the database schema converts it to SQL, executes against live data, and returns a formatted answer with optional visualizations.
-          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.18)", borderRadius: 10, marginBottom: 20 }}><span style={{ fontSize: 16, color: "#EF4444" }}>{"\u2756"}</span><span style={{ fontSize: 15, color: "#B8C8DA", fontStyle: "italic" }}>Ask anything &mdash; &quot;Show me Keytruda spend trend over the last 4 quarters&quot;</span></div>
+          <div style={{ fontSize: 15, color: "#D0DAE6", lineHeight: 1.65, marginBottom: 16 }}>The customer or sales rep types a plain-English question. An LLM trained on the database schema converts it to SQL, executes against live data, and returns a formatted answer with optional visualizations.</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {[
-              "What are my top 5 drugs by NCR?",
-              "Compare Q3 vs Q4 biosimilar adoption",
-              "Which providers have the highest waste?",
-              "Show GPO rebate trend by quarter",
-            ].map((q, i) => (
-              <span key={i} style={{ fontSize: 13, color: "#EF4444", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 20, padding: "6px 14px", cursor: "pointer" }}>{q}</span>
-            ))}
+            {["What are my top 5 drugs by NCR?", "Compare Q3 vs Q4 biosimilar adoption", "Which providers have the highest waste?", "Show GPO rebate trend by quarter"].map((q, i) => (<span key={i} style={{ fontSize: 13, color: "#EF4444", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 20, padding: "6px 14px", cursor: "pointer" }}>{q}</span>))}
           </div>
         </div>
       </div>
 
-      {/* ---- BEFORE / AFTER ---- */}
+      <div style={{ marginTop: 28 }}>
+        <SectionHeader label="Before &amp; After" />
+        <Card style={{ padding: 0, overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.3)" }}><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Static PowerPoint QBR</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>Skynet Dynamic Portal</span></div>
+          {skynetBeforeAfter.map((row, i) => (<div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: i < skynetBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}><span style={{ fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{row.dimension}</span><span style={{ fontSize: 14, color: "#B8C8DA" }}>{row.before}</span><span style={{ fontSize: 14, color: "#10B981" }}>{row.after}</span></div>))}
+        </Card>
+      </div>
+
+      <div style={{ marginTop: 28 }}>
+        <SectionHeader label="Intelligence Layer" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+          {[{ title: "AI Prompting Tools", subtitle: "LLM interfaces", color: "#3B82F6", capabilities: ["Natural language to SQL", "Conversational Q&A on live data", "Portfolio insight generation", "Cross-section trend detection", "Payer policy summaries (via Titan)"] }, { title: "Machine Learning", subtitle: "Pattern recognition", color: "#8B5CF6", capabilities: ["Recommended actions scoring", "Biosimilar adoption forecasting", "Anomaly detection on spend shifts", "Provider performance clustering", "GPO tier optimization signals"] }, { title: "Agents", subtitle: "Automated workflows", color: "#F59E0B", capabilities: ["Scheduled data aggregation", "Multi-source pipeline orchestration", "QBR auto-assembly", "Payer surveillance feed (Titan)", "Alert generation on threshold breaches"] }].map((layer) => (<div key={layer.title} style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} /><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", marginBottom: 16 }}>{layer.subtitle}</div><div style={{ display: "flex", flexDirection: "column", gap: 7 }}>{layer.capabilities.map((c, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}><div style={{ width: 4, height: 4, borderRadius: "50%", background: layer.color, marginTop: 7, flexShrink: 0, opacity: 1 }} /><span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span></div>))}</div></div>))}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 28 }}>
+        <SectionHeader label="Data Sources" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
+          {skynetDataSources.map((src, i) => (<div key={i} onClick={() => setActiveSource(activeSource === i ? null : i)} style={{ background: activeSource === i ? `${src.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeSource === i ? src.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: src.color, opacity: activeSource === i ? 1 : 0.35 }} /><div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}><div style={{ fontSize: 14, fontWeight: 600, color: src.color }}>{src.name}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 4, padding: "2px 7px" }}>{src.refresh}</span></div><div style={{ fontSize: 13, color: "#D0DAE6", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{src.desc.split("\u2014")[0]}.</div></div>))}
+        </div>
+        {selectedSource && (<div style={{ margin: "12px 0 0", background: `${selectedSource.color}08`, border: `1px solid ${selectedSource.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedSource.color, marginBottom: 8 }}>{selectedSource.name}</div><p style={{ fontSize: 15, color: "#E2EAF2", margin: 0, lineHeight: 1.65 }}>{selectedSource.desc}</p></div>)}
+      </div>
+
+      <div style={{ marginTop: 28, padding: "16px 20px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}><span style={{ color: "#EF4444", fontSize: 16, marginTop: 1 }}>{"\u25C6"}</span><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>Skynet replaces the single most time-consuming sales deliverable at McKesson Specialty Health. Every QBR today requires 4&ndash;8 hours of manual data gathering and PowerPoint assembly per account. With 200+ accounts on quarterly cycles, that&apos;s 800&ndash;1,600 hours per quarter of rep time redirected from selling to slide-building.</span></div>
+      <div style={{ height: 64 }} />
+    </div>
+  );
+}
+
+// ============================================================
+// BOLT PAAS DATA
+// ============================================================
+
+const BOLT_COLOR = "#8B5CF6";
+
+const boltBeforeAfter = [
+  { dimension: "Who builds", before: "Engineering team", after: "Certified business owners & product people" },
+  { dimension: "Idea \u2192 Prototype", before: "8\u201312 weeks", after: "1\u20132 weeks" },
+  { dimension: "Idea \u2192 Production", before: "~6 months", after: "2\u20134 weeks" },
+  { dimension: "Handoffs", before: "4+ (business \u2192 product \u2192 eng \u2192 QA)", after: "1 (builder \u2192 code review)" },
+  { dimension: "Investment approval", before: "Business case required", after: "Not required for prototypes" },
+  { dimension: "Domain context", before: "Lost in translation across handoffs", after: "Builder IS the domain expert" },
+  { dimension: "Backlog dependency", before: "Competes for engineering capacity", after: "Independent \u2014 no queue" },
+  { dimension: "Production platform", before: "Varies by team and project", after: "Standardized on Bolt (AWS)" },
+];
+
+const boltCertModules = [
+  { id: "env", title: "Environment Setup", color: "#3B82F6", icon: "\uD83D\uDD27", skills: ["GitHub repo creation & branch strategy", "Supabase project provisioning & RLS setup", "Vercel project creation & deployment", "Claude Code installation & CLAUDE.md configuration", "Connecting GitHub \u2192 Vercel auto-deploy pipeline"] },
+  { id: "build", title: "Core Build Skills", color: "#8B5CF6", icon: "\u26A1", skills: ["Prompt engineering for code generation", "PR best practices \u2014 small, atomic, descriptive", "Database schema design & migrations", "Testing fundamentals \u2014 build verification, basic E2E", "Reading and evaluating AI-generated code"] },
+  { id: "compliance", title: "Bolt Compliance", color: "#10B981", icon: "\uD83D\uDEE1", skills: ["App structure requirements for Bolt migration", "Shared auth integration patterns", "Data layer conventions & naming standards", "Security baseline \u2014 RLS policies, no secrets in code", "Code review readiness checklist"] },
+  { id: "ops", title: "Operational Readiness", color: "#F59E0B", icon: "\uD83D\uDE80", skills: ["Environment variables & secrets management", "Error handling & logging patterns", "Performance basics \u2014 query optimization, caching", "Documentation standards for handoff", "Monitoring & alerting fundamentals"] },
+];
+
+const boltArchLayers = [
+  { id: "builder", title: "Builder Environment", color: "#8B5CF6", items: ["Claude AI", "Claude Code", "GitHub", "Vercel (prototype)"] },
+  { id: "gate", title: "Migration Gate", color: "#F59E0B", items: ["Engineer Review", "AI Review Agent", "Bolt Compliance Scan", "Security Check"] },
+  { id: "bolt", title: "Bolt Platform \u2014 AWS", color: "#3B82F6", items: ["Shared Auth", "Data Services", "Monitoring", "Production Hosting"] },
+];
+
+const boltPlatformTools = [
+  { name: "GitHub", color: "#B8C8DA", desc: "Version control & collaboration \u2014 all builder code lives here. PRs trigger review workflows and Vercel preview deploys.", role: "Source of truth" },
+  { name: "Supabase", color: "#10B981", desc: "PostgreSQL database with row-level security, auth, edge functions, and real-time subscriptions. Provisioned per project with managed migrations.", role: "Database & auth" },
+  { name: "Vercel", color: "#3B82F6", desc: "Prototype hosting with instant preview deploys on every PR. Auto-deploys from main branch. Zero-config for Next.js.", role: "Prototype hosting" },
+  { name: "Claude Code", color: "#8B5CF6", desc: "Terminal-native AI coding agent. Reads, writes, tests, and commits code from natural language instructions. The primary build tool for certified builders.", role: "Build tool" },
+  { name: "Bolt / AWS", color: "#F59E0B", desc: "Production platform with shared services \u2014 authentication, data layer, monitoring, and compliance guardrails. Where approved apps run at scale.", role: "Production platform" },
+  { name: "AI Review Agent", color: "#EF4444", desc: "Automated code review powered by Claude Code. Scans for Bolt compliance, security issues, and best practice violations before human review.", role: "Quality gate" },
+];
+
+// ============================================================
+// BOLT PAAS PAGE
+// ============================================================
+
+function BoltPaaSPage() {
+  const [activeModule, setActiveModule] = useState<number | null>(null);
+  const [activeTool, setActiveTool] = useState<number | null>(null);
+  const selectedModule = activeModule !== null ? boltCertModules[activeModule] : null;
+  const selectedTool = activeTool !== null ? boltPlatformTools[activeTool] : null;
+
+  return (
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
+      {/* HERO */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Bolt PaaS</h1>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#F59E0B", background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Building</span>
+      </div>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>Business-Led Application Platform</p>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>Empowers business owners and product people to build production software using Claude Code and Claude AI. Certified builders create prototypes independently, then migrate approved applications to Bolt &mdash; McKesson&apos;s governed AWS platform with shared services.</p>
+      <div style={{ display: "flex", gap: 16, marginBottom: 48 }}>
+        {[{ label: "Faster", value: "12\u00D7" }, { label: "Build model", value: "Business-led" }, { label: "Platform", value: "AWS" }, { label: "Quality gate", value: "AI + Human" }].map((stat, i) => (<div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span><span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span></div>))}
+      </div>
+
+      {/* VELOCITY SHIFT VISUAL — COMBINED */}
+      <Card style={{ padding: "32px 28px", marginBottom: 4 }}>
+        {/* Traditional SDLC */}
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 16 }}>Traditional SDLC</div>
+          <svg viewBox="0 0 920 130" style={{ width: "100%", display: "block" }}>
+            {[
+              { x: 0, w: 160, label: "Requirements", sub: "Business \u2192 Product", weeks: "3\u20134 wks", icon: "M6 3h12v2H6zm0 4h12v1H6zm0 3h8v1H6z" },
+              { x: 184, w: 160, label: "Business Case", sub: "Investment approval", weeks: "4\u20136 wks", icon: "M4 5h16v2H4zm2 4h12v6H6z" },
+              { x: 368, w: 160, label: "Prototyping", sub: "Product \u2192 Eng", weeks: "4\u20136 wks", icon: "M4 4h16v12H4zm2 2v8h12V6z" },
+              { x: 552, w: 190, label: "Build & Test", sub: "Engineering + QA", weeks: "8\u201312 wks", icon: "M7 3l-4 8h6l-2 7 9-10h-6l4-5z" },
+              { x: 766, w: 154, label: "Deploy", sub: "Stabilization", weeks: "2\u20134 wks", icon: "M12 2L4 7v6l8 5 8-5V7z" },
+            ].map((s, i) => (
+              <g key={i}>
+                <rect x={s.x} y={0} width={s.w} height={80} rx={10} fill="rgba(148,163,184,0.06)" stroke="rgba(148,163,184,0.15)" strokeWidth={1} />
+                {/* Icon top-right */}
+                <g transform={`translate(${s.x + s.w - 30}, 8)`} opacity={0.3}>
+                  <svg width="18" height="18" viewBox="0 0 24 24"><path d={s.icon} fill="#B8C8DA" /></svg>
+                </g>
+                <text x={s.x + s.w / 2} y={36} textAnchor="middle" fontSize="15" fontWeight="600" fill="#FFFFFF" fontFamily="DM Sans, sans-serif">{s.label}</text>
+                <text x={s.x + s.w / 2} y={58} textAnchor="middle" fontSize="13" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">{s.sub}</text>
+                <text x={s.x + s.w / 2} y={104} textAnchor="middle" fontSize="13" fontWeight="600" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">{s.weeks}</text>
+                {i < 4 && (
+                  <g>
+                    <line x1={s.x + s.w + 4} y1={40} x2={s.x + s.w + 20} y2={40} stroke="rgba(148,163,184,0.25)" strokeWidth={1.5} />
+                    <path d={`M${s.x + s.w + 16} 36 L${s.x + s.w + 22} 40 L${s.x + s.w + 16} 44`} fill="none" stroke="rgba(148,163,184,0.25)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+                  </g>
+                )}
+              </g>
+            ))}
+            <rect x={0} y={120} width={920} height={6} rx={3} fill="rgba(148,163,184,0.15)" />
+          </svg>
+          <div style={{ textAlign: "center", marginTop: 10 }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: "#B8C8DA", letterSpacing: 0.5 }}>{"~6 months \u00B7 4+ handoffs \u00B7 Investment approval required"}</span>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "8px 0 28px" }}>
+          <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: BOLT_COLOR, fontWeight: 600, letterSpacing: 1 }}>VS</span>
+          <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
+        </div>
+
+        {/* Builder-Led with Bolt */}
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: BOLT_COLOR }}>Builder-led with Bolt</div>
+          </div>
+          <div style={{ display: "flex", gap: 0, alignItems: "flex-start" }}>
+            <div style={{ flex: 1 }}>
+              <svg viewBox="0 0 700 130" style={{ width: "100%", display: "block" }}>
+                {[
+                  { x: 0, w: 220, label: "Build Prototype", sub: "Builder + Claude Code", weeks: "1\u20132 wks", color: BOLT_COLOR, icon: "M7 3l-4 8h6l-2 7 9-10h-6l4-5z" },
+                  { x: 240, w: 180, label: "Iterate", sub: "User feedback, live", weeks: "1\u20132 wks", color: BOLT_COLOR, icon: "M12 4V1L8 5l4 4V6c3.3 0 6 2.7 6 6s-2.7 6-6 6-6-2.7-6-6H4c0 4.4 3.6 8 8 8s8-3.6 8-8-3.6-8-8-8z" },
+                  { x: 440, w: 130, label: "AI Review", sub: "AI + engineer", weeks: "2\u20133 days", color: "#F59E0B", icon: "M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1 15l-5-5 1.4-1.4L11 14.2l7.6-7.6L20 8l-9 9z" },
+                  { x: 590, w: 110, label: "Bolt Deploy", sub: "Git \u2192 AWS", weeks: "1\u20132 days", color: "#3B82F6", icon: "M12 2l-7 7h4v6h6v-6h4z" },
+                ].map((s, i) => (
+                  <g key={i}>
+                    <rect x={s.x} y={0} width={s.w} height={80} rx={10} fill={`${s.color}0C`} stroke={`${s.color}35`} strokeWidth={1} />
+                    <rect x={s.x} y={0} width={s.w} height={3} rx={1.5} fill={s.color} opacity={0.6} />
+                    {/* Icon top-right */}
+                    <g transform={`translate(${s.x + s.w - 30}, 10)`} opacity={0.5}>
+                      <svg width="18" height="18" viewBox="0 0 24 24"><path d={s.icon} fill={s.color} /></svg>
+                    </g>
+                    <text x={s.x + s.w / 2} y={36} textAnchor="middle" fontSize="15" fontWeight="600" fill="#FFFFFF" fontFamily="DM Sans, sans-serif">{s.label}</text>
+                    <text x={s.x + s.w / 2} y={58} textAnchor="middle" fontSize="13" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">{s.sub}</text>
+                    <text x={s.x + s.w / 2} y={104} textAnchor="middle" fontSize="13" fontWeight="600" fill={s.color} fontFamily="JetBrains Mono, monospace">{s.weeks}</text>
+                    {i < 3 && (
+                      <g>
+                        <line x1={s.x + s.w + 4} y1={40} x2={s.x + s.w + 16} y2={40} stroke={`${s.color}50`} strokeWidth={1.5} />
+                        <path d={`M${s.x + s.w + 12} 36 L${s.x + s.w + 18} 40 L${s.x + s.w + 12} 44`} fill="none" stroke={`${s.color}50`} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+                      </g>
+                    )}
+                  </g>
+                ))}
+                <rect x={0} y={120} width={700} height={6} rx={3} fill={`${BOLT_COLOR}08`} />
+                <rect x={0} y={120} width={200} height={6} rx={3} fill={`${BOLT_COLOR}40`} />
+              </svg>
+              <div style={{ textAlign: "center", marginTop: 10 }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: BOLT_COLOR, letterSpacing: 0.5 }}>{"2\u20134 weeks \u00B7 1 handoff \u00B7 No investment approval needed"}</span>
+              </div>
+            </div>
+
+            {/* 12× Badge */}
+            <div style={{ width: 140, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 8 }}>
+              <div style={{ width: 110, height: 110, borderRadius: "50%", background: `${BOLT_COLOR}15`, border: `2px solid ${BOLT_COLOR}50`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxShadow: `0 0 40px ${BOLT_COLOR}20` }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 36, fontWeight: 700, color: BOLT_COLOR, lineHeight: 1 }}>12&times;</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#D0DAE6", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>Faster</span>
+              </div>
+              <span style={{ fontSize: 12, color: "#B8C8DA", marginTop: 10, textAlign: "center", lineHeight: 1.3 }}>Idea to production</span>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* BEFORE & AFTER TABLE */}
       <div style={{ marginTop: 28 }}>
         <SectionHeader label="Before &amp; After" />
         <Card style={{ padding: 0, overflow: "hidden" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.3)" }}>
             <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span>
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Static PowerPoint QBR</span>
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>Skynet Dynamic Portal</span>
+            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Traditional SDLC</span>
+            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>Bolt PaaS</span>
           </div>
-          {skynetBeforeAfter.map((row, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: i < skynetBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}>
+          {boltBeforeAfter.map((row, i) => (
+            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: i < boltBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}>
               <span style={{ fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{row.dimension}</span>
               <span style={{ fontSize: 14, color: "#B8C8DA" }}>{row.before}</span>
               <span style={{ fontSize: 14, color: "#10B981" }}>{row.after}</span>
@@ -1176,71 +1242,135 @@ function SkynetPage() {
         </Card>
       </div>
 
-      {/* ---- INTELLIGENCE LAYER ---- */}
+      {/* PLATFORM ARCHITECTURE */}
       <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Intelligence Layer" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-          {[
-            { title: "AI Prompting Tools", subtitle: "LLM interfaces", color: "#3B82F6", capabilities: ["Natural language to SQL", "Conversational Q&A on live data", "Portfolio insight generation", "Cross-section trend detection", "Payer policy summaries (via Titan)"] },
-            { title: "Machine Learning", subtitle: "Pattern recognition", color: "#8B5CF6", capabilities: ["Recommended actions scoring", "Biosimilar adoption forecasting", "Anomaly detection on spend shifts", "Provider performance clustering", "GPO tier optimization signals"] },
-            { title: "Agents", subtitle: "Automated workflows", color: "#F59E0B", capabilities: ["Scheduled data aggregation", "Multi-source pipeline orchestration", "QBR auto-assembly", "Payer surveillance feed (Titan)", "Alert generation on threshold breaches"] },
-          ].map((layer) => (
-            <div key={layer.title} style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} />
-              <div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", marginBottom: 16 }}>{layer.subtitle}</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                {layer.capabilities.map((c, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: layer.color, marginTop: 7, flexShrink: 0, opacity: 1 }} />
-                    <span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span>
+        <SectionHeader label="Platform Architecture" />
+        <Card style={{ padding: "28px 24px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            {boltArchLayers.map((layer, i) => (
+              <div key={layer.id}>
+                <div style={{ background: `${layer.color}0A`, border: `1px solid ${layer.color}25`, borderRadius: i === 0 ? "12px 12px 0 0" : i === 2 ? "0 0 12px 12px" : 0, padding: "20px 24px", position: "relative" }}>
+                  <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: 3, background: layer.color, borderRadius: i === 0 ? "12px 0 0 0" : i === 2 ? "0 0 0 12px" : 0 }} />
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: layer.color, marginBottom: 4 }}>{layer.title}</div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {layer.items.map((item, j) => (
+                          <span key={j} style={{ fontSize: 14, color: "#E2EAF2", background: `${layer.color}12`, border: `1px solid ${layer.color}25`, borderRadius: 6, padding: "4px 12px" }}>{item}</span>
+                        ))}
+                      </div>
+                    </div>
+                    {i === 1 && (
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                        <span style={{ fontSize: 20, color: `${layer.color}80` }}>{"\u2191"}</span>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: layer.color, letterSpacing: 0.5 }}>review gate</span>
+                        <span style={{ fontSize: 20, color: `${layer.color}80` }}>{"\u2193"}</span>
+                      </div>
+                    )}
                   </div>
-                ))}
+                </div>
+                {i < 2 && (
+                  <div style={{ display: "flex", justifyContent: "center", padding: "8px 0" }}>
+                    <span style={{ fontSize: 18, color: "rgba(148,163,184,0.3)" }}>{"\u25BC"}</span>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Card>
       </div>
 
-      {/* ---- DATA SOURCES ---- */}
+      {/* FULL STACK BUILDER CERTIFICATION */}
       <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Data Sources" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
-          {skynetDataSources.map((src, i) => (
-            <div key={i} onClick={() => setActiveSource(activeSource === i ? null : i)}
-              style={{ background: activeSource === i ? `${src.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeSource === i ? src.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: src.color, opacity: activeSource === i ? 1 : 0.35 }} />
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: src.color }}>{src.name}</div>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 4, padding: "2px 7px" }}>{src.refresh}</span>
-              </div>
-              <div style={{ fontSize: 13, color: "#D0DAE6", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{src.desc.split("\u2014")[0]}.</div>
+        <SectionHeader label="Full Stack Builder Certification" />
+        <div style={{ padding: "20px 24px", background: `${BOLT_COLOR}08`, border: `1px solid ${BOLT_COLOR}20`, borderRadius: 12, marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: `${BOLT_COLOR}25`, border: `1px solid ${BOLT_COLOR}40`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${BOLT_COLOR}30` }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M13 2L4.5 13H12L11 22L19.5 11H12L13 2Z" fill={BOLT_COLOR} stroke="#FFFFFF" strokeWidth="1" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF" }}>Certified Full Stack Builder</div>
+              <div style={{ fontSize: 14, color: "#B8C8DA" }}>Production-ready applications meeting Bolt migration standards</div>
+            </div>
+          </div>
+          <p style={{ fontSize: 15, color: "#D0DAE6", lineHeight: 1.6, margin: 0 }}>
+            Business owners and product people complete a structured certification program that covers environment setup, core build skills, Bolt compliance requirements, and operational readiness. Certified builders can independently create, iterate, and prepare applications for Bolt migration.
+          </p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
+          {boltCertModules.map((mod, i) => (
+            <div key={mod.id} onClick={() => setActiveModule(activeModule === i ? null : i)} style={{ background: activeModule === i ? `${mod.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeModule === i ? mod.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: mod.color, opacity: activeModule === i ? 1 : 0.4 }} />
+              <div style={{ fontSize: 18, marginBottom: 8 }}>{mod.icon}</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: mod.color, marginBottom: 4 }}>{mod.title}</div>
+              <div style={{ fontSize: 13, color: "#B8C8DA" }}>{mod.skills.length} skills</div>
             </div>
           ))}
         </div>
-
-        {selectedSource && (
-          <div style={{ margin: "12px 0 0", background: `${selectedSource.color}08`, border: `1px solid ${selectedSource.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedSource.color, marginBottom: 8 }}>{selectedSource.name}</div>
-            <p style={{ fontSize: 15, color: "#E2EAF2", margin: 0, lineHeight: 1.65 }}>{selectedSource.desc}</p>
+        {selectedModule && (
+          <div style={{ margin: "12px 0 0", background: `${selectedModule.color}08`, border: `1px solid ${selectedModule.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedModule.color, marginBottom: 16 }}>{selectedModule.title}</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+              {selectedModule.skills.map((skill, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedModule.color, marginTop: 7, flexShrink: 0, boxShadow: `0 0 6px ${selectedModule.color}40` }} />
+                  <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{skill}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
 
-      {/* Bottom callout */}
-      <div style={{ marginTop: 28, padding: "16px 20px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}>
-        <span style={{ color: "#EF4444", fontSize: 16, marginTop: 1 }}>{"\u25C6"}</span>
-        <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>
-          Skynet replaces the single most time-consuming sales deliverable at McKesson Specialty Health. Every QBR today requires 4&ndash;8 hours of manual data gathering and PowerPoint assembly per account. With 200+ accounts on quarterly cycles, that&apos;s 800&ndash;1,600 hours per quarter of rep time redirected from selling to slide-building.
-        </span>
+      {/* PLATFORM COMPONENTS */}
+      <div style={{ marginTop: 28 }}>
+        <SectionHeader label="Platform Components" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
+          {boltPlatformTools.map((tool, i) => (
+            <div key={i} onClick={() => setActiveTool(activeTool === i ? null : i)} style={{ background: activeTool === i ? `${tool.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeTool === i ? tool.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: tool.color, opacity: activeTool === i ? 1 : 0.35 }} />
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: tool.color }}>{tool.name}</div>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#B8C8DA", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 7px" }}>{tool.role}</span>
+              </div>
+              <div style={{ fontSize: 13, color: "#D0DAE6", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{tool.desc.split(".")[0]}.</div>
+            </div>
+          ))}
+        </div>
+        {selectedTool && (
+          <div style={{ margin: "12px 0 0", background: `${selectedTool.color}08`, border: `1px solid ${selectedTool.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedTool.color, marginBottom: 8 }}>{selectedTool.name}</div>
+            <p style={{ fontSize: 15, color: "#E2EAF2", margin: 0, lineHeight: 1.65 }}>{selectedTool.desc}</p>
+          </div>
+        )}
       </div>
 
+      {/* BOTTOM CALLOUT */}
+      <div style={{ marginTop: 28, padding: "20px 24px", background: `${BOLT_COLOR}08`, border: `1px solid ${BOLT_COLOR}20`, borderRadius: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {[
+            "Applications are built by business owners in weeks, avoiding long engineering backlogs",
+            "Bolt doesn\u2019t replace engineering. It redirects engineering from routine tools to platform, guardrails, and governance",
+            "Domain experts build faster because they ARE the requirements. No handoff, no translation loss",
+            "The code review gate ensures production quality. AI review agent + engineer review = governed, not ungoverned",
+            "The result: 12\u00D7 faster time to production, zero increase in engineering headcount",
+          ].map((item, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+              <span style={{ color: BOLT_COLOR, fontSize: 14, marginTop: 2, flexShrink: 0 }}>{"\u25C6"}</span>
+              <span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.55 }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
       <div style={{ height: 64 }} />
     </div>
   );
 }
+
 // ============================================================
-// MAIN APP \u2014 TAB NAVIGATION
+// MAIN APP — TAB NAVIGATION
 // ============================================================
 
 const pages = [
@@ -1248,6 +1378,7 @@ const pages = [
   { id: "novaxray", label: "Nova + X-Ray", icon: "\u25CA" },
   { id: "meridian", label: "Meridian", icon: "\u25CE" },
   { id: "skynet", label: "Skynet", icon: "\u2756" },
+  { id: "bolt", label: "Bolt PaaS", icon: "\u26A1" },
   { id: "timeline", label: "AI Evolution", icon: "\u25C6" },
   { id: "framework", label: "Knowledge Levels", icon: "\u2726" },
 ];
@@ -1268,7 +1399,7 @@ export default function App() {
               </button>
             ); })}
           </div>
-          <span style={{ fontSize: 14, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.3 }}>Dan Lodder &middot; April 2026</span>
+          <span style={{ fontSize: 14, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.3 }}>Dan Lodder &middot; May 2026</span>
         </div>
       </nav>
       <div key={activePage} style={{ animation: "fadeIn 0.3s ease" }}>
@@ -1276,6 +1407,7 @@ export default function App() {
         {activePage === "novaxray" && <NovaXrayPage />}
         {activePage === "meridian" && <MeridianPage />}
         {activePage === "skynet" && <SkynetPage />}
+        {activePage === "bolt" && <BoltPaaSPage />}
         {activePage === "timeline" && <TimelinePage />}
         {activePage === "framework" && <FrameworkPage />}
       </div>
