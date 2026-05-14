@@ -1370,6 +1370,387 @@ function BoltPaaSPage() {
 }
 
 // ============================================================
+// MPTS ROADMAP DATA
+// ============================================================
+
+const ROADMAP_COLORS = {
+  legacy: "#EF4444",
+  intermediate: "#F59E0B",
+  bolt: "#10B981",
+  tool: "#8B5CF6",
+};
+
+const portfolioTiers = [
+  {
+    id: "legacy",
+    title: "Legacy",
+    subtitle: "Large codebases, monolith architecture",
+    color: ROADMAP_COLORS.legacy,
+    apps: [
+      { name: "Lynx Mobile", desc: "Specialty drug inventory management", users: "360+ practices, 1,600 sites", age: "~20 years", migration: "180+ days", target: "bolt", complexity: "HIGH", icon: "\uD83D\uDCE6" },
+      { name: "RetinaOS", desc: "Retina clinical workflow & inventory", users: "Retina practices", age: "Established", migration: "180+ days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDC41" },
+      { name: "Glide Health", desc: "Revenue cycle intelligence with ML/AI", users: "Oncology & multispecialty", age: "Established", migration: "90\u2013180 days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDCCA" },
+      { name: "Regimen Profiler", desc: "Treatment cost & reimbursement estimator", users: "Oncology practices", age: "Established", migration: "180+ days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDC8A" },
+      { name: "Customer Center", desc: "Online drug ordering platform", users: "All specialty practices", age: "Established", migration: "180+ days", target: "bolt", complexity: "HIGH", icon: "\uD83D\uDED2" },
+    ],
+  },
+  {
+    id: "intermediate",
+    title: "Intermediate",
+    subtitle: "AI-powered, smaller codebases",
+    color: ROADMAP_COLORS.intermediate,
+    apps: [
+      { name: "Titan", desc: "Payer policy intelligence", status: "Live", migration: "0\u201390 days", target: "bolt", complexity: "LOW", icon: "\uD83D\uDEE1" },
+      { name: "Nova 2.0", desc: "Internal pricing intelligence engine", status: "In dev", migration: "90\u2013180 days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDCB0" },
+      { name: "X-Ray", desc: "Drug pricing transparency", status: "Building", migration: "90\u2013180 days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDD0D" },
+      { name: "Skynet", desc: "Dynamic QBR portal", status: "Planning", migration: "0\u201390 days", target: "bolt", complexity: "LOW", icon: "\uD83D\uDCCB" },
+    ],
+  },
+  {
+    id: "bolt",
+    title: "Bolt PaaS",
+    subtitle: "Greenfield \u2014 builder-led on AWS",
+    color: ROADMAP_COLORS.bolt,
+    apps: [
+      { name: "New Projects", desc: "Built by certified builders using Claude Code", status: "Ready", migration: "Native", target: "native", complexity: "\u2014", icon: "\u26A1" },
+    ],
+  },
+];
+
+const migrationPaths = [
+  {
+    id: "int-to-bolt",
+    title: "Intermediate \u2192 Bolt",
+    subtitle: "Near-term migrations",
+    color: ROADMAP_COLORS.intermediate,
+    timeline: "0\u2013180 days",
+    apps: "Titan, Skynet (first wave) \u2192 Nova, X-Ray (second wave)",
+    description: "Smaller, modern codebases with minimal legacy dependencies. Git-based pull into Bolt with engineer + AI review gate. Titan and Skynet move first (lowest complexity), followed by Nova and X-Ray once the shared data layer is stable.",
+    tools: ["Claude Code", "Bolt PaaS", "AI Review Agent"],
+    steps: ["Provision Bolt environment", "Code review gate (AI + engineer)", "Migrate auth to Bolt shared auth", "DNS cutover, keep Vercel as rollback"],
+  },
+  {
+    id: "legacy-incremental",
+    title: "Legacy \u2192 Incremental Modernization",
+    subtitle: "Understand, extract, migrate module by module",
+    color: ROADMAP_COLORS.legacy,
+    timeline: "90\u2013365+ days",
+    apps: "Glide Health (first), then Regimen Profiler, RetinaOS",
+    description: "Index the legacy codebase with Sourcegraph to give developers full cross-repo context. Extract microservices one module at a time using Claude Code with Sourcegraph context. Each extracted module deploys to Bolt independently. Lower risk, longer timeline, builds internal capability.",
+    tools: ["Sourcegraph Cody", "Claude Code", "Bolt PaaS"],
+    steps: ["Deploy Sourcegraph \u2014 index full codebase", "Map dependencies and business logic", "Identify extraction boundaries", "Extract modules \u2192 Bolt, one at a time", "Decommission legacy module when Bolt replacement is stable"],
+  },
+  {
+    id: "legacy-rewrite",
+    title: "Legacy \u2192 Autonomous Rewrite",
+    subtitle: "Large-scale AI-driven modernization",
+    color: "#EC4899",
+    timeline: "180\u2013365+ days",
+    apps: "Lynx Mobile, Customer Center",
+    description: "For the largest, most complex monoliths where incremental extraction is too slow. Blitzy reverse-engineers the full codebase, builds a knowledge graph, and coordinates thousands of AI agents to autonomously generate the modernized codebase. Higher cost, faster timeline, requires significant validation infrastructure.",
+    tools: ["Blitzy", "Sourcegraph Cody", "Claude Code", "Bolt PaaS"],
+    steps: ["Sourcegraph indexes codebase for baseline understanding", "Blitzy reverse-engineers and builds knowledge graph", "Autonomous code generation (days\u2013weeks of inference)", "Human validation + test suite execution", "Staged migration to Bolt with rollback"],
+  },
+];
+
+const aiToolsRoadmap = [
+  { name: "GitHub Copilot", status: "Approved", color: "#B8C8DA", tiers: ["Legacy", "Intermediate", "Bolt"], desc: "File-level autocomplete. Currently the only approved AI coding tool. Provides value everywhere but insufficient for large codebase reasoning.", limitation: "Cannot see beyond the open file" },
+  { name: "Claude Code", status: "Pending AI Council", color: "#8B5CF6", tiers: ["Intermediate", "Bolt", "Legacy"], desc: "Terminal-native AI coding agent. Project-level reasoning, agentic workflows, full-file generation. The primary build tool for Bolt and the key unlock for developer productivity across all tiers.", limitation: "Needs Sourcegraph for legacy codebase context" },
+  { name: "Sourcegraph Cody", status: "Evaluate", color: "#3B82F6", tiers: ["Legacy"], desc: "Codebase-aware context retrieval across large, multi-repository architectures. Makes Claude Code effective against monoliths by providing cross-repo context for every prompt. $59/user/month.", limitation: "Context layer, not a build tool on its own" },
+  { name: "Blitzy", status: "Evaluate", color: "#EC4899", tiers: ["Legacy"], desc: "Autonomous enterprise code generation. Reverse-engineers codebases (1M\u2013100M+ LOC), builds knowledge graphs, coordinates 3,000+ AI agents. For Lynx-scale modernization. $250K+ evaluation.", limitation: "High cost, requires validation infrastructure" },
+];
+
+const timelineBands = [
+  {
+    id: "now",
+    label: "0\u201390 Days",
+    title: "Foundation",
+    color: ROADMAP_COLORS.bolt,
+    actions: [
+      "Secure AI Council approval for Claude Code / Codex",
+      "Begin Bolt migration for Titan and Skynet (lowest complexity)",
+      "Pilot Sourcegraph on Lynx codebase with 10\u201320 developers",
+      "Complete Full Stack Builder certification program v1",
+      "First new project built natively on Bolt",
+    ],
+  },
+  {
+    id: "next",
+    label: "90\u2013180 Days",
+    title: "Acceleration",
+    color: ROADMAP_COLORS.intermediate,
+    actions: [
+      "Titan and Skynet running on Bolt",
+      "Begin Nova and X-Ray Bolt migration assessment",
+      "Glide Health modernization feasibility study (Sourcegraph)",
+      "Expand Claude Code access to full engineering team",
+      "Second wave of certified builders operational",
+    ],
+  },
+  {
+    id: "later",
+    label: "180+ Days",
+    title: "Transformation",
+    color: ROADMAP_COLORS.legacy,
+    actions: [
+      "All intermediate apps running on Bolt",
+      "Lynx modernization decision: incremental vs. autonomous rewrite",
+      "Evaluate Blitzy POC on a contained Lynx module",
+      "Assess RetinaOS, Regimen Profiler, Customer Center for Bolt",
+      "New projects built exclusively on Bolt by certified builders",
+    ],
+  },
+];
+
+// ============================================================
+// MPTS ROADMAP PAGE
+// ============================================================
+
+function MptsRoadmapPage() {
+  const [activeTier, setActiveTier] = useState<number | null>(null);
+  const [activePath, setActivePath] = useState<number | null>(null);
+  const [activeTool, setActiveTool] = useState<number | null>(null);
+
+  const selectedTier = activeTier !== null ? portfolioTiers[activeTier] : null;
+  const selectedPath = activePath !== null ? migrationPaths[activePath] : null;
+  const selectedTool = activeTool !== null ? aiToolsRoadmap[activeTool] : null;
+
+  return (
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
+      {/* HERO */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>MPTS Roadmap</h1>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#F59E0B", background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Building</span>
+      </div>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>McKesson Provider Technology Solutions &mdash; Application Portfolio &amp; Migration Strategy</p>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>A three-tier view of every application we manage, where each is headed, and the tools and timelines that get them there.</p>
+      <div style={{ display: "flex", gap: 16, marginBottom: 48 }}>
+        {[{ label: "Applications", value: "10" }, { label: "Tiers", value: "3" }, { label: "Target velocity", value: "12\u00D7" }, { label: "Platform", value: "Bolt / AWS" }].map((stat, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span>
+            <span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* PORTFOLIO MAP */}
+      <SectionHeader label="Application Portfolio" />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginBottom: 4 }}>
+        {portfolioTiers.map((tier, ti) => (
+          <div key={tier.id} onClick={() => setActiveTier(activeTier === ti ? null : ti)} style={{ cursor: "pointer" }}>
+            <div style={{ background: `${tier.color}0C`, border: `1px solid ${tier.color}30`, borderRadius: "12px 12px 0 0", padding: "16px 20px", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: tier.color, opacity: activeTier === ti ? 1 : 0.5 }} />
+              <div style={{ fontSize: 18, fontWeight: 700, color: tier.color }}>{tier.title}</div>
+              <div style={{ fontSize: 13, color: "#D0DAE6", marginTop: 2 }}>{tier.subtitle}</div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", marginTop: 6 }}>{tier.apps.length} {tier.apps.length === 1 ? "application" : "applications"}</div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              {tier.apps.map((app, ai) => (
+                <div key={ai} style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderTop: ai === 0 ? "none" : "1px solid rgba(148,163,184,0.06)", borderRadius: ai === tier.apps.length - 1 ? "0 0 12px 12px" : 0, padding: "14px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 18, flexShrink: 0 }}>{app.icon}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{app.name}</div>
+                    <div style={{ fontSize: 12, color: "#B8C8DA", lineHeight: 1.3, marginTop: 2 }}>{app.desc}</div>
+                  </div>
+                  {app.target !== "native" && (
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0 }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: app.complexity === "HIGH" ? "#EF4444" : app.complexity === "MEDIUM" ? "#F59E0B" : "#10B981", background: app.complexity === "HIGH" ? "rgba(239,68,68,0.1)" : app.complexity === "MEDIUM" ? "rgba(245,158,11,0.1)" : "rgba(16,185,129,0.1)", border: `1px solid ${app.complexity === "HIGH" ? "rgba(239,68,68,0.25)" : app.complexity === "MEDIUM" ? "rgba(245,158,11,0.25)" : "rgba(16,185,129,0.25)"}`, borderRadius: 4, padding: "1px 6px", fontWeight: 600 }}>{app.complexity}</span>
+                      <span style={{ fontSize: 11, color: "#B8C8DA", marginTop: 4 }}>{app.migration}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {selectedTier && (
+        <div style={{ margin: "12px 0 0", background: `${selectedTier.color}08`, border: `1px solid ${selectedTier.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedTier.color, marginBottom: 16 }}>{selectedTier.title} Tier &mdash; {selectedTier.apps.length} applications</div>
+          <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(selectedTier.apps.length, 3)}, 1fr)`, gap: 12 }}>
+            {selectedTier.apps.map((app, i) => (
+              <div key={i} style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: "16px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <span style={{ fontSize: 20 }}>{app.icon}</span>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "#FFFFFF" }}>{app.name}</div>
+                </div>
+                <div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.5, marginBottom: 8 }}>{app.desc}</div>
+                {app.users && <div style={{ fontSize: 12, color: "#B8C8DA" }}>{app.users}</div>}
+                {app.status && <div style={{ fontSize: 12, color: selectedTier.color, marginTop: 4 }}>Status: {app.status}</div>}
+                {app.target !== "native" && (
+                  <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ fontSize: 12, color: "#B8C8DA" }}>Bolt migration:</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: selectedTier.color }}>{app.migration}</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* MIGRATION FLOW VISUAL */}
+      <div style={{ margin: "48px 0 0" }}>
+        <SectionHeader label="Migration Flow" />
+        <Card style={{ padding: "28px 24px" }}>
+          <svg viewBox="0 0 920 100" style={{ width: "100%", display: "block" }}>
+            <rect x={0} y={10} width={260} height={80} rx={12} fill={`${ROADMAP_COLORS.legacy}0C`} stroke={`${ROADMAP_COLORS.legacy}30`} strokeWidth={1} />
+            <rect x={0} y={10} width={260} height={3} rx={1.5} fill={ROADMAP_COLORS.legacy} opacity={0.6} />
+            <text x={130} y={42} textAnchor="middle" fontSize="16" fontWeight="700" fill={ROADMAP_COLORS.legacy} fontFamily="DM Sans, sans-serif">Legacy</text>
+            <text x={130} y={62} textAnchor="middle" fontSize="12" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">5 applications</text>
+            <text x={130} y={80} textAnchor="middle" fontSize="11" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Lynx, RetinaOS, Glide, RP, CC</text>
+            <line x1={272} y1={50} x2={318} y2={50} stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} />
+            <path d="M314 46 L320 50 L314 54" fill="none" stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+            <text x={296} y={38} textAnchor="middle" fontSize="10" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Sourcegraph</text>
+            <text x={296} y={68} textAnchor="middle" fontSize="10" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">+ Blitzy</text>
+            <rect x={330} y={10} width={260} height={80} rx={12} fill={`${ROADMAP_COLORS.intermediate}0C`} stroke={`${ROADMAP_COLORS.intermediate}30`} strokeWidth={1} />
+            <rect x={330} y={10} width={260} height={3} rx={1.5} fill={ROADMAP_COLORS.intermediate} opacity={0.6} />
+            <text x={460} y={42} textAnchor="middle" fontSize="16" fontWeight="700" fill={ROADMAP_COLORS.intermediate} fontFamily="DM Sans, sans-serif">Intermediate</text>
+            <text x={460} y={62} textAnchor="middle" fontSize="12" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">4 applications</text>
+            <text x={460} y={80} textAnchor="middle" fontSize="11" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Titan, Nova, X-Ray, Skynet</text>
+            <line x1={602} y1={50} x2={648} y2={50} stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} />
+            <path d="M644 46 L650 50 L644 54" fill="none" stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+            <text x={626} y={38} textAnchor="middle" fontSize="10" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Claude Code</text>
+            <text x={626} y={68} textAnchor="middle" fontSize="10" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">+ Review Gate</text>
+            <rect x={660} y={10} width={260} height={80} rx={12} fill={`${ROADMAP_COLORS.bolt}0C`} stroke={`${ROADMAP_COLORS.bolt}30`} strokeWidth={1} />
+            <rect x={660} y={10} width={260} height={3} rx={1.5} fill={ROADMAP_COLORS.bolt} opacity={0.6} />
+            <text x={790} y={42} textAnchor="middle" fontSize="16" fontWeight="700" fill={ROADMAP_COLORS.bolt} fontFamily="DM Sans, sans-serif">Bolt PaaS</text>
+            <text x={790} y={62} textAnchor="middle" fontSize="12" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">Production on AWS</text>
+            <text x={790} y={80} textAnchor="middle" fontSize="11" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">{"12\u00D7 faster delivery"}</text>
+          </svg>
+        </Card>
+      </div>
+
+      {/* MIGRATION PATHS */}
+      <div style={{ margin: "28px 0 0" }}>
+        <SectionHeader label="Migration Paths" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
+          {migrationPaths.map((path, i) => (
+            <div key={path.id} onClick={() => setActivePath(activePath === i ? null : i)} style={{ background: activePath === i ? `${path.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activePath === i ? path.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: path.color, opacity: activePath === i ? 1 : 0.4 }} />
+              <div style={{ fontSize: 16, fontWeight: 600, color: path.color, marginBottom: 4 }}>{path.title}</div>
+              <div style={{ fontSize: 13, color: "#D0DAE6", marginBottom: 8, lineHeight: 1.4 }}>{path.subtitle}</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA" }}>{path.timeline}</span>
+                <div style={{ display: "flex", gap: 4 }}>
+                  {path.tools.slice(0, 2).map((t, j) => (<span key={j} style={{ fontSize: 11, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 6px" }}>{t}</span>))}
+                  {path.tools.length > 2 && <span style={{ fontSize: 11, color: "#B8C8DA", padding: "2px 4px" }}>+{path.tools.length - 2}</span>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {selectedPath && (
+          <div style={{ margin: "12px 0 0", background: `${selectedPath.color}08`, border: `1px solid ${selectedPath.color}20`, borderRadius: 12, padding: "28px 28px 24px", animation: "fadeIn 0.2s ease" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedPath.color, marginBottom: 6 }}>{selectedPath.title}</div>
+            <div style={{ fontSize: 14, color: selectedPath.color, marginBottom: 16 }}>Applications: {selectedPath.apps}</div>
+            <p style={{ fontSize: 16, color: "#E2EAF2", margin: "0 0 20px", lineHeight: 1.65, maxWidth: 800 }}>{selectedPath.description}</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Migration Steps</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+                  {selectedPath.steps.map((step, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: "50%", background: `${selectedPath.color}20`, border: `1px solid ${selectedPath.color}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: selectedPath.color }}>{i + 1}</span>
+                      </div>
+                      <span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.5 }}>{step}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Tools Required</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {selectedPath.tools.map((tool, i) => (<span key={i} style={{ fontSize: 14, color: selectedPath.color, background: `${selectedPath.color}12`, border: `1px solid ${selectedPath.color}25`, borderRadius: 6, padding: "6px 14px" }}>{tool}</span>))}
+                </div>
+                <div style={{ marginTop: 16, padding: "12px 16px", background: `${selectedPath.color}08`, border: `1px solid ${selectedPath.color}15`, borderRadius: 8 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: selectedPath.color, marginBottom: 4 }}>Timeline</div>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, color: "#FFFFFF" }}>{selectedPath.timeline}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* AI TOOLING LANDSCAPE */}
+      <div style={{ margin: "28px 0 0" }}>
+        <SectionHeader label="AI Tooling Landscape" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
+          {aiToolsRoadmap.map((tool, i) => (
+            <div key={i} onClick={() => setActiveTool(activeTool === i ? null : i)} style={{ background: activeTool === i ? `${tool.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeTool === i ? tool.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: tool.color, opacity: activeTool === i ? 1 : 0.4 }} />
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: tool.color }}>{tool.name}</div>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: tool.status === "Approved" ? "#10B981" : tool.status === "Pending AI Council" ? "#F59E0B" : "#3B82F6", background: tool.status === "Approved" ? "rgba(16,185,129,0.1)" : tool.status === "Pending AI Council" ? "rgba(245,158,11,0.1)" : "rgba(59,130,246,0.1)", border: `1px solid ${tool.status === "Approved" ? "rgba(16,185,129,0.25)" : tool.status === "Pending AI Council" ? "rgba(245,158,11,0.25)" : "rgba(59,130,246,0.25)"}`, borderRadius: 4, padding: "1px 6px" }}>{tool.status}</span>
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                {tool.tiers.map((t, j) => (<span key={j} style={{ fontSize: 11, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 6px" }}>{t}</span>))}
+              </div>
+            </div>
+          ))}
+        </div>
+        {selectedTool && (
+          <div style={{ margin: "12px 0 0", background: `${selectedTool.color}08`, border: `1px solid ${selectedTool.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedTool.color, marginBottom: 8 }}>{selectedTool.name}</div>
+            <p style={{ fontSize: 16, color: "#E2EAF2", margin: "0 0 12px", lineHeight: 1.65 }}>{selectedTool.desc}</p>
+            <div style={{ padding: "10px 14px", background: "rgba(148,163,184,0.06)", border: "1px solid rgba(148,163,184,0.1)", borderRadius: 8 }}>
+              <span style={{ fontSize: 13, color: "#B8C8DA" }}>Limitation: {selectedTool.limitation}</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* TIMELINE */}
+      <div style={{ margin: "28px 0 0" }}>
+        <SectionHeader label="Execution Timeline" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+          {timelineBands.map((band) => (
+            <div key={band.id} style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: band.color, opacity: 0.5 }} />
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: band.color }}>{band.label}</div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginTop: 2 }}>{band.title}</div>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {band.actions.map((action, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: band.color, marginTop: 7, flexShrink: 0 }} />
+                    <span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.5 }}>{action}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* BOTTOM CALLOUT */}
+      <div style={{ marginTop: 28, padding: "20px 24px", background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.15)", borderRadius: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {[
+            "Every application in the portfolio has a path to Bolt \u2014 the question is sequence, not whether",
+            "Intermediate apps move first because they\u2019re smaller, modern, and prove the migration pattern",
+            "Legacy modernization requires new tooling (Sourcegraph, Blitzy) \u2014 which requires AI Council tool expansion",
+            "The AI Council decision is the single gate: approve tool expansion and the entire roadmap accelerates",
+          ].map((item, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+              <span style={{ color: "#10B981", fontSize: 14, marginTop: 2, flexShrink: 0 }}>{"\u25C6"}</span>
+              <span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.55 }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ height: 64 }} />
+    </div>
+  );
+}
+
+// ============================================================
 // MAIN APP — TAB NAVIGATION
 // ============================================================
 
@@ -1379,6 +1760,7 @@ const pages = [
   { id: "meridian", label: "Meridian", icon: "\u25CE" },
   { id: "skynet", label: "Skynet", icon: "\u2756" },
   { id: "bolt", label: "Bolt PaaS", icon: "\u26A1" },
+  { id: "roadmap", label: "MPTS Roadmap", icon: "\uD83D\uDDFA" },
   { id: "timeline", label: "AI Evolution", icon: "\u25C6" },
   { id: "framework", label: "Knowledge Levels", icon: "\u2726" },
 ];
@@ -1408,6 +1790,7 @@ export default function App() {
         {activePage === "meridian" && <MeridianPage />}
         {activePage === "skynet" && <SkynetPage />}
         {activePage === "bolt" && <BoltPaaSPage />}
+        {activePage === "roadmap" && <MptsRoadmapPage />}
         {activePage === "timeline" && <TimelinePage />}
         {activePage === "framework" && <FrameworkPage />}
       </div>
