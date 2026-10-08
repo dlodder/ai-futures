@@ -5,6 +5,8 @@ import { useState } from "react";
 // SHARED STYLES & COMPONENTS
 // ============================================================
 
+const PRACTICE_NAME = "PracticeIQ";
+
 const FONT_LINK = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap";
 
 const SectionHeader = ({ label }: { label: string }) => (
@@ -47,7 +49,7 @@ const dataLayer = [
 
 const intelligenceLayer = [
   { id: "ml", title: "Machine Learning", subtitle: "Pattern recognition", color: "#8B5CF6", capabilities: ["Predictive pricing models", "Win / loss signal learning", "Margin forecasting", "Demand & utilization forecasting", "Anomaly detection", "Learning loops on deal outcomes"], usedBy: ["Nova 2.0", "X-Ray"] },
-  { id: "prompting", title: "AI Prompting Tools", subtitle: "LLM interfaces", color: "#3B82F6", capabilities: ["Natural language to SQL", "Conversational Q&A on live data", "RAG \u2014 retrieval-augmented generation", "Document extraction & synthesis", "Explainable, grounded answers", "Pricing guidance chat"], usedBy: ["Practice Pulse", "Nova 2.0", "Titan", "X-Ray"] },
+  { id: "prompting", title: "AI Prompting Tools", subtitle: "LLM interfaces", color: "#3B82F6", capabilities: ["Natural language to SQL", "Conversational Q&A on live data", "RAG \u2014 retrieval-augmented generation", "Document extraction & synthesis", "Explainable, grounded answers", "Pricing guidance chat"], usedBy: [PRACTICE_NAME, "Nova 2.0", "Titan", "X-Ray"] },
   { id: "agents", title: "Agents", subtitle: "Automated workflows", color: "#F59E0B", capabilities: ["24/7 payer policy surveillance", "Automated document extraction", "Deal orchestration pipelines", "Multi-step data acquisition", "Scheduled monitoring & alerting", "Approval workflow automation"], usedBy: ["Titan", "Nova 2.0", "X-Ray"] },
 ];
 
@@ -55,7 +57,7 @@ const projects = [
   { id: "titan", name: "Titan", tagline: "Payer policy intelligence", color: "#F59E0B", status: "Live", statusColor: "#10B981", description: "Eliminates the quarterly manual grind for payer policy tracking. Continuously monitors formularies, step therapy requirements, and preferred drug lists across oncology drugs and biosimilars \u2014 delivering verified, real-time coverage intelligence to prevent claim denials.", capabilities: ["24/7 automated payer surveillance", "Formulary & step therapy extraction", "Preferred drug list monitoring", "Audit-ready governance trail", "Real-time API + clean UI delivery"], dataInputs: ["Payer Policy Surveillance", "Biosimilar Utilization"], intelligenceUsed: ["Agents", "AI Prompting Tools"], impact: "Removes administrative barriers for cancer patients \u2014 ensures the right drug is verified before treatment, not after a denial." },
   { id: "nova", name: "Nova 2.0", tagline: "AI pricing engine", color: "#10B981", status: "In dev", statusColor: "#3B82F6", description: "Replaces the Excel-based pricing model end-to-end. Automates buy/sell economics across WAC, contract price, VCD, FFS, GPO admin fees, and OIDs. Phase 3 adds AI deal recommendations. Phase 4 deploys small-account autonomy and field enablement. Estimated $6\u201312M upside.", capabilities: ["Automated WAC / GPO / OID waterfall", "Real-time what-if scenario modeling", "AI deal recommendations (Phase 3)", "SOX-compliant approval workflows", "Drug-level and account-level P&L", "LLM pricing guidance chat"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates", "Customer & Account Data"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools"], impact: "$6\u201312M upside through improved pricing efficiency. Compresses analyst time per deal and systematically protects margin on every renewal." },
   { id: "xray", name: "X-Ray", tagline: "Drug pricing transparency", color: "#3B82F6", status: "Building", statusColor: "#F59E0B", description: "Customer-facing solution delivering full drug pricing transparency and net cost recovery visibility to practices. Shows the complete cost walk from WAC through discounts and rebates to net price, then layers in reimbursement to reveal per-drug NCR. Built on the same shared data infrastructure as Nova.", capabilities: ["WAC-to-net-price cost walk per drug", "Net cost recovery (NCR) calculation", "Reimbursement vs. net price comparison", "Customer-facing and field rep views", "Real-time rebate feed integration"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools", "Agents"], impact: "Gives practices and field reps full visibility into drug economics \u2014 pricing transparency that drives competitive market response and enables data-driven drug decisions at the point of care." },
-  { id: "skynet", name: "Practice Pulse", tagline: "Dynamic QBR portal", color: "#EF4444", status: "Planning", statusColor: "#A8B8CC", description: "Replaces the static PowerPoint QBR process. Pulls data from disparate sources into a unified schema and delivers it through a dynamic, interactive customer portal. The rep or customer can ask any question in natural language \u2014 converted to SQL on the fly against a live database.", capabilities: ["Automated data aggregation from all sources", "Dynamic customer-facing portal", "Natural language to SQL query engine", "Real-time distribution purchase analytics", "GPO rebate, PMID, biosimilar reporting", "Technology adoption tracking"], dataInputs: ["GPO Rebates", "MID Data", "Biosimilar Utilization", "Customer & Account Data"], intelligenceUsed: ["AI Prompting Tools"], impact: "Moves from a static PowerPoint deck with manual data gathering to a live customer experience. Eliminates hours of rep prep time per QBR cycle." },
+  { id: "skynet", name: PRACTICE_NAME, tagline: "Dynamic QBR portal", color: "#EF4444", status: "Planning", statusColor: "#A8B8CC", description: "Replaces the static PowerPoint QBR process. Pulls data from disparate sources into a unified schema and delivers it through a dynamic, interactive customer portal. The rep or customer can ask any question in natural language \u2014 converted to SQL on the fly against a live database.", capabilities: ["Automated data aggregation from all sources", "Dynamic customer-facing portal", "Natural language to SQL query engine", "Real-time distribution purchase analytics", "GPO rebate, PMID, biosimilar reporting", "Technology adoption tracking"], dataInputs: ["GPO Rebates", "MID Data", "Biosimilar Utilization", "Customer & Account Data"], intelligenceUsed: ["AI Prompting Tools"], impact: "Moves from a static PowerPoint deck with manual data gathering to a live customer experience. Eliminates hours of rep prep time per QBR cycle." },
 ];
 
 // ============================================================
@@ -946,7 +948,7 @@ function SkynetPage() {
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Practice Pulse</h1>
+        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>{PRACTICE_NAME}</h1>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#A8B8CC", background: "rgba(168,184,204,0.12)", border: "1px solid rgba(168,184,204,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Planning</span>
       </div>
       <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>Dynamic QBR Portal</p>
@@ -1039,7 +1041,7 @@ function SkynetPage() {
       <div style={{ marginTop: 28 }}>
         <SectionHeader label="Before &amp; After" />
         <Card style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.3)" }}><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Static PowerPoint QBR</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>Practice Pulse Dynamic Portal</span></div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.3)" }}><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Static PowerPoint QBR</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>{PRACTICE_NAME} Dynamic Portal</span></div>
           {skynetBeforeAfter.map((row, i) => (<div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: i < skynetBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}><span style={{ fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{row.dimension}</span><span style={{ fontSize: 14, color: "#B8C8DA" }}>{row.before}</span><span style={{ fontSize: 14, color: "#10B981" }}>{row.after}</span></div>))}
         </Card>
       </div>
@@ -1059,7 +1061,7 @@ function SkynetPage() {
         {selectedSource && (<div style={{ margin: "12px 0 0", background: `${selectedSource.color}08`, border: `1px solid ${selectedSource.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedSource.color, marginBottom: 8 }}>{selectedSource.name}</div><p style={{ fontSize: 15, color: "#E2EAF2", margin: 0, lineHeight: 1.65 }}>{selectedSource.desc}</p></div>)}
       </div>
 
-      <div style={{ marginTop: 28, padding: "16px 20px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}><span style={{ color: "#EF4444", fontSize: 16, marginTop: 1 }}>{"\u25C6"}</span><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>Practice Pulse replaces the single most time-consuming sales deliverable at McKesson Specialty Health. Every QBR today requires 4&ndash;8 hours of manual data gathering and PowerPoint assembly per account. With 200+ accounts on quarterly cycles, that&apos;s 800&ndash;1,600 hours per quarter of rep time redirected from selling to slide-building.</span></div>
+      <div style={{ marginTop: 28, padding: "16px 20px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}><span style={{ color: "#EF4444", fontSize: 16, marginTop: 1 }}>{"\u25C6"}</span><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>{PRACTICE_NAME} replaces the single most time-consuming sales deliverable at McKesson Specialty Health. Every QBR today requires 4&ndash;8 hours of manual data gathering and PowerPoint assembly per account. With 200+ accounts on quarterly cycles, that&apos;s 800&ndash;1,600 hours per quarter of rep time redirected from selling to slide-building.</span></div>
       <div style={{ height: 64 }} />
     </div>
   );
@@ -1096,14 +1098,38 @@ const boltArchLayers = [
 ];
 
 const boltPlatformTools = [
-  { name: "GitHub", color: "#B8C8DA", desc: "Version control & collaboration \u2014 all builder code lives here. PRs trigger review workflows and Vercel preview deploys.", role: "Source of truth" },
+  { name: "GitHub", color: "#B8C8DA", desc: "Version control & collaboration \u2014 all builder code lives here. PRs trigger review workflows.", role: "Source of truth" },
   { name: "Supabase", color: "#10B981", desc: "PostgreSQL database with row-level security, auth, edge functions, and real-time subscriptions. Provisioned per project with managed migrations.", role: "Database & auth" },
-  { name: "Vercel", color: "#3B82F6", desc: "Prototype hosting with instant preview deploys on every PR. Auto-deploys from main branch. Zero-config for Next.js.", role: "Prototype hosting" },
   { name: "Claude Code", color: "#8B5CF6", desc: "Terminal-native AI coding agent. Reads, writes, tests, and commits code from natural language instructions. The primary build tool for certified builders.", role: "Build tool" },
   { name: "Bolt / AWS", color: "#F59E0B", desc: "Production platform with shared services \u2014 authentication, data layer, monitoring, and compliance guardrails. Where approved apps run at scale.", role: "Production platform" },
   { name: "AI Review Agent", color: "#EF4444", desc: "Automated code review powered by Claude Code. Scans for Bolt compliance, security issues, and best practice violations before human review.", role: "Quality gate" },
-  { name: "Axiom", color: "#10B981", desc: "GPO rebate reconciliation engine. Compares quarterly GPO rebate data from pharma manufacturers against McKesson rebate records to identify discrepancies, flag variances, and accelerate dispute resolution.", role: "Bolt-native app" },
 ];
+
+type EngagementCell = "bolt" | "partner" | "shared";
+
+const boltEngagementRoles = ["Business Owner", "Product Builder", "App Engineer", "Platform Engineer"];
+
+const boltEngagementModels: { id: string; name: string; abbr: string; desc: string; cells: EngagementCell[]; examples: string[] }[] = [
+  { id: "ownership", name: "Product Ownership", abbr: "", desc: "Bolt owns the product end to end, from vision to platform.",
+    cells: ["bolt", "bolt", "bolt", "bolt"], examples: ["Lynx", "Glide RI", "RetentionIQ"] },
+  { id: "paas", name: "Product as a Service", abbr: "PaaS", desc: "The business owns the product vision; Bolt builds, engineers, and runs it.",
+    cells: ["partner", "bolt", "bolt", "bolt"], examples: ["SavingsIQ", "NOVA", "PracticeIQ"] },
+  { id: "daas", name: "Development as a Service", abbr: "DaaS", desc: "Partner and Bolt build together; Bolt engineers and runs it.",
+    cells: ["partner", "shared", "bolt", "bolt"], examples: ["Strategy", "GPO", "Other partner apps"] },
+  { id: "iaas", name: "Infrastructure as a Service", abbr: "IaaS", desc: "The partner team builds and engineers its own app; Bolt provides the platform.",
+    cells: ["partner", "partner", "partner", "bolt"], examples: ["Generics Team"] },
+];
+
+const ENGAGEMENT_BOLT = "#3B82F6";
+const ENGAGEMENT_PARTNER = "#F59E0B";
+const engagementCellStyle: Record<EngagementCell, { background: string; label: string }> = {
+  bolt: { background: "rgba(59,130,246,0.85)", label: "Bolt" },
+  partner: { background: "rgba(245,158,11,0.85)", label: "Partner" },
+  shared: { background: `repeating-linear-gradient(45deg, ${ENGAGEMENT_PARTNER} 0 10px, ${ENGAGEMENT_BOLT} 10px 20px)`, label: "Shared" },
+};
+const ENGAGEMENT_GRID = "minmax(220px, 1.4fr) repeat(4, 1fr) minmax(180px, 1.2fr)";
+const engagementRolesFor = (cells: EngagementCell[], team: "bolt" | "partner") =>
+  boltEngagementRoles.flatMap((role, i) => cells[i] === team ? [role] : cells[i] === "shared" ? [`${role} (shared)`] : []);
 
 // ============================================================
 // BOLT PAAS PAGE
@@ -1114,6 +1140,8 @@ function BoltPaaSPage() {
   const [activeTool, setActiveTool] = useState<number | null>(null);
   const selectedModule = activeModule !== null ? boltCertModules[activeModule] : null;
   const selectedTool = activeTool !== null ? boltPlatformTools[activeTool] : null;
+  const [activeEngagement, setActiveEngagement] = useState<string | null>(null);
+  const selectedEngagement = boltEngagementModels.find((m) => m.id === activeEngagement) ?? null;
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
@@ -1223,6 +1251,82 @@ function BoltPaaSPage() {
           </div>
         </div>
       </Card>
+
+      {/* ENGAGEMENT MODELS */}
+      <div style={{ marginTop: 28 }}>
+        <SectionHeader label="Engagement Models" />
+        <h2 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 6px", lineHeight: 1.25 }}>How Teams Work With Bolt</h2>
+        <p style={{ fontSize: 16, color: "#D0DAE6", margin: "0 0 16px", maxWidth: 820, lineHeight: 1.6 }}>{"Four ways to build on Bolt. The more the business owns, the less Bolt provides. The platform is always Bolt's."}</p>
+        <Card style={{ padding: "24px 24px 20px" }}>
+          <div style={{ overflowX: "auto" }}>
+            <div style={{ minWidth: 820, display: "flex", flexDirection: "column", gap: 6 }}>
+              {/* Header row */}
+              <div style={{ display: "grid", gridTemplateColumns: ENGAGEMENT_GRID, gap: 6, padding: "0 8px" }}>
+                <div />
+                {boltEngagementRoles.map((role) => (
+                  <div key={role} style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", textAlign: "center", alignSelf: "end", paddingBottom: 4 }}>{role}</div>
+                ))}
+                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", alignSelf: "end", paddingBottom: 4, paddingLeft: 8 }}>Examples</div>
+              </div>
+              {/* Model rows */}
+              {boltEngagementModels.map((model) => { const isActive = activeEngagement === model.id; return (
+                <div key={model.id} onClick={() => setActiveEngagement(isActive ? null : model.id)} style={{ display: "grid", gridTemplateColumns: ENGAGEMENT_GRID, gap: 6, padding: 8, borderRadius: 10, cursor: "pointer", background: isActive ? `${BOLT_COLOR}14` : "transparent", border: `1px solid ${isActive ? BOLT_COLOR + "60" : "rgba(148,163,184,0.06)"}`, transition: "all 0.2s ease" }}>
+                  <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", paddingRight: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                      <span style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>{model.name}</span>
+                      {model.abbr && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#D0DAE6", background: "rgba(148,163,184,0.1)", border: "1px solid rgba(148,163,184,0.18)", borderRadius: 4, padding: "1px 6px" }}>{model.abbr}</span>}
+                    </div>
+                    <div style={{ fontSize: 13, color: "#A8B8CC", lineHeight: 1.45, marginTop: 4 }}>{model.desc}</div>
+                  </div>
+                  {model.cells.map((cell, ci) => (
+                    <div key={ci} style={{ minHeight: 56, borderRadius: 8, background: engagementCellStyle[cell].background, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: cell === "partner" ? "#0B0F1A" : "#FFFFFF", textShadow: cell === "shared" ? "0 1px 3px rgba(0,0,0,0.85), 0 0 2px rgba(0,0,0,0.6)" : "none", letterSpacing: 0.3 }}>{engagementCellStyle[cell].label}</span>
+                    </div>
+                  ))}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignContent: "center", paddingLeft: 8 }}>
+                    {model.examples.map((ex) => (
+                      <span key={ex} style={{ fontSize: 12, color: "#D0DAE6", border: "1px solid rgba(148,163,184,0.2)", background: "rgba(148,163,184,0.06)", borderRadius: 999, padding: "3px 10px", whiteSpace: "nowrap" }}>{ex}</span>
+                    ))}
+                  </div>
+                </div>
+              ); })}
+            </div>
+          </div>
+          {/* Legend */}
+          <div style={{ display: "flex", gap: 20, flexWrap: "wrap", marginTop: 16, paddingLeft: 8 }}>
+            {(["bolt", "partner", "shared"] as EngagementCell[]).map((cell) => (
+              <div key={cell} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ width: 18, height: 18, borderRadius: 4, background: cell === "shared" ? `repeating-linear-gradient(45deg, ${ENGAGEMENT_PARTNER} 0 5px, ${ENGAGEMENT_BOLT} 5px 10px)` : engagementCellStyle[cell].background, display: "inline-block" }} />
+                <span style={{ fontSize: 13, color: "#D0DAE6" }}>{cell === "bolt" ? "Bolt team provides" : cell === "partner" ? "Partner team provides" : "Shared"}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+        {selectedEngagement && (
+          <div style={{ margin: "12px 0 0", background: `${BOLT_COLOR}08`, border: `1px solid ${BOLT_COLOR}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: BOLT_COLOR, marginBottom: 16 }}>{selectedEngagement.name}{selectedEngagement.abbr ? ` (${selectedEngagement.abbr})` : ""}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+              {[
+                { title: "Partner team provides", color: ENGAGEMENT_PARTNER, roles: engagementRolesFor(selectedEngagement.cells, "partner") },
+                { title: "Bolt team provides", color: ENGAGEMENT_BOLT, roles: engagementRolesFor(selectedEngagement.cells, "bolt") },
+              ].map((list) => (
+                <div key={list.title}>
+                  <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: list.color, marginBottom: 10 }}>{list.title}</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+                    {list.roles.length === 0 && <span style={{ fontSize: 15, color: "#A8B8CC" }}>{"None. Bolt provides every role."}</span>}
+                    {list.roles.map((role) => (
+                      <div key={role} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                        <div style={{ width: 5, height: 5, borderRadius: "50%", background: list.color, marginTop: 8, flexShrink: 0, boxShadow: `0 0 6px ${list.color}40` }} />
+                        <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{role}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* BEFORE & AFTER TABLE */}
       <div style={{ marginTop: 28 }}>
@@ -1404,7 +1508,7 @@ const portfolioTiers = [
       { name: "Titan", desc: "Payer policy intelligence", status: "Live", migration: "0\u201390 days", target: "bolt", complexity: "LOW", icon: "\uD83D\uDEE1" },
       { name: "Nova 2.0", desc: "Internal pricing intelligence engine", status: "In dev", migration: "90\u2013180 days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDCB0" },
       { name: "X-Ray", desc: "Drug pricing transparency", status: "Building", migration: "90\u2013180 days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDD0D" },
-      { name: "Practice Pulse", desc: "Dynamic QBR portal", status: "Planning", migration: "0\u201390 days", target: "bolt", complexity: "LOW", icon: "\uD83D\uDCCB" },
+      { name: PRACTICE_NAME, desc: "Dynamic QBR portal", status: "Planning", migration: "0\u201390 days", target: "bolt", complexity: "LOW", icon: "\uD83D\uDCCB" },
     ],
   },
   {
@@ -1427,8 +1531,8 @@ const migrationPaths = [
     subtitle: "Near-term migrations",
     color: ROADMAP_COLORS.intermediate,
     timeline: "0\u2013180 days",
-    apps: "Titan, Practice Pulse (first wave) \u2192 Nova, X-Ray (second wave)",
-    description: "Smaller, modern codebases with minimal legacy dependencies. Git-based pull into Bolt with engineer + AI review gate. Titan and Practice Pulse move first (lowest complexity), followed by Nova and X-Ray once the shared data layer is stable.",
+    apps: `Titan, ${PRACTICE_NAME} (first wave) \u2192 Nova, X-Ray (second wave)`,
+    description: `Smaller, modern codebases with minimal legacy dependencies. Git-based pull into Bolt with engineer + AI review gate. Titan and ${PRACTICE_NAME} move first (lowest complexity), followed by Nova and X-Ray once the shared data layer is stable.`,
     tools: ["Claude Code", "Bolt PaaS", "AI Review Agent"],
     steps: ["Provision Bolt environment", "Code review gate (AI + engineer)", "Migrate auth to Bolt shared auth", "DNS cutover, keep Vercel as rollback"],
   },
@@ -1471,7 +1575,7 @@ const timelineBands = [
     color: ROADMAP_COLORS.bolt,
     actions: [
       "Secure AI Council approval for Claude Code / Codex",
-      "Begin Bolt migration for Titan and Practice Pulse (lowest complexity)",
+      `Begin Bolt migration for Titan and ${PRACTICE_NAME} (lowest complexity)`,
       "Pilot Sourcegraph on Lynx codebase with 10\u201320 developers",
       "Complete Full Stack Builder certification program v1",
       "First new project built natively on Bolt",
@@ -1483,7 +1587,7 @@ const timelineBands = [
     title: "Acceleration",
     color: ROADMAP_COLORS.intermediate,
     actions: [
-      "Titan and Practice Pulse running on Bolt",
+      `Titan and ${PRACTICE_NAME} running on Bolt`,
       "Begin Nova and X-Ray Bolt migration assessment",
       "Glide Health modernization feasibility study (Sourcegraph)",
       "Expand Claude Code access to full engineering team",
@@ -1611,7 +1715,7 @@ function MptsRoadmapPage() {
             <rect x={330} y={10} width={260} height={3} rx={1.5} fill={ROADMAP_COLORS.intermediate} opacity={0.6} />
             <text x={460} y={42} textAnchor="middle" fontSize="16" fontWeight="700" fill={ROADMAP_COLORS.intermediate} fontFamily="DM Sans, sans-serif">Intermediate</text>
             <text x={460} y={62} textAnchor="middle" fontSize="12" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">4 applications</text>
-            <text x={460} y={80} textAnchor="middle" fontSize="11" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Titan, Nova, X-Ray, Practice Pulse</text>
+            <text x={460} y={80} textAnchor="middle" fontSize="11" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">{`Titan, Nova, X-Ray, ${PRACTICE_NAME}`}</text>
             <line x1={602} y1={50} x2={648} y2={50} stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} />
             <path d="M644 46 L650 50 L644 54" fill="none" stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
             <text x={626} y={38} textAnchor="middle" fontSize="10" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Claude Code</text>
@@ -1761,7 +1865,7 @@ const valueProjects = [
   { name: "Nova 2.0", color: "#10B981", desc: "Internal pricing intelligence engine replacing Excel-based pricing models. Automates buy/sell economics across WAC, contract price, VCD, FFS, GPO admin fees, and OIDs with AI deal recommendations.", customerValue: "$1.5M", sdlcValue: "$1.5M", customerRaw: 1500000, sdlcRaw: 1500000, status: "In dev" },
   { name: "X-Ray", color: "#3B82F6", desc: "Customer-facing drug pricing transparency. Delivers the complete cost walk from WAC through discounts and rebates to net price, with per-drug net cost recovery visibility for practices and field reps.", customerValue: "$1M", sdlcValue: "$1.0M", customerRaw: 1000000, sdlcRaw: 1000000, status: "Building" },
   { name: "Titan", color: "#F59E0B", desc: "Payer policy intelligence. Automated 24/7 surveillance of formularies, step therapy requirements, and preferred drug lists across oncology drugs and biosimilars.", customerValue: "$1.25M", sdlcValue: "$1.5M", customerRaw: 1250000, sdlcRaw: 1500000, status: "Live" },
-  { name: "Practice Pulse", color: "#EF4444", desc: "Dynamic QBR portal replacing static PowerPoint decks. Pulls data from 6+ sources into a unified schema with natural language query engine for reps and customers.", customerValue: "$1.2M", sdlcValue: "$2.2M", customerRaw: 1200000, sdlcRaw: 2200000, status: "Planning" },
+  { name: PRACTICE_NAME, color: "#EF4444", desc: "Dynamic QBR portal replacing static PowerPoint decks. Pulls data from 6+ sources into a unified schema with natural language query engine for reps and customers.", customerValue: "$1.2M", sdlcValue: "$2.2M", customerRaw: 1200000, sdlcRaw: 2200000, status: "Planning" },
   { name: "Meridian", color: "#8B5CF6", desc: "Oncology expansion intelligence platform. Scores ~2,500 ZIP codes across 6 states to identify optimal clinic expansion opportunities with AI-generated market reports.", customerValue: "$1M", sdlcValue: "$750K", customerRaw: 1000000, sdlcRaw: 750000, status: "Live" },
   { name: "Axiom", color: "#06B6D4", desc: "GPO rebate reconciliation engine. Compares quarterly GPO rebate data from pharma manufacturers against McKesson rebate records to identify discrepancies and accelerate dispute resolution.", customerValue: "$750K", sdlcValue: "$1.0M", customerRaw: 750000, sdlcRaw: 1000000, status: "Building" },
 ];
@@ -1903,7 +2007,7 @@ const pages = [
   { id: "glide", label: "Glide Stack", icon: "\u25C8" },
   { id: "novaxray", label: "Nova + X-Ray", icon: "\u25CA" },
   { id: "meridian", label: "Meridian", icon: "\u25CE" },
-  { id: "skynet", label: "Practice Pulse", icon: "\u2756" },
+  { id: "skynet", label: PRACTICE_NAME, icon: "\u2756" },
   { id: "bolt", label: "Bolt PaaS", icon: "\u26A1" },
   { id: "roadmap", label: "MPTS Roadmap", icon: "\uD83D\uDDFA" },
   { id: "value", label: "Value", icon: "\uD83D\uDCC8" },
@@ -1911,23 +2015,74 @@ const pages = [
   { id: "framework", label: "Knowledge Levels", icon: "\u2726" },
 ];
 
+type NavItem = { type: "link"; id: string } | { type: "group"; label: string; children: string[] };
+
+const navItems: NavItem[] = [
+  { type: "link", id: "glide" },
+  { type: "link", id: "bolt" },
+  { type: "group", label: "Products", children: ["novaxray", "meridian", "skynet"] },
+  { type: "group", label: "Strategy", children: ["roadmap", "value"] },
+  { type: "group", label: "AI Literacy", children: ["timeline", "framework"] },
+];
+
+const pageById = (id: string) => pages.find((p) => p.id === id)!;
+
+const NavChevron = ({ color, open }: { color: string; open: boolean }) => (
+  <svg width="10" height="10" viewBox="0 0 10 10" style={{ transition: "transform 0.2s ease", transform: open ? "rotate(180deg)" : "none" }}>
+    <path d="M2 3.5 L5 6.5 L8 3.5" fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export default function App() {
   const [activePage, setActivePage] = useState("glide");
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const navButtonStyle = (isActive: boolean): React.CSSProperties => ({ background: isActive ? "rgba(59,130,246,0.12)" : "transparent", border: isActive ? "1px solid rgba(59,130,246,0.25)" : "1px solid transparent", borderRadius: 8, padding: "8px 16px", cursor: "pointer", outline: "none", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s ease", whiteSpace: "nowrap" });
+  const navLabelStyle = (isActive: boolean): React.CSSProperties => ({ fontSize: 15, fontWeight: isActive ? 600 : 500, color: isActive ? "#F0F4F8" : "#D0DAE6", transition: "color 0.2s ease", whiteSpace: "nowrap" });
   return (
     <div style={{ minHeight: "100vh", background: "#141B2D", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
       <link href={FONT_LINK} rel="stylesheet" />
       <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } } * { box-sizing: border-box; }`}</style>
       <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(11,15,26,0.9)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(148,163,184,0.08)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
-          <div style={{ display: "flex", gap: 4 }}>
-            {pages.map((page) => { const isActive = activePage === page.id; return (
-              <button key={page.id} onClick={() => setActivePage(page.id)} style={{ background: isActive ? "rgba(59,130,246,0.12)" : "transparent", border: isActive ? "1px solid rgba(59,130,246,0.25)" : "1px solid transparent", borderRadius: 8, padding: "8px 16px", cursor: "pointer", outline: "none", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s ease" }} onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(148,163,184,0.06)"; }} onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
-                <span style={{ fontSize: 15, color: isActive ? "#3B82F6" : "#B8C8DA" }}>{page.icon}</span>
-                <span style={{ fontSize: 15, fontWeight: isActive ? 600 : 500, color: isActive ? "#F0F4F8" : "#D0DAE6", transition: "color 0.2s ease" }}>{page.label}</span>
-              </button>
-            ); })}
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56, gap: 16 }}>
+          <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+            {navItems.map((item) => {
+              if (item.type === "link") {
+                const page = pageById(item.id);
+                const isActive = activePage === page.id;
+                return (
+                  <button key={page.id} onClick={() => setActivePage(page.id)} style={navButtonStyle(isActive)} onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(148,163,184,0.06)"; }} onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
+                    <span style={{ fontSize: 15, color: isActive ? "#3B82F6" : "#B8C8DA" }}>{page.icon}</span>
+                    <span style={navLabelStyle(isActive)}>{page.label}</span>
+                  </button>
+                );
+              }
+              const isActive = item.children.includes(activePage);
+              const isOpen = openGroup === item.label;
+              return (
+                <div key={item.label} style={{ position: "relative", paddingBottom: isOpen ? 4 : 0, marginBottom: isOpen ? -4 : 0 }} onMouseEnter={() => setOpenGroup(item.label)} onMouseLeave={() => setOpenGroup(null)}>
+                  <button onClick={() => setOpenGroup(isOpen ? null : item.label)} style={{ ...navButtonStyle(isActive), background: isActive ? "rgba(59,130,246,0.12)" : isOpen ? "rgba(148,163,184,0.06)" : "transparent" }}>
+                    <span style={navLabelStyle(isActive)}>{item.label}</span>
+                    <NavChevron color={isActive ? "#3B82F6" : "#B8C8DA"} open={isOpen} />
+                  </button>
+                  {isOpen && (
+                    <div style={{ position: "absolute", top: "100%", left: 0, minWidth: 200, background: "rgba(15,20,34,0.98)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 10, padding: 6, boxShadow: "0 12px 32px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", gap: 2 }}>
+                      {item.children.map((childId) => {
+                        const page = pageById(childId);
+                        const isChildActive = activePage === page.id;
+                        return (
+                          <button key={page.id} onClick={() => { setActivePage(page.id); setOpenGroup(null); }} style={{ ...navButtonStyle(isChildActive), width: "100%", padding: "8px 12px", textAlign: "left" }} onMouseEnter={(e) => { if (!isChildActive) e.currentTarget.style.background = "rgba(148,163,184,0.08)"; }} onMouseLeave={(e) => { if (!isChildActive) e.currentTarget.style.background = "transparent"; }}>
+                            <span style={{ fontSize: 15, color: isChildActive ? "#3B82F6" : "#B8C8DA", width: 20, textAlign: "center" }}>{page.icon}</span>
+                            <span style={navLabelStyle(isChildActive)}>{page.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
-          <span style={{ fontSize: 14, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.3 }}>Dan Lodder &middot; May 2026</span>
+          <span style={{ fontSize: 14, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.3, whiteSpace: "nowrap" }}>{"Dan Lodder \u00B7 October 2026"}</span>
         </div>
       </nav>
       <div key={activePage} style={{ animation: "fadeIn 0.3s ease" }}>
