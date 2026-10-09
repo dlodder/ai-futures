@@ -1218,7 +1218,6 @@ const BOLT_COLOR = "#2DD4BF";
 const boltBeforeAfter = [
   { dimension: "Who builds", before: "Engineering team", after: "Certified business owners & product people" },
   { dimension: "Idea \u2192 Prototype", before: "8\u201312 weeks", after: "1\u20132 weeks" },
-  { dimension: "Idea \u2192 Production", before: "~6 months", after: "2\u20134 weeks" },
   { dimension: "Handoffs", before: "4+ (business \u2192 product \u2192 eng \u2192 QA)", after: "1 (builder \u2192 code review)" },
   { dimension: "Investment approval", before: "Business case required", after: "Not required for prototypes" },
   { dimension: "Domain context", before: "Lost in translation across handoffs", after: "Builder IS the domain expert" },
@@ -1227,36 +1226,19 @@ const boltBeforeAfter = [
 ];
 
 const boltCertModules = [
-  { id: "env", title: "Environment Setup", color: "#3B82F6", icon: "\uD83D\uDD27", skills: ["GitHub repo creation & branch strategy", "Supabase project provisioning & RLS setup", "Vercel project creation & deployment", "Claude Code installation & CLAUDE.md configuration", "Connecting GitHub \u2192 Vercel auto-deploy pipeline"] },
-  { id: "build", title: "Core Build Skills", color: "#8B5CF6", icon: "\u26A1", skills: ["Prompt engineering for code generation", "PR best practices \u2014 small, atomic, descriptive", "Database schema design & migrations", "Testing fundamentals \u2014 build verification, basic E2E", "Reading and evaluating AI-generated code"] },
-  { id: "compliance", title: "Bolt Compliance", color: "#10B981", icon: "\uD83D\uDEE1", skills: ["App structure requirements for Bolt migration", "Shared auth integration patterns", "Data layer conventions & naming standards", "Security baseline \u2014 RLS policies, no secrets in code", "Code review readiness checklist"] },
-  { id: "ops", title: "Operational Readiness", color: "#F59E0B", icon: "\uD83D\uDE80", skills: ["Environment variables & secrets management", "Error handling & logging patterns", "Performance basics \u2014 query optimization, caching", "Documentation standards for handoff", "Monitoring & alerting fundamentals"] },
+  { id: "env", title: "Environment Setup", color: BOLT_COLOR, icon: "\uD83D\uDD27", skills: ["GitHub repo creation & branch strategy", "Supabase project provisioning & RLS setup", "Vercel project creation & deployment", "Claude Code installation & CLAUDE.md configuration", "Connecting GitHub \u2192 Vercel auto-deploy pipeline"] },
+  { id: "build", title: "Core Build Skills", color: BOLT_COLOR, icon: "\u26A1", skills: ["Prompt engineering for code generation", "PR best practices \u2014 small, atomic, descriptive", "Database schema design & migrations", "Testing fundamentals \u2014 build verification, basic E2E", "Reading and evaluating AI-generated code"] },
+  { id: "compliance", title: "Bolt Compliance", color: BOLT_COLOR, icon: "\uD83D\uDEE1", skills: ["App structure requirements for Bolt migration", "Shared auth integration patterns", "Data layer conventions & naming standards", "Security baseline \u2014 RLS policies, no secrets in code", "Code review readiness checklist"] },
+  { id: "ops", title: "Operational Readiness", color: BOLT_COLOR, icon: "\uD83D\uDE80", skills: ["Environment variables & secrets management", "Error handling & logging patterns", "Performance basics \u2014 query optimization, caching", "Documentation standards for handoff", "Monitoring & alerting fundamentals"] },
 ];
-
-const boltArchLayers = [
-  { id: "builder", title: "Builder Environment", color: "#8B5CF6", items: ["Claude AI", "Claude Code", "GitHub", "Vercel (prototype)"] },
-  { id: "gate", title: "Migration Gate", color: "#F59E0B", items: ["Engineer Review", "AI Review Agent", "Bolt Compliance Scan", "Security Check"] },
-  { id: "bolt", title: "Bolt Platform \u2014 AWS", color: "#3B82F6", items: ["Shared Auth", "Data Services", "Monitoring", "Production Hosting"] },
-];
-
-const boltPlatformTools = [
-  { name: "GitHub", color: "#B8C8DA", desc: "Version control & collaboration \u2014 all builder code lives here. PRs trigger review workflows.", role: "Source of truth" },
-  { name: "Supabase", color: "#10B981", desc: "PostgreSQL database with row-level security, auth, edge functions, and real-time subscriptions. Provisioned per project with managed migrations.", role: "Database & auth" },
-  { name: "Claude Code", color: "#8B5CF6", desc: "Terminal-native AI coding agent. Reads, writes, tests, and commits code from natural language instructions. The primary build tool for certified builders.", role: "Build tool" },
-  { name: "Bolt / AWS", color: "#F59E0B", desc: "Production platform with shared services \u2014 authentication, data layer, monitoring, and compliance guardrails. Where approved apps run at scale.", role: "Production platform" },
-  { name: "AI Review Agent", color: "#EF4444", desc: "Automated code review powered by Claude Code. Scans for Bolt compliance, security issues, and best practice violations before human review.", role: "Quality gate" },
-];
-
 
 type EngCell = "bolt" | "partner" | "shared";
 
 const ENG_STYLES: Record<EngCell, { bg: string; text: string; label: string }> = {
-  bolt: { bg: "rgba(59,130,246,0.85)", text: "#FFFFFF", label: "Bolt" },
-  partner: { bg: "rgba(245,158,11,0.85)", text: "#0B1A33", label: "Partner" },
-  shared: { bg: "repeating-linear-gradient(45deg, #F59E0B 0 10px, #3B82F6 10px 20px)", text: "#FFFFFF", label: "Shared" },
+  bolt: { bg: "rgba(59,130,246,0.30)", text: "#FFFFFF", label: "Bolt" },
+  partner: { bg: "rgba(245,158,11,0.26)", text: "#FFFFFF", label: "Partner" },
+  shared: { bg: "rgba(184,200,218,0.16)", text: "#FFFFFF", label: "Shared" },
 };
-
-const ENG_COLS = "minmax(220px, 1.4fr) repeat(4, 1fr) minmax(180px, 1.2fr)";
 
 const boltEngagementRoles = ["Business Owner", "Product Builder", "App Engineer", "Platform Engineer"];
 
@@ -1290,360 +1272,325 @@ const boltStack = [
 ];
 
 const SectionTitle = ({ num, label, title, sub, color }: { num: string; label: string; title: string; sub?: string; color: string }) => (
-  <div style={{ marginBottom: 20 }}>
-    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color, marginBottom: 8 }}>{num + " · " + label}</div>
-    <div style={{ fontSize: 28, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2 }}>{title}</div>
-    {sub && <p style={{ fontSize: 16, color: "#D0DAE6", margin: "8px 0 0", lineHeight: 1.6, maxWidth: 760 }}>{sub}</p>}
-  </div>
+  <header style={{ marginBottom: 24 }}>
+    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase", color, margin: "0 0 8px" }}>{num + " / " + label}</p>
+    <h2 id={`bolt-${num}-title`} tabIndex={-1} style={{ fontSize: "clamp(26px, 3vw, 30px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.25, margin: 0 }}>{title}</h2>
+    {sub && <p style={{ fontSize: 17, color: "#D0DAE6", margin: "10px 0 0", lineHeight: 1.6, maxWidth: 850 }}>{sub}</p>}
+  </header>
 );
 
 const boltSections = [
-  { id: "why", label: "Why" },
-  { id: "how", label: "How" },
-  { id: "who", label: "Who" },
-  { id: "builders", label: "Builders" },
+  { id: "why", label: "Why Bolt" },
+  { id: "how", label: "How it works" },
+  { id: "who", label: "Team roles" },
+  { id: "builders", label: "Builder training" },
 ];
+
+// Stable controls retain focus when their disclosure state changes.
+function BoltButton({ children, style, onFocus, onBlur, onPointerEnter, onPointerLeave, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const [focused, setFocused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button {...props} type="button"
+      onFocus={(event) => { setFocused(true); onFocus?.(event); }}
+      onBlur={(event) => { setFocused(false); onBlur?.(event); }}
+      onPointerEnter={(event) => { setHovered(true); onPointerEnter?.(event); }}
+      onPointerLeave={(event) => { setHovered(false); onPointerLeave?.(event); }}
+      style={{ fontFamily: "inherit", fontSize: 16, fontWeight: 600, lineHeight: 1.45, color: "#E2EAF2", cursor: "pointer", minHeight: 44, background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.45)", borderRadius: 8, padding: "10px 14px", display: "inline-flex", alignItems: "center", justifyContent: "space-between", gap: 12, textAlign: "left", ...style, outline: focused ? "3px solid #FFFFFF" : "3px solid transparent", outlineOffset: 3, boxShadow: hovered ? `inset 0 0 0 1px ${BOLT_COLOR}` : style?.boxShadow }}>
+      {children}
+    </button>
+  );
+}
+
+function BoltIcon({ kind = "chevron", expanded = false }: { kind?: "chevron" | "arrow" | "close" | "down"; expanded?: boolean }) {
+  return (
+    <svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0, transform: kind === "chevron" && expanded ? "rotate(180deg)" : undefined }}>
+      <path d={kind === "down" ? "M12 4v16m-6-6 6 6 6-6" : kind === "arrow" ? "M4 12h16m-6-6 6 6-6 6" : kind === "close" ? "m6 6 12 12M18 6 6 18" : "m6 9 6 6 6-6"} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+const boltProcessPaths = [
+  { id: "traditional", title: "Traditional development", note: "4+ handoffs across teams", steps: [
+    { name: "Requirements", owner: "Business to Product", time: "3–4 weeks" },
+    { name: "Business Case", owner: "Investment approval", time: "4–6 weeks" },
+    { name: "Prototyping", owner: "Product to Engineering", time: "4–6 weeks" },
+    { name: "Build & Test", owner: "Engineering + QA", time: "8–12 weeks" },
+    { name: "Deploy", owner: "Stabilization", time: "2–4 weeks" },
+  ] },
+  { id: "bolt", title: "Builder-led with Bolt", note: "Builder owns the work through review", steps: [
+    { name: "Build Prototype", owner: "Builder + Claude Code", time: "1–2 weeks" },
+    { name: "Iterate", owner: "Live user feedback", time: "1–2 weeks" },
+    { name: "AI + Engineer Review", owner: "Production review gate", time: "2–3 days" },
+    { name: "Bolt Deploy", owner: "Git to AWS", time: "1–2 days" },
+  ] },
+];
+
+function BoltStackDiagram({ onNavigate }: { onNavigate: Navigate }) {
+  const [activeTile, setActiveTile] = useState<string | null>(null);
+  const renderTile = (id: string, name: string, panelId: string) => (
+    <BoltButton key={id} id={`bolt-tile-${id}`} aria-expanded={activeTile === id} aria-controls={panelId} onClick={() => setActiveTile(activeTile === id ? null : id)} style={{ color: activeTile === id ? "#FFFFFF" : "#E2EAF2", borderColor: activeTile === id ? BOLT_COLOR : "rgba(184,200,218,0.45)", background: activeTile === id ? "rgba(45,212,191,0.12)" : "rgba(16,34,66,0.6)" }}>
+      <span>{name}</span><BoltIcon expanded={activeTile === id} />
+    </BoltButton>
+  );
+  return (
+    <Card style={{ padding: "8px clamp(16px, 2.5vw, 24px) 20px" }}>
+      {boltStack.map((layer, index) => {
+        const selectedItem = layer.items.find((item, itemIndex) => activeTile === `${layer.id}-${itemIndex}`);
+        const selectedIntel = layer.id === "run" ? intelligenceLayer.find((item) => activeTile === `intel-${item.id}`) : undefined;
+        const selected = selectedItem || selectedIntel;
+        const panelId = `bolt-stack-${layer.id}-detail`;
+        return (
+          <div key={layer.id} style={{ padding: "24px 0", borderBottom: "1px solid rgba(184,200,218,0.16)" }}>
+            <div style={{ display: "flex", gap: "20px 28px", flexWrap: "wrap", alignItems: "flex-start" }}>
+              <div style={{ flex: "0 1 225px", display: "flex", gap: 12 }}>
+                <span aria-hidden="true" style={{ color: BOLT_COLOR, fontSize: 16, fontFamily: "'JetBrains Mono', monospace", paddingTop: 2 }}>{"0" + (index + 1)}</span>
+                <div><h3 style={{ fontSize: 20, lineHeight: 1.3, color: "#FFFFFF", margin: 0 }}>{layer.step}</h3><p style={{ fontSize: 16, lineHeight: 1.5, color: "#B8C8DA", margin: "6px 0 0" }}>{layer.note}</p></div>
+              </div>
+              <div style={{ flex: "1 1 460px", minWidth: 0 }}>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>{layer.items.map((item, itemIndex) => renderTile(`${layer.id}-${itemIndex}`, item.name, panelId))}</div>
+                {layer.id === "run" && (
+                  <div style={{ marginTop: 18 }}>
+                    <p style={{ color: "#B8C8DA", fontSize: 15, margin: "0 0 8px" }}>Intelligence Services</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>{intelligenceLayer.map((item) => renderTile(`intel-${item.id}`, item.title, panelId))}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div id={panelId} hidden={!selected} role="region" aria-labelledby={selected ? `bolt-tile-${activeTile}` : undefined} style={{ marginTop: 18, borderLeft: `3px solid ${BOLT_COLOR}`, padding: "4px 0 4px 18px", color: "#E2EAF2", fontSize: 16, lineHeight: 1.6 }}>
+              {selectedItem && <p style={{ margin: 0 }}>{selectedItem.desc}</p>}
+              {selectedIntel && <><ul style={{ margin: 0, paddingLeft: 20, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))", gap: "6px 28px" }}>{selectedIntel.capabilities.map((capability) => <li key={capability}>{capability}</li>)}</ul><p style={{ margin: "12px 0 0", color: "#B8C8DA" }}>{"Used by: " + selectedIntel.usedBy.join(", ")}</p></>}
+            </div>
+          </div>
+        );
+      })}
+      <BoltButton onClick={() => onNavigate("dataplatform")} style={{ width: "100%", marginTop: 20, background: "rgba(45,212,191,0.08)", borderColor: BOLT_COLOR, color: BOLT_COLOR, padding: "16px 18px" }}>
+        <span style={{ display: "flex", gap: "4px 16px", alignItems: "baseline", flexWrap: "wrap" }}><span style={{ color: "#FFFFFF", fontSize: 18 }}>Data Platform foundation</span><span style={{ fontWeight: 400, color: "#D0DAE6", fontSize: 16 }}>Eight governed data domains</span></span><BoltIcon kind="arrow" />
+      </BoltButton>
+    </Card>
+  );
+}
+
+function BoltEngagementMatrix() {
+  const [activeModel, setActiveModel] = useState<string | null>(null);
+  const [scrollFocused, setScrollFocused] = useState(false);
+  const teamColor = (cell: EngCell) => cell === "bolt" ? "#3B82F6" : cell === "partner" ? "#F59E0B" : "rgba(184,200,218,0.5)";
+  const toggleModel = (id: string) => setActiveModel((current) => current === id ? null : id);
+
+  return (
+    <div style={{ minWidth: 0, maxWidth: "100%", background: "rgba(16,34,66,0.5)", border: "1px solid rgba(184,200,218,0.16)", borderRadius: 16, overflow: "hidden" }}>
+      <p id="bolt-engagement-help" style={{ margin: 0, padding: "20px 24px 8px", fontSize: 16, lineHeight: 1.5, color: "#B8C8DA" }}>
+        Select a model for responsibilities. Scroll the table sideways on smaller screens.
+      </p>
+      <div
+        role="region"
+        aria-label="Engagement model responsibilities"
+        aria-describedby="bolt-engagement-help"
+        tabIndex={0}
+        onFocus={(event) => { if (event.target === event.currentTarget) setScrollFocused(true); }}
+        onBlur={() => setScrollFocused(false)}
+        style={{ overflowX: "auto", maxWidth: "100%", padding: "0 16px", outline: scrollFocused ? `3px solid ${BOLT_COLOR}` : "none", outlineOffset: -3 }}
+      >
+        <table style={{ width: "100%", minWidth: 960, tableLayout: "fixed", borderCollapse: "collapse", fontSize: 16, lineHeight: 1.45, textAlign: "left" }}>
+          <caption style={{ textAlign: "left", color: "#E2EAF2", fontSize: 16, fontWeight: 600, padding: "12px 8px 16px" }}>Role ownership by engagement model</caption>
+          <colgroup>
+            <col style={{ width: "24%" }} />
+            {boltEngagementRoles.map((role) => <col key={role} style={{ width: "13.5%" }} />)}
+            <col style={{ width: "22%" }} />
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col" style={{ padding: "12px 8px", color: "#B8C8DA", fontWeight: 600, borderBottom: "1px solid rgba(184,200,218,0.24)" }}>Engagement model</th>
+              {boltEngagementRoles.map((role) => <th key={role} scope="col" style={{ padding: "12px 8px", color: "#B8C8DA", fontWeight: 600, textAlign: "center", borderBottom: "1px solid rgba(184,200,218,0.24)" }}>{role}</th>)}
+              <th scope="col" style={{ padding: "12px 12px", color: "#B8C8DA", fontWeight: 600, borderBottom: "1px solid rgba(184,200,218,0.24)" }}>Examples</th>
+            </tr>
+          </thead>
+          {boltEngagementModels.map((model) => {
+            const isActive = activeModel === model.id;
+            const detailId = `bolt-engagement-detail-${model.id}`;
+            const triggerId = `bolt-engagement-trigger-${model.id}`;
+            return (
+              <tbody key={model.id}>
+                <tr onClick={() => toggleModel(model.id)} style={{ cursor: "pointer", background: isActive ? "rgba(45,212,191,0.08)" : "transparent", borderBottom: isActive ? "none" : "1px solid rgba(184,200,218,0.13)" }}>
+                  <th scope="row" style={{ padding: "12px 4px", fontWeight: 600, textAlign: "left", verticalAlign: "middle" }}>
+                    <BoltButton
+                      id={triggerId}
+                      type="button"
+                      aria-expanded={isActive}
+                      aria-controls={detailId}
+                      onClick={(event) => { event.stopPropagation(); toggleModel(model.id); }}
+                      style={{ width: "100%", padding: "10px 8px", borderColor: isActive ? BOLT_COLOR : "rgba(184,200,218,0.25)", background: "transparent", color: "#FFFFFF", textAlign: "left" }}
+                    >
+                      <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                        <span style={{ display: "block", fontSize: 16, lineHeight: 1.35 }}>
+                          {model.name}
+                          {model.abbr && <span style={{ display: "block", marginTop: 4, color: "#B8C8DA", fontSize: 15, fontWeight: 400 }}>{model.abbr}</span>}
+                        </span>
+                        <BoltIcon kind="chevron" expanded={isActive} />
+                      </span>
+                    </BoltButton>
+                  </th>
+                  {model.cells.map((cell, index) => (
+                    <td key={boltEngagementRoles[index]} style={{ padding: "16px 6px", textAlign: "center", verticalAlign: "middle" }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 7, minWidth: 76, boxSizing: "border-box", padding: "7px 9px", borderRadius: 7, background: ENG_STYLES[cell].bg, border: `1.5px solid ${teamColor(cell)}`, fontSize: 16, fontWeight: 700, color: ENG_STYLES[cell].text }}>
+                        {cell === "shared" && <span aria-hidden="true" style={{ display: "inline-flex", width: 14, height: 14, borderRadius: 3, overflow: "hidden", flexShrink: 0 }}><span style={{ width: "50%", background: "#3B82F6" }} /><span style={{ width: "50%", background: "#F59E0B" }} /></span>}
+                        {ENG_STYLES[cell].label}
+                      </span>
+                    </td>
+                  ))}
+                  <td style={{ padding: "16px 12px", color: "#D0DAE6", fontSize: 16, verticalAlign: "middle" }}>{model.examples.join(", ")}</td>
+                </tr>
+                <tr id={detailId} hidden={!isActive}>
+                  <td colSpan={6} style={{ padding: "4px 12px 24px", background: "rgba(45,212,191,0.08)", borderBottom: "1px solid rgba(184,200,218,0.2)" }}>
+                    <div role="region" aria-labelledby={triggerId} style={{ padding: "16px 16px 0", borderTop: "1px solid rgba(45,212,191,0.28)" }}>
+                      <p style={{ margin: "0 0 18px", fontSize: 17, lineHeight: 1.6, color: "#E2EAF2" }}>{model.desc}</p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
+                        {(["partner", "bolt"] as EngCell[]).map((side) => {
+                          const roles = boltEngagementRoles.flatMap((role, index) => model.cells[index] === side ? [role] : model.cells[index] === "shared" ? [`${role} (shared)`] : []);
+                          return (
+                            <div key={side} style={{ flex: "1 1 260px", borderLeft: `3px solid ${teamColor(side)}`, paddingLeft: 16 }}>
+                              <div style={{ color: "#FFFFFF", fontSize: 16, fontWeight: 600, marginBottom: 8 }}>{side === "bolt" ? "Bolt team provides" : "Partner team provides"}</div>
+                              {roles.length === 0 ? <p style={{ margin: 0, fontSize: 16, color: "#D0DAE6" }}>Nothing. Bolt covers every role.</p> : <ul style={{ margin: 0, paddingLeft: 20, color: "#D0DAE6", fontSize: 16, lineHeight: 1.7 }}>{roles.map((role) => <li key={role}>{role}</li>)}</ul>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            );
+          })}
+        </table>
+      </div>
+      <p style={{ margin: 0, padding: "16px 24px 20px", color: "#B8C8DA", fontSize: 15, lineHeight: 1.6 }}>
+        <strong style={{ color: "#E2EAF2" }}>Bolt</strong>{" = Bolt team provides · "}<strong style={{ color: "#E2EAF2" }}>Partner</strong>{" = Partner team provides · "}<strong style={{ color: "#E2EAF2" }}>Shared</strong>{" = both teams provide"}
+      </p>
+    </div>
+  );
+}
+
 
 function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
   const [showCompare, setShowCompare] = useState(false);
-  const [activeTile, setActiveTile] = useState<string | null>(null);
   const [activeModule, setActiveModule] = useState<number | null>(null);
-  const [activeModel, setActiveModel] = useState<string | null>(null);
-  const selectedModel = boltEngagementModels.find((m) => m.id === activeModel) || null;
-  const selectedModule = activeModule !== null ? boltCertModules[activeModule] : null;
-
-  const tileDetail = (() => {
-    if (!activeTile) return null;
-    const [layerId, name] = activeTile.split("|");
-    if (layerId === "intel") {
-      const l = intelligenceLayer.find((x) => x.title === name);
-      return l ? { name: l.title, color: l.color, desc: l.capabilities.join(" · "), usedBy: l.usedBy } : null;
-    }
-    const layer = boltStack.find((x) => x.id === layerId);
-    const item = layer?.items.find((x) => x.name === name);
-    return layer && item ? { name: item.name, color: layer.color, desc: item.desc, usedBy: [] as string[] } : null;
-  })();
-
-  const jump = (id: string) => { const el = typeof document !== "undefined" ? document.getElementById(id) : null; if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
-
-  const Tile = ({ id, name, color }: { id: string; name: string; color: string }) => {
-    const on = activeTile === id;
-    return (
-      <button onClick={() => setActiveTile(on ? null : id)} style={{ background: on ? `${color}26` : `${color}10`, border: `1px solid ${on ? color : color + "40"}`, borderRadius: 8, padding: "10px 14px", cursor: "pointer", outline: "none", fontSize: 15, fontWeight: 600, color: on ? "#FFFFFF" : "#E2EAF2", transition: "all 0.15s ease", whiteSpace: "nowrap" }}>{name}</button>
-    );
+  const sectionStyle: React.CSSProperties = { marginTop: 56, scrollMarginTop: 84 };
+  const jump = (id: string, index: number) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "instant", block: "start" });
+    document.getElementById(`bolt-0${index + 1}-title`)?.focus({ preventScroll: true });
   };
-
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      {/* HERO */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Bolt PaaS</h1>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#F59E0B", background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Building</span>
-      </div>
-      <p style={{ fontSize: 19, color: "#E2EAF2", margin: "0 0 28px", maxWidth: 820, lineHeight: 1.55 }}>Business owners and product people build production software with Claude Code, then ship it on Bolt, McKesson{"’"}s governed AWS platform.</p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24 }}>
-        {[
-          { value: "2–4 wks", label: "Idea to production", sub: "vs. ~6 months traditional" },
-          { value: "1", label: "Handoff", sub: "vs. 4+ across business, product, eng, QA" },
-          { value: "AI + Human", label: "Review gate", sub: "on every release" },
-        ].map((k) => (
-          <div key={k.label} style={{ background: `${BOLT_COLOR}0D`, border: `1px solid ${BOLT_COLOR}30`, borderRadius: 12, padding: "20px 22px" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 34, fontWeight: 700, color: BOLT_COLOR, lineHeight: 1 }}>{k.value}</div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginTop: 10 }}>{k.label}</div>
-            <div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 2 }}>{k.sub}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        {boltSections.map((sec, i) => (
-          <button key={sec.id} onClick={() => jump(sec.id)} style={{ background: "transparent", border: "1px solid rgba(148,163,184,0.25)", borderRadius: 20, padding: "6px 14px", cursor: "pointer", outline: "none", fontSize: 14, color: "#D0DAE6" }}>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", color: BOLT_COLOR, marginRight: 6 }}>{"0" + (i + 1)}</span>{sec.label}
-          </button>
-        ))}
-      </div>
-
-      {/* 01 WHY */}
-      <section id="why" style={{ marginTop: 64, scrollMarginTop: 80 }}>
-        <SectionTitle num="01" label="Why" title="From six months to a few weeks" sub="Builders who know the business build the software themselves, so there is no backlog to wait in and nothing lost in translation." color={BOLT_COLOR} />
-      {/* VELOCITY SHIFT VISUAL — COMBINED */}
-      <Card style={{ padding: "32px 28px", marginBottom: 4 }}>
-        {/* Traditional SDLC */}
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 16 }}>Traditional SDLC</div>
-          <svg viewBox="0 0 920 130" style={{ width: "100%", display: "block" }}>
-            {[
-              { x: 0, w: 160, label: "Requirements", sub: "Business \u2192 Product", weeks: "3\u20134 wks", icon: "M6 3h12v2H6zm0 4h12v1H6zm0 3h8v1H6z" },
-              { x: 184, w: 160, label: "Business Case", sub: "Investment approval", weeks: "4\u20136 wks", icon: "M4 5h16v2H4zm2 4h12v6H6z" },
-              { x: 368, w: 160, label: "Prototyping", sub: "Product \u2192 Eng", weeks: "4\u20136 wks", icon: "M4 4h16v12H4zm2 2v8h12V6z" },
-              { x: 552, w: 190, label: "Build & Test", sub: "Engineering + QA", weeks: "8\u201312 wks", icon: "M7 3l-4 8h6l-2 7 9-10h-6l4-5z" },
-              { x: 766, w: 154, label: "Deploy", sub: "Stabilization", weeks: "2\u20134 wks", icon: "M12 2L4 7v6l8 5 8-5V7z" },
-            ].map((s, i) => (
-              <g key={i}>
-                <rect x={s.x} y={0} width={s.w} height={80} rx={10} fill="rgba(148,163,184,0.06)" stroke="rgba(148,163,184,0.15)" strokeWidth={1} />
-                {/* Icon top-right */}
-                <g transform={`translate(${s.x + s.w - 30}, 8)`} opacity={0.3}>
-                  <svg width="18" height="18" viewBox="0 0 24 24"><path d={s.icon} fill="#B8C8DA" /></svg>
-                </g>
-                <text x={s.x + s.w / 2} y={36} textAnchor="middle" fontSize="15" fontWeight="600" fill="#FFFFFF" fontFamily="DM Sans, sans-serif">{s.label}</text>
-                <text x={s.x + s.w / 2} y={58} textAnchor="middle" fontSize="13" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">{s.sub}</text>
-                <text x={s.x + s.w / 2} y={104} textAnchor="middle" fontSize="13" fontWeight="600" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">{s.weeks}</text>
-                {i < 4 && (
-                  <g>
-                    <line x1={s.x + s.w + 4} y1={40} x2={s.x + s.w + 20} y2={40} stroke="rgba(148,163,184,0.25)" strokeWidth={1.5} />
-                    <path d={`M${s.x + s.w + 16} 36 L${s.x + s.w + 22} 40 L${s.x + s.w + 16} 44`} fill="none" stroke="rgba(148,163,184,0.25)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-                  </g>
-                )}
-              </g>
-            ))}
-            <rect x={0} y={120} width={920} height={6} rx={3} fill="rgba(148,163,184,0.15)" />
-          </svg>
-          <div style={{ textAlign: "center", marginTop: 10 }}>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: "#B8C8DA", letterSpacing: 0.5 }}>{"~6 months \u00B7 4+ handoffs \u00B7 Investment approval required"}</span>
-          </div>
+    <main id="bolt-page" style={{ maxWidth: 1100, margin: "0 auto", padding: "40px clamp(16px, 2.5vw, 24px) 48px", color: "#E2EAF2", fontSize: 16, lineHeight: 1.5 }}>
+      <header>
+        <div style={{ display: "flex", gap: 16, justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
+          <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Bolt PaaS</h1>
+          <span style={{ color: "#B8C8DA", fontSize: 15, border: "1px solid rgba(184,200,218,0.3)", borderRadius: 6, padding: "4px 10px" }}>Building</span>
         </div>
-
-        {/* Divider */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "8px 0 28px" }}>
-          <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: BOLT_COLOR, fontWeight: 600, letterSpacing: 1 }}>VS</span>
-          <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
-        </div>
-
-        {/* Builder-Led with Bolt */}
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: BOLT_COLOR }}>Builder-led with Bolt</div>
-          </div>
-          <div style={{ display: "flex", gap: 0, alignItems: "flex-start" }}>
-            <div style={{ flex: 1 }}>
-              <svg viewBox="0 0 700 130" style={{ width: "100%", display: "block" }}>
-                {[
-                  { x: 0, w: 220, label: "Build Prototype", sub: "Builder + Claude Code", weeks: "1\u20132 wks", color: BOLT_COLOR, icon: "M7 3l-4 8h6l-2 7 9-10h-6l4-5z" },
-                  { x: 240, w: 180, label: "Iterate", sub: "User feedback, live", weeks: "1\u20132 wks", color: BOLT_COLOR, icon: "M12 4V1L8 5l4 4V6c3.3 0 6 2.7 6 6s-2.7 6-6 6-6-2.7-6-6H4c0 4.4 3.6 8 8 8s8-3.6 8-8-3.6-8-8-8z" },
-                  { x: 440, w: 130, label: "AI Review", sub: "AI + engineer", weeks: "2\u20133 days", color: "#F59E0B", icon: "M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1 15l-5-5 1.4-1.4L11 14.2l7.6-7.6L20 8l-9 9z" },
-                  { x: 590, w: 110, label: "Bolt Deploy", sub: "Git \u2192 AWS", weeks: "1\u20132 days", color: "#3B82F6", icon: "M12 2l-7 7h4v6h6v-6h4z" },
-                ].map((s, i) => (
-                  <g key={i}>
-                    <rect x={s.x} y={0} width={s.w} height={80} rx={10} fill={`${s.color}0C`} stroke={`${s.color}35`} strokeWidth={1} />
-                    <rect x={s.x} y={0} width={s.w} height={3} rx={1.5} fill={s.color} opacity={0.6} />
-                    {/* Icon top-right */}
-                    <g transform={`translate(${s.x + s.w - 30}, 10)`} opacity={0.5}>
-                      <svg width="18" height="18" viewBox="0 0 24 24"><path d={s.icon} fill={s.color} /></svg>
-                    </g>
-                    <text x={s.x + s.w / 2} y={36} textAnchor="middle" fontSize="15" fontWeight="600" fill="#FFFFFF" fontFamily="DM Sans, sans-serif">{s.label}</text>
-                    <text x={s.x + s.w / 2} y={58} textAnchor="middle" fontSize="13" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">{s.sub}</text>
-                    <text x={s.x + s.w / 2} y={104} textAnchor="middle" fontSize="13" fontWeight="600" fill={s.color} fontFamily="JetBrains Mono, monospace">{s.weeks}</text>
-                    {i < 3 && (
-                      <g>
-                        <line x1={s.x + s.w + 4} y1={40} x2={s.x + s.w + 16} y2={40} stroke={`${s.color}50`} strokeWidth={1.5} />
-                        <path d={`M${s.x + s.w + 12} 36 L${s.x + s.w + 18} 40 L${s.x + s.w + 12} 44`} fill="none" stroke={`${s.color}50`} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-                      </g>
-                    )}
-                  </g>
-                ))}
-                <rect x={0} y={120} width={700} height={6} rx={3} fill={`${BOLT_COLOR}08`} />
-                <rect x={0} y={120} width={200} height={6} rx={3} fill={`${BOLT_COLOR}40`} />
-              </svg>
-              <div style={{ textAlign: "center", marginTop: 10 }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: BOLT_COLOR, letterSpacing: 0.5 }}>{"2\u20134 weeks \u00B7 1 handoff \u00B7 No investment approval needed"}</span>
-              </div>
-            </div>
-
-            {/* 12× Badge */}
-            <div style={{ width: 140, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 8 }}>
-              <div style={{ width: 110, height: 110, borderRadius: "50%", background: `${BOLT_COLOR}15`, border: `2px solid ${BOLT_COLOR}50`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", boxShadow: `0 0 40px ${BOLT_COLOR}20` }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 36, fontWeight: 700, color: BOLT_COLOR, lineHeight: 1 }}>12&times;</span>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#D0DAE6", letterSpacing: 1, textTransform: "uppercase", marginTop: 4 }}>Faster</span>
-              </div>
-              <span style={{ fontSize: 12, color: "#B8C8DA", marginTop: 10, textAlign: "center", lineHeight: 1.3 }}>Idea to production</span>
-            </div>
-          </div>
-        </div>
-      </Card>
-        <button onClick={() => setShowCompare(!showCompare)} style={{ marginTop: 12, background: "transparent", border: "none", padding: 0, cursor: "pointer", outline: "none", display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 600, color: BOLT_COLOR }}>
-          {showCompare ? "Hide full comparison" : "Full comparison"}
-          <svg width="10" height="10" viewBox="0 0 10 10" style={{ transform: showCompare ? "rotate(180deg)" : "none", transition: "transform 0.2s ease" }}><path d="M1.5 3.5 L5 7 L8.5 3.5" fill="none" stroke={BOLT_COLOR} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </button>
-        {showCompare && (
-          <Card style={{ padding: 0, overflow: "hidden", marginTop: 12, animation: "fadeIn 0.2s ease" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)" }}>
-              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span>
-              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Traditional SDLC</span>
-              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>Bolt PaaS</span>
-            </div>
-            {boltBeforeAfter.map((row, i) => (
-              <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "12px 20px", borderBottom: i < boltBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{row.dimension}</span>
-                <span style={{ fontSize: 14, color: "#B8C8DA" }}>{row.before}</span>
-                <span style={{ fontSize: 14, color: "#10B981" }}>{row.after}</span>
-              </div>
-            ))}
-          </Card>
-        )}
-      </section>
-
-      {/* 02 HOW */}
-      <section id="how" style={{ marginTop: 64, scrollMarginTop: 80 }}>
-        <SectionTitle num="02" label="How" title="One stack, from idea to production" sub="Builders work in the top layer. Every app passes the review gate, then runs on Bolt with shared services and AI built in. Click any tile." color={BOLT_COLOR} />
-        <Card style={{ padding: "8px 24px" }}>
-          {boltStack.map((layer, li) => (
-            <div key={layer.id}>
-              <div style={{ display: "grid", gridTemplateColumns: "190px 1fr", gap: 20, alignItems: "center", padding: "18px 0" }}>
-                <div style={{ borderLeft: `3px solid ${layer.color}`, paddingLeft: 14 }}>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: "#FFFFFF" }}>{layer.step}</div>
-                  <div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>{layer.note}</div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {layer.items.map((it) => (<Tile key={it.name} id={layer.id + "|" + it.name} name={it.name} color={layer.color} />))}
-                  </div>
-                  {layer.id === "run" && (
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#99F6E4", marginRight: 4 }}>Intelligence Services</span>
-                      {intelligenceLayer.map((l) => (<Tile key={l.id} id={"intel|" + l.title} name={l.title} color={l.color} />))}
-                    </div>
-                  )}
-                </div>
-              </div>
-              {li < boltStack.length - 1 && (
-                <div style={{ display: "flex", alignItems: "center", gap: 10, paddingLeft: 17 }}>
-                  <svg width="12" height="16" viewBox="0 0 12 16"><path d="M6 1 V13 M2 9 L6 14 L10 9" fill="none" stroke="rgba(148,163,184,0.45)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
-                </div>
-              )}
+        <p style={{ fontSize: 20, color: "#E2EAF2", margin: "14px 0 24px", maxWidth: 880, lineHeight: 1.55 }}>Business owners and product people build with Claude Code and ship on McKesson{"’"}s governed AWS platform.</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 250px), 1fr))", gap: 12 }}>
+          {[
+            { value: "2–4 weeks", label: "Idea to production", sub: "vs. ~6 months; up to 12× faster" },
+            { value: "1 handoff", label: "Builder to code review", sub: "vs. 4+ across teams" },
+            { value: "AI + Human", label: "Review on every release", sub: "Governed production on Bolt" },
+          ].map((metric) => (
+            <div key={metric.label} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(45,212,191,0.3)", borderRadius: 10, padding: "22px 24px" }}>
+              <p style={{ fontSize: 30, fontWeight: 700, letterSpacing: -0.6, color: BOLT_COLOR, margin: 0, lineHeight: 1.2 }}>{metric.value}</p>
+              <p style={{ color: "#FFFFFF", fontSize: 17, fontWeight: 600, margin: "10px 0 3px" }}>{metric.label}</p>
+              <p style={{ fontSize: 16, color: "#B8C8DA", margin: 0 }}>{metric.sub}</p>
             </div>
           ))}
-          <button onClick={() => onNavigate("dataplatform")} style={{ width: "100%", margin: "4px 0 16px", background: "rgba(16,185,129,0.08)", border: "1px dashed rgba(16,185,129,0.45)", borderRadius: 10, padding: "14px 18px", cursor: "pointer", outline: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#10B981" }}>Foundation</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF" }}>Data Platform</span>
-              <span style={{ fontSize: 14, color: "#B8C8DA" }}>Eight governed data domains every app builds on</span>
-            </span>
-            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7 H11 M7.5 3.5 L11 7 L7.5 10.5" fill="none" stroke="#10B981" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
-        </Card>
-        {tileDetail && (
-          <div style={{ margin: "12px 0 0", background: `${tileDetail.color}0D`, border: `1px solid ${tileDetail.color}35`, borderRadius: 12, padding: "18px 22px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 6 }}>{tileDetail.name}</div>
-            <p style={{ fontSize: 15, color: "#E2EAF2", margin: 0, lineHeight: 1.6 }}>{tileDetail.desc}</p>
-            {tileDetail.usedBy.length > 0 && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12, alignItems: "center" }}>
-                <span style={{ fontSize: 13, color: "#B8C8DA", marginRight: 4 }}>Used by</span>
-                {tileDetail.usedBy.map((proj) => { const p = projects.find((x) => x.name === proj); return (<span key={proj} style={{ fontSize: 13, color: p ? p.color : "#D0DAE6", background: p ? `${p.color}12` : "rgba(148,163,184,0.08)", border: `1px solid ${p ? p.color + "30" : "rgba(148,163,184,0.15)"}`, borderRadius: 5, padding: "2px 8px", fontFamily: "'JetBrains Mono', monospace" }}>{proj}</span>); })}
-              </div>
-            )}
-          </div>
-        )}
-      </section>
-
-      {/* 03 WHO */}
-      <section id="who" style={{ marginTop: 64, scrollMarginTop: 80 }}>
-        <SectionTitle num="03" label="Who" title="How teams work with Bolt" sub={"Four engagement models. The more the business owns, the less Bolt provides. The platform is always Bolt’s."} color={BOLT_COLOR} />
-      <div>
-        <Card style={{ padding: "20px 20px 18px" }}>
-          <div style={{ overflowX: "auto" }}>
-            <div style={{ minWidth: 820 }}>
-              <div style={{ display: "grid", gridTemplateColumns: ENG_COLS, gap: 6, padding: "0 7px 8px" }}>
-                <div />
-                {boltEngagementRoles.map((r) => (<div key={r} style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", textAlign: "center", alignSelf: "end" }}>{r}</div>))}
-                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", paddingLeft: 4, alignSelf: "end" }}>Examples</div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                {boltEngagementModels.map((m) => { const isActive = activeModel === m.id; return (
-                  <div key={m.id} onClick={() => setActiveModel(isActive ? null : m.id)} style={{ display: "grid", gridTemplateColumns: ENG_COLS, gap: 6, padding: 6, borderRadius: 10, cursor: "pointer", border: `1px solid ${isActive ? BOLT_COLOR + "70" : "transparent"}`, background: isActive ? `${BOLT_COLOR}10` : "transparent", transition: "all 0.2s ease" }}>
-                    <div style={{ padding: "4px 8px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>{m.name}</span>
-                        {m.abbr && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#99F6E4", background: `${BOLT_COLOR}20`, border: `1px solid ${BOLT_COLOR}50`, borderRadius: 4, padding: "1px 6px" }}>{m.abbr}</span>}
-                      </div>
-                      <div style={{ fontSize: 13, color: "#A8B8CC", lineHeight: 1.45, marginTop: 4 }}>{m.desc}</div>
-                    </div>
-                    {m.cells.map((c, ci) => (
-                      <div key={ci} style={{ minHeight: 56, borderRadius: 8, background: ENG_STYLES[c].bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 0.5, color: ENG_STYLES[c].text, background: c === "shared" ? "rgba(16,34,66,0.6)" : "transparent", padding: c === "shared" ? "2px 8px" : 0, borderRadius: 4 }}>{ENG_STYLES[c].label}</span>
-                      </div>
-                    ))}
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignContent: "center", padding: "4px" }}>
-                      {m.examples.map((ex) => (<span key={ex} style={{ fontSize: 13, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.18)", borderRadius: 6, padding: "3px 9px" }}>{ex}</span>))}
-                    </div>
-                  </div>
-                ); })}
-              </div>
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: 20, marginTop: 16, flexWrap: "wrap" }}>
-            {(["bolt", "partner", "shared"] as EngCell[]).map((c) => (
-              <div key={c} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 18, height: 12, borderRadius: 3, background: ENG_STYLES[c].bg }} />
-                <span style={{ fontSize: 13, color: "#B8C8DA" }}>{c === "bolt" ? "Bolt team provides" : c === "partner" ? "Partner team provides" : "Shared"}</span>
-              </div>
-            ))}
-            <span style={{ fontSize: 13, color: "#A8B8CC", marginLeft: "auto" }}>Click a row for detail</span>
-          </div>
-        </Card>
-        {selectedModel && (
-          <div style={{ margin: "12px 0 0", background: `${BOLT_COLOR}08`, border: `1px solid ${BOLT_COLOR}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#99F6E4", marginBottom: 6 }}>{selectedModel.name}{selectedModel.abbr ? ` (${selectedModel.abbr})` : ""}</div>
-            <p style={{ fontSize: 16, color: "#E2EAF2", margin: "0 0 16px", lineHeight: 1.6 }}>{selectedModel.desc}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              {(["partner", "bolt"] as EngCell[]).map((side) => {
-                const roles = boltEngagementRoles.filter((_, ri) => selectedModel.cells[ri] === side || selectedModel.cells[ri] === "shared").map((r) => (selectedModel.cells[boltEngagementRoles.indexOf(r)] === "shared" ? `${r} (shared)` : r));
-                const color = side === "bolt" ? "#3B82F6" : "#F59E0B";
-                return (
-                  <div key={side} style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color, marginBottom: 12 }}>{side === "bolt" ? "Bolt team provides" : "Partner team provides"}</div>
-                    {roles.length === 0 ? (<span style={{ fontSize: 15, color: "#A8B8CC" }}>Nothing. Bolt covers every role.</span>) : (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                        {roles.map((r) => (<div key={r} style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} /><span style={{ fontSize: 15, color: "#E2EAF2" }}>{r}</span></div>))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-      </section>
-
-      {/* 04 BUILDERS */}
-      <section id="builders" style={{ marginTop: 64, scrollMarginTop: 80 }}>
-        <SectionTitle num="04" label="Builders" title="Become a certified Full Stack Builder" sub="Four modules take business owners and product people from setup to production-ready. Click a step to see its skills." color={BOLT_COLOR} />
-        <div style={{ position: "relative", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-          <div style={{ position: "absolute", top: 22, left: "12%", right: "12%", height: 2, background: `linear-gradient(90deg, ${boltCertModules.map((m) => m.color).join(", ")})`, opacity: 0.35 }} />
-          {boltCertModules.map((mod, i) => { const on = activeModule === i; return (
-            <button key={mod.id} onClick={() => setActiveModule(on ? null : i)} style={{ position: "relative", background: "transparent", border: "none", cursor: "pointer", outline: "none", padding: 0, textAlign: "center" }}>
-              <div style={{ width: 44, height: 44, borderRadius: "50%", margin: "0 auto", background: on ? mod.color : "#0B1A33", border: `2px solid ${mod.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, color: on ? "#0B1A33" : mod.color, transition: "all 0.2s ease" }}>{i + 1}</div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: on ? mod.color : "#FFFFFF", marginTop: 12 }}>{mod.title}</div>
-              <div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>{mod.skills.length + " skills"}</div>
-            </button>
-          ); })}
         </div>
-        {selectedModule && (
-          <div style={{ margin: "20px 0 0", background: `${selectedModule.color}0A`, border: `1px solid ${selectedModule.color}30`, borderRadius: 12, padding: "20px 24px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedModule.color, marginBottom: 12 }}>{selectedModule.title}</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 24px" }}>
-              {selectedModule.skills.map((skill, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedModule.color, marginTop: 8, flexShrink: 0 }} />
-                  <span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.5 }}>{skill}</span>
-                </div>
-              ))}
+        <nav aria-label="Bolt page sections" style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 20 }}>
+          {boltSections.map((section, index) => <BoltButton key={section.id} onClick={() => jump(section.id, index)} style={{ background: "transparent", padding: "8px 14px" }}><span style={{ color: BOLT_COLOR, fontFamily: "'JetBrains Mono', monospace" }}>{"0" + (index + 1)}</span><span>{section.label}</span><BoltIcon kind="down" /></BoltButton>)}
+        </nav>
+      </header>
+
+      <section id="why" aria-labelledby="bolt-01-title" style={sectionStyle}>
+        <SectionTitle num="01" label="Why" title="Business expertise, fewer handoffs" sub="The people who know the business build the software. Engineers own the production review gate." color={BOLT_COLOR} />
+        <div role="img" aria-label="Idea to production: about 6 months with traditional development, 2 to 4 weeks with Bolt" style={{ display: "grid", gap: 14, marginBottom: 20 }}>
+          {[
+            { label: "Traditional", time: "~6 months", from: 100, to: 100, color: "#B8C8DA" },
+            { label: "With Bolt", time: "2\u20134 weeks", from: 7.7, to: 15.4, color: BOLT_COLOR },
+          ].map((row) => (
+            <div key={row.label} aria-hidden="true" style={{ display: "grid", gridTemplateColumns: "minmax(110px, 140px) 1fr minmax(100px, 120px)", alignItems: "center", gap: 16 }}>
+              <span style={{ fontSize: 17, fontWeight: 600, color: "#FFFFFF" }}>{row.label}</span>
+              <div style={{ position: "relative", height: 18, borderRadius: 9, background: "rgba(184,200,218,0.08)" }}>
+                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${row.to}%`, borderRadius: 9, background: row.color, opacity: 0.35 }} />
+                <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${row.from}%`, borderRadius: 9, background: row.color }} />
+              </div>
+              <span style={{ fontSize: 20, fontWeight: 700, color: row.color, textAlign: "right", whiteSpace: "nowrap" }}>{row.time}</span>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
+        <Card style={{ padding: "clamp(16px, 2.5vw, 24px)" }}>
+          {boltProcessPaths.map((path, pathIndex) => (
+            <div key={path.id} style={{ paddingTop: pathIndex ? 24 : 0, marginTop: pathIndex ? 24 : 0, borderTop: pathIndex ? "1px solid rgba(184,200,218,0.2)" : undefined }}>
+              <div style={{ display: "flex", gap: "4px 20px", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", marginBottom: 16 }}>
+                <h3 style={{ fontSize: 18, color: pathIndex ? BOLT_COLOR : "#E2EAF2", margin: 0 }}>{path.title}</h3>
+                <p style={{ fontSize: 16, color: "#B8C8DA", margin: 0 }}>{path.note}</p>
+              </div>
+              <ol aria-label={path.title + " stages"} style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${pathIndex ? 205 : 155}px), 1fr))`, gap: 12 }}>
+                {path.steps.map((step, index) => (
+                  <li key={step.name} style={{ borderTop: `2px solid ${pathIndex ? BOLT_COLOR : "#B8C8DA"}`, padding: "12px 0 0" }}>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}><span aria-hidden="true" style={{ fontSize: 15, color: pathIndex ? BOLT_COLOR : "#B8C8DA" }}>{index + 1 + "."}</span><span style={{ fontSize: 17, fontWeight: 600, color: "#FFFFFF", lineHeight: 1.4 }}>{step.name}</span></div>
+                    <p style={{ color: "#B8C8DA", fontSize: 16, lineHeight: 1.5, margin: "6px 0 0" }}>{step.owner}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
+        </Card>
+        <BoltButton id="bolt-comparison-trigger" aria-expanded={showCompare} aria-controls="bolt-comparison" onClick={() => setShowCompare(!showCompare)} style={{ marginTop: 12, color: BOLT_COLOR, background: "transparent" }}><span>{showCompare ? "Hide timing & full comparison" : "Show timing & full comparison"}</span><BoltIcon expanded={showCompare} /></BoltButton>
+        <div id="bolt-comparison" hidden={!showCompare} role="region" aria-labelledby="bolt-comparison-trigger" style={{ marginTop: 16 }}>
+          <Card style={{ padding: "clamp(16px, 2.5vw, 24px)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 290px), 1fr))", gap: 28, marginBottom: 24 }}>
+              {boltProcessPaths.map((path) => <div key={path.id}><h3 style={{ fontSize: 18, color: "#FFFFFF", margin: "0 0 12px" }}>{path.title + ": stage timing"}</h3><dl style={{ margin: 0 }}>{path.steps.map((step) => <div key={step.name} style={{ display: "flex", gap: 12, justifyContent: "space-between", padding: "6px 0" }}><dt style={{ color: "#D0DAE6" }}>{step.name}</dt><dd style={{ color: "#E2EAF2", margin: 0, whiteSpace: "nowrap" }}>{step.time}</dd></div>)}</dl></div>)}
+            </div>
+            <div role="region" aria-label="Full development comparison, scroll horizontally if needed" tabIndex={0} style={{ overflowX: "auto", padding: 4 }}>
+              <table style={{ width: "100%", minWidth: 640, borderCollapse: "collapse", textAlign: "left", fontSize: 16 }}>
+                <caption style={{ textAlign: "left", color: "#FFFFFF", fontSize: 18, fontWeight: 700, paddingBottom: 12 }}>Full comparison</caption>
+                <thead><tr>{["Dimension", "Traditional development", "Bolt PaaS"].map((label) => <th key={label} scope="col" style={{ width: "33.33%", color: "#FFFFFF", borderBottom: "1px solid #B8C8DA", padding: "12px 12px 12px 0" }}>{label}</th>)}</tr></thead>
+                <tbody>{boltBeforeAfter.map((row) => <tr key={row.dimension}><th scope="row" style={{ fontWeight: 600, padding: "14px 16px 14px 0", borderBottom: "1px solid rgba(184,200,218,0.16)", verticalAlign: "top" }}>{row.dimension}</th><td style={{ color: "#B8C8DA", padding: "14px 16px 14px 0", borderBottom: "1px solid rgba(184,200,218,0.16)", verticalAlign: "top" }}>{row.before}</td><td style={{ color: "#E2EAF2", padding: "14px 0", borderBottom: "1px solid rgba(184,200,218,0.16)", verticalAlign: "top" }}>{row.after}</td></tr>)}</tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
       </section>
 
-      {/* CLOSE */}
-      <div style={{ marginTop: 64, padding: "24px 28px", background: `${BOLT_COLOR}0A`, border: `1px solid ${BOLT_COLOR}25`, borderRadius: 12, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: 320 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF", marginBottom: 6 }}>Bolt doesn{"’"}t replace engineering. It redirects it.</div>
-          <div style={{ fontSize: 15, color: "#D0DAE6", lineHeight: 1.6 }}>Domain experts build the tools; engineers own the platform, the guardrails and the review gate.</div>
-        </div>
-        <CrossLink label="Built on the Data Platform" target="dataplatform" onNavigate={onNavigate} color="#10B981" />
-      </div>
-      <div style={{ height: 64 }} />
-    </div>
+      <section id="how" aria-labelledby="bolt-02-title" style={sectionStyle}>
+        <SectionTitle num="02" label="How" title="Build. Review. Run on Bolt." sub="Every app passes AI, engineer and security review before production. Explore the tools and shared services below." color={BOLT_COLOR} />
+        <BoltStackDiagram onNavigate={onNavigate} />
+      </section>
+
+      <section id="who" aria-labelledby="bolt-03-title" style={sectionStyle}>
+        <SectionTitle num="03" label="Who" title="Choose the ownership. Bolt runs the platform." sub="Four engagement models, from Bolt-owned products to partner-built apps. Select a model to see responsibilities." color={BOLT_COLOR} />
+        <BoltEngagementMatrix />
+      </section>
+
+      <section id="builders" aria-labelledby="bolt-04-title" style={sectionStyle}>
+        <SectionTitle num="04" label="Builders" title="Four steps to Full Stack Builder certification" sub="From environment setup to operational readiness. Open each module to explore its skills." color={BOLT_COLOR} />
+        <ol style={{ listStyle: "none", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 235px), 1fr))", gap: 12, margin: 0, padding: 0, alignItems: "start" }}>
+          {boltCertModules.map((module, index) => {
+            const expanded = activeModule === index;
+            return (
+              <li key={module.id} style={{ background: "rgba(16,34,66,0.6)", border: `1px solid ${expanded ? BOLT_COLOR : "rgba(184,200,218,0.3)"}`, borderRadius: 10 }}>
+                <BoltButton id={`bolt-module-${module.id}`} aria-expanded={expanded} aria-controls={`bolt-module-${module.id}-skills`} onClick={() => setActiveModule(expanded ? null : index)} style={{ width: "100%", minHeight: 174, border: "none", padding: 20, background: expanded ? "rgba(45,212,191,0.08)" : "transparent", display: "flex", flexDirection: "column", alignItems: "stretch", gap: 12 }}>
+                  <span style={{ color: BOLT_COLOR, fontSize: 24, fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>{"0" + (index + 1)}</span>
+                  <span style={{ fontSize: 18, color: "#FFFFFF", flex: 1 }}>{module.title}</span>
+                  <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#B8C8DA", fontSize: 16, fontWeight: 400 }}><span>{(expanded ? "Hide " : "View ") + module.skills.length + " skills"}</span><BoltIcon expanded={expanded} /></span>
+                </BoltButton>
+                <div id={`bolt-module-${module.id}-skills`} role="region" aria-labelledby={`bolt-module-${module.id}`} hidden={!expanded} style={{ padding: "0 20px 20px" }}><ul style={{ borderTop: "1px solid rgba(184,200,218,0.2)", padding: "16px 0 0 18px", margin: 0, display: "grid", gap: 12 }}>{module.skills.map((skill) => <li key={skill} style={{ fontSize: 16, lineHeight: 1.5, color: "#E2EAF2" }}>{skill}</li>)}</ul></div>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
+      <footer style={{ marginTop: 48, paddingTop: 28, borderTop: "1px solid rgba(184,200,218,0.25)", display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+        <p style={{ flex: "1 1 530px", fontSize: 18, color: "#D0DAE6", margin: 0, lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>Domain experts build the tools.</strong>{" Engineers own the platform, guardrails and review gate."}</p>
+        <BoltButton onClick={() => onNavigate("dataplatform")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR }}><span>Explore the Data Platform</span><BoltIcon kind="arrow" /></BoltButton>
+      </footer>
+    </main>
   );
 }
 
