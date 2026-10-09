@@ -2278,7 +2278,7 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => vo
     { id: "title", render: () => (
       <div style={{ display: "flex", gap: 48, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ flex: "1 1 520px" }}>
-          {eyebrow("Glide Platform · Bolt PaaS")}
+          {eyebrow("Glide Platform · Application layer")}
           <h2 className="bolt-anim" style={{ ...rise(0.08), fontSize: "clamp(44px, 6vw, 80px)", lineHeight: 1.05, letterSpacing: -1.5, color: "#FFFFFF", margin: 0 }}>Build in weeks,<br />not months.</h2>
           <p className="bolt-anim" style={{ ...rise(0.2), fontSize: 24, lineHeight: 1.5, color: "#D0DAE6", margin: "24px 0 0", maxWidth: 620 }}>{"Business experts, product owners and engineers build with Claude Code and ship on McKesson’s governed AWS platform."}</p>
         </div>
@@ -2377,16 +2377,16 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => vo
     { id: "title", render: () => (
       <div style={{ display: "flex", gap: 48, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ flex: "1 1 520px" }}>
-          {eyebrow("Glide Platform · Data Platform")}
+          {eyebrow("Glide Platform · Data layer")}
           <h2 className="bolt-anim" style={{ ...rise(0.08), fontSize: "clamp(44px, 5.6vw, 76px)", lineHeight: 1.05, letterSpacing: -1.5, color: "#FFFFFF", margin: 0 }}>{"Enterprise data,"}<br />{"turned into capabilities."}</h2>
-          <p className="bolt-anim" style={{ ...rise(0.2), fontSize: 24, lineHeight: 1.5, color: "#D0DAE6", margin: "24px 0 0", maxWidth: 640 }}>{"A connected, governed foundation where applications, data products, analytics and AI are built once, reused everywhere, and inherit enterprise controls by default."}</p>
+          <p className="bolt-anim" style={{ ...rise(0.2), fontSize: 24, lineHeight: 1.5, color: "#D0DAE6", margin: "24px 0 0", maxWidth: 640 }}>{"A governed foundation where data products, analytics and AI are built once, reused everywhere and inherit enterprise controls by default."}</p>
         </div>
         <div className="bolt-anim" style={{ ...rise(0.3), flex: "0 1 460px" }}><BoltHeroStack autoExplode litLayer="data" maxWidth={460} /></div>
       </div>
     ) },
     { id: "foundation", render: () => (
       <div>
-        {eyebrow("Provider Solutions Data Platform")}
+        {eyebrow("Data Platform")}
         {title("Transforming enterprise data into business capabilities through intent")}
         <div className="bolt-anim" style={rise(0.15)}><DpHeroTiles big /></div>
       </div>
@@ -2771,6 +2771,7 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
         <div aria-hidden="true" style={{ position: "absolute", top: -40, left: 0, right: 0, height: 380, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.22) 1px, transparent 1.2px)", backgroundSize: "22px 22px", WebkitMaskImage: "radial-gradient(ellipse 70% 80% at 75% 35%, black 10%, transparent 75%)", maskImage: "radial-gradient(ellipse 70% 80% at 75% 35%, black 10%, transparent 75%)" }} />
         <div style={{ position: "relative", display: "flex", gap: "16px 32px", alignItems: "center", flexWrap: "wrap", marginBottom: 24 }}>
           <div style={{ flex: "1 1 480px", minWidth: 0 }}>
+            <p style={{ margin: "0 0 8px", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color: BOLT_COLOR }}>{"Glide Platform · Application layer"}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
               <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Bolt PaaS</h1>
               <BoltButton onClick={() => setPresenting(true)} aria-keyshortcuts="P" style={{ background: "rgba(45,212,191,0.12)", borderColor: BOLT_COLOR, color: BOLT_COLOR, padding: "6px 14px", minHeight: 38 }}>
@@ -2778,7 +2779,8 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
                 <span>Present</span><span style={{ fontSize: 12, fontWeight: 500, color: "#B8C8DA", border: "1px solid rgba(184,200,218,0.35)", borderRadius: 4, padding: "0 5px" }}>P</span>
               </BoltButton>
             </div>
-            <p style={{ fontSize: 20, color: "#E2EAF2", margin: "14px 0 0", maxWidth: 620, lineHeight: 1.55 }}>{"Business experts, product owners and engineers build with Claude Code and ship on McKesson’s governed AWS platform."}</p>
+            <p style={{ fontSize: 22, color: "#FFFFFF", fontWeight: 600, margin: "14px 0 0", maxWidth: 640, lineHeight: 1.4 }}>{"Turning business intent into governed enterprise software."}</p>
+            <p style={{ fontSize: 18, color: "#D0DAE6", margin: "10px 0 0", maxWidth: 640, lineHeight: 1.55 }}>{"Business experts, product owners and engineers build with Claude Code and ship on McKesson’s governed AWS platform."}</p>
           </div>
           <div style={{ flex: "0 1 370px", minWidth: 260, marginLeft: "auto" }}>
             <BoltHeroStack onLayer={(layer) => layer === "apps" ? onNavigate("solutions") : layer === "data" ? onNavigate("dataplatform") : jump("how", 2)} />
@@ -3813,17 +3815,16 @@ function DataPlatformPage({ onNavigate }: { onNavigate: Navigate }) {
         <div aria-hidden="true" style={{ position: "absolute", top: -40, left: 0, right: 0, height: 380, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.22) 1px, transparent 1.2px)", backgroundSize: "22px 22px", WebkitMaskImage: "radial-gradient(ellipse 70% 80% at 75% 35%, black 10%, transparent 75%)", maskImage: "radial-gradient(ellipse 70% 80% at 75% 35%, black 10%, transparent 75%)" }} />
         <div style={{ position: "relative", display: "flex", gap: "16px 32px", alignItems: "center", flexWrap: "wrap", marginBottom: 24 }}>
           <div style={{ flex: "1 1 480px", minWidth: 0 }}>
-            <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color: DP_COLOR }}>{"Provider Solutions Data Platform"}</p>
+            <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color: DP_COLOR }}>{"Glide Platform · Data layer"}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
               <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Data Platform</h1>
-              <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: DP_COLOR, border: `1px solid ${DP_COLOR}77`, background: `${DP_COLOR}14`, borderRadius: 6, padding: "4px 10px" }}>Available</span>
               <BoltButton onClick={() => setPresenting(true)} aria-keyshortcuts="P" style={{ background: `${DP_COLOR}1F`, borderColor: DP_COLOR, color: DP_COLOR, padding: "6px 14px", minHeight: 38 }}>
                 <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"><path d="M7 4v16l13-8L7 4Z" fill="currentColor" /></svg>
                 <span>Present</span><span style={{ fontSize: 12, fontWeight: 500, color: "#B8C8DA", border: "1px solid rgba(184,200,218,0.35)", borderRadius: 4, padding: "0 5px" }}>P</span>
               </BoltButton>
             </div>
             <p style={{ fontSize: 22, color: "#FFFFFF", fontWeight: 600, margin: "14px 0 0", maxWidth: 640, lineHeight: 1.4 }}>{"Transforming enterprise data into business capabilities through intent."}</p>
-            <p style={{ fontSize: 18, color: "#D0DAE6", margin: "10px 0 0", maxWidth: 640, lineHeight: 1.55 }}>{"A connected, governed foundation where applications, data products, analytics and AI are built once, reused everywhere, and inherit enterprise controls by default."}</p>
+            <p style={{ fontSize: 18, color: "#D0DAE6", margin: "10px 0 0", maxWidth: 640, lineHeight: 1.55 }}>{"A governed foundation where data products, analytics and AI are built once, reused everywhere and inherit enterprise controls by default."}</p>
           </div>
           <div style={{ flex: "0 1 370px", minWidth: 260, marginLeft: "auto" }}>
             <BoltHeroStack litLayer="data" onLayer={(layer) => layer === "apps" ? onNavigate("solutions") : layer === "bolt" ? onNavigate("bolt") : jump("dp-domains", 1)} />
