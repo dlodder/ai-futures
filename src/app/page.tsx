@@ -1474,7 +1474,7 @@ function BoltEngagementMatrix() {
 function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
   const [showCompare, setShowCompare] = useState(false);
   const [activeModule, setActiveModule] = useState<number | null>(null);
-  const sectionStyle: React.CSSProperties = { marginTop: 56, scrollMarginTop: 84 };
+  const sectionStyle: React.CSSProperties = { marginTop: 56, paddingTop: 48, borderTop: "1px solid rgba(184,200,218,0.16)", scrollMarginTop: 84 };
   const jump = (id: string, index: number) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "instant", block: "start" });
     document.getElementById(`bolt-0${index + 1}-title`)?.focus({ preventScroll: true });
