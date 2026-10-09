@@ -1279,6 +1279,14 @@ const BOLT_CSS = `
 @keyframes boltFlip { from { opacity: 0; transform: perspective(700px) rotateX(-90deg); } to { opacity: 1; transform: none; } }
 @keyframes boltFlash { 0% { box-shadow: 0 0 0 0 rgba(45,212,191,0.75); } 100% { box-shadow: 0 0 0 28px rgba(45,212,191,0); } }
 @keyframes boltPop { 0% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes boltBlink { 50% { opacity: 0; } }
+@keyframes boltIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes boltGrowX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes boltPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+.bolt-range { -webkit-appearance: none; appearance: none; background: transparent; }
+.bolt-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 4px; height: 48px; }
+.bolt-range::-moz-range-thumb { width: 4px; height: 48px; border: 0; }
+@media (max-width: 720px) { .bolt-split { flex-direction: column; } .bolt-split-pane { width: 100% !important; } .bolt-split-inner { min-width: 0 !important; } .bolt-split-handle, .bolt-split-input, .bolt-split-hint { display: none !important; } }
 @media (prefers-reduced-motion: reduce) { .bolt-anim { animation: none !important; transition: none !important; } }
 `;
 
@@ -1389,9 +1397,10 @@ const CheckMark = ({ on }: { on: boolean }) => (
 );
 
 // Live, illustrative walk of one app from idea to production
-function BoltShipDemo({ autoStart = false, big = false }: { autoStart?: boolean; big?: boolean }) {
+function BoltShipDemo({ autoStart = false, big = false, trigger = 0 }: { autoStart?: boolean; big?: boolean; trigger?: number }) {
   const [t, setT] = useState(0);
   const [running, setRunning] = useState(false);
+  useEffect(() => { if (!trigger) return; setT(0); setRunning(true); }, [trigger]);
   useEffect(() => {
     if (!autoStart) return;
     const id = window.setTimeout(() => { setT(0); setRunning(true); }, 700);
@@ -1501,6 +1510,8 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370 }: { onLay
     const id = window.setTimeout(() => setAuto(true), 900);
     return () => window.clearTimeout(id);
   }, [autoExplode]);
+  const [motionOk, setMotionOk] = useState(false);
+  useEffect(() => { setMotionOk(!prefersReducedMotion()); }, []);
   const exploded = hover || auto || focusLayer !== null;
   const cx = 112, w = 84, h = 34, t = 10;
   const slab = (y: number, color: string, lit: boolean) => (
@@ -1555,50 +1566,18 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370 }: { onLay
           <text x={218} y={l.y + 15} fontSize={12} fill={exploded && interactive ? l.color : "#B8C8DA"} fontFamily="DM Sans, sans-serif">{exploded && interactive ? l.action + " →" : l.sub}</text>
         </g>
       ))}
+      {motionOk && (
+        <g aria-hidden="true" style={{ pointerEvents: "none", filter: `drop-shadow(0 0 4px ${BOLT_COLOR})` }}>
+          {[-34, 18, -10, 30, -22, 6, 40, -40].map((dx, i) => (
+            <circle key={i} cx={cx + dx} cy={212} r={i % 3 === 0 ? 3.6 : 2.7} fill="#34D399" opacity={0}>
+              <animate attributeName="cy" values="214;126;46" keyTimes="0;0.5;1" dur="3.6s" begin={`${i * 0.45}s`} repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.8;1" dur="3.6s" begin={`${i * 0.45}s`} repeatCount="indefinite" />
+              <animate attributeName="fill" values="#34D399;#2DD4BF;#93C5FD" keyTimes="0;0.5;1" dur="3.6s" begin={`${i * 0.45}s`} repeatCount="indefinite" />
+            </circle>
+          ))}
+        </g>
+      )}
     </svg>
-  );
-}
-
-// Animated idea-to-production comparison; plays when scrolled into view
-function BoltTimeBar() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [play, setPlay] = useState(false);
-  const [run, setRun] = useState(0);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const reduce = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || typeof IntersectionObserver === "undefined") { setPlay(true); return; }
-    const io = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { setPlay(true); io.disconnect(); } }, { threshold: 0.4 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  const replay = () => { setPlay(false); setRun((r) => r + 1); window.setTimeout(() => setPlay(true), 60); };
-  const rows = [
-    { label: "Traditional", time: "~6 months", from: 100, to: 100, color: "#B8C8DA", delay: 0, dur: 2.2 },
-    { label: "With Bolt", time: "2–4 weeks", from: 7.7, to: 15.4, color: BOLT_COLOR, delay: 2.4, dur: 0.45 },
-  ];
-  return (
-    <div ref={ref} style={{ marginBottom: 20 }}>
-      <div role="img" aria-label="Idea to production: about 6 months with traditional development, 2 to 4 weeks with Bolt" style={{ display: "grid", gap: 14 }}>
-        {rows.map((row) => (
-          <div key={row.label + run} aria-hidden="true" style={{ display: "grid", gridTemplateColumns: "minmax(110px, 140px) 1fr minmax(100px, 120px)", alignItems: "center", gap: 16 }}>
-            <span style={{ fontSize: 17, fontWeight: 600, color: "#FFFFFF" }}>{row.label}</span>
-            <div style={{ position: "relative", height: 18, borderRadius: 9, background: "rgba(184,200,218,0.08)", overflow: "hidden" }}>
-              <div className="bolt-anim" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${row.to}%`, borderRadius: 9, background: row.color, opacity: 0.35, transformOrigin: "left center", transform: play ? "scaleX(1)" : "scaleX(0)", transition: `transform ${row.dur}s cubic-bezier(.2,.7,.2,1) ${row.delay}s` }} />
-              <div className="bolt-anim" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${row.from}%`, borderRadius: 9, background: row.color, transformOrigin: "left center", transform: play ? "scaleX(1)" : "scaleX(0)", transition: `transform ${row.dur}s cubic-bezier(.2,.7,.2,1) ${row.delay}s` }} />
-            </div>
-            <span className="bolt-anim" style={{ fontSize: 20, fontWeight: 700, color: row.color, textAlign: "right", whiteSpace: "nowrap", opacity: play ? 1 : 0, transition: `opacity 0.4s ease ${row.delay + row.dur}s` }}>{row.time}</span>
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 6 }}>
-        <button type="button" onClick={replay} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#B8C8DA", fontSize: 14, fontFamily: "inherit", padding: "4px 0", display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          Replay
-        </button>
-      </div>
-    </div>
   );
 }
 
@@ -1637,9 +1616,384 @@ function BoltSealAuto() {
   return <BoltBuilderSeal visited={visited} />;
 }
 
+// Drag-the-timeline: both paths on one 26-week axis. Phase lengths are midpoints of the stage timings in the full comparison.
+type TlPhase = { name: string; from: number; to: number };
+const TL_MAX = 26;
+const BOLT_LIVE = 3.6;
+const tlTrad: TlPhase[] = [
+  { name: "Requirements", from: 0, to: 3.5 },
+  { name: "Business Case", from: 3.5, to: 8.5 },
+  { name: "Prototyping", from: 8.5, to: 13.5 },
+  { name: "Build & Test", from: 13.5, to: 23 },
+  { name: "Deploy", from: 23, to: 26 },
+];
+const tlBolt: TlPhase[] = [
+  { name: "Build prototype", from: 0, to: 1.5 },
+  { name: "Iterate", from: 1.5, to: 3 },
+  { name: "AI + Engineer Review", from: 3, to: 3.4 },
+  { name: "Bolt Deploy", from: 3.4, to: BOLT_LIVE },
+  { name: "In production", from: BOLT_LIVE, to: TL_MAX },
+];
+const tlPhaseName = (phases: TlPhase[], w: number) => (phases.find((p) => w < p.to) || phases[phases.length - 1]).name;
+const MONO = "'JetBrains Mono', monospace";
+
+function BoltTimeBar({ big = false }: { big?: boolean }) {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.4);
+  const [week, setWeek] = useState(0);
+  const [manual, setManual] = useState(false);
+  const [sweep, setSweep] = useState(0);
+  const [focused, setFocused] = useState(false);
+  useEffect(() => {
+    if (!inView || manual) return;
+    if (prefersReducedMotion()) { setWeek(TL_MAX); return; }
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const x = Math.min(1, (now - start) / 4200);
+      setWeek((x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2) * TL_MAX);
+      if (x < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, manual, sweep]);
+  const replay = () => { setManual(false); setWeek(0); setSweep((s) => s + 1); };
+
+  const wk = week <= 0 ? 0 : Math.ceil(week - 0.01);
+  const tradLive = week >= TL_MAX - 0.01;
+  const boltLive = week >= BOLT_LIVE;
+  const boltWeeks = Math.floor(week - BOLT_LIVE);
+  const tradStatus = week <= 0 ? "Not started" : tradLive ? "Live in production" : tlPhaseName(tlTrad, week);
+  const boltStatus = week <= 0 ? "Not started" : !boltLive ? tlPhaseName(tlBolt, week) : boltWeeks < 1 ? "Live in production" : `Live · ${boltWeeks} week${boltWeeks === 1 ? "" : "s"} in production`;
+  const H = big ? 30 : 24;
+  const pct = (w: number) => `${(w / TL_MAX) * 100}%`;
+
+  const lane = (phases: TlPhase[], color: string, status: string, live: boolean) => (
+    <div style={{ height: H + 32 }}>
+      <div style={{ position: "relative", height: H }}>
+        {phases.map((p, i) => {
+          const fill = Math.max(0, Math.min(1, (week - p.from) / (p.to - p.from)));
+          const widthPct = ((p.to - p.from) / TL_MAX) * 100;
+          const prod = p.name === "In production";
+          return (
+            <div key={p.name} style={{ position: "absolute", top: 0, bottom: 0, left: `calc(${pct(p.from)} + 1px)`, width: `calc(${widthPct}% - 2px)`, borderRadius: 5, background: "rgba(184,200,218,0.07)", border: "1px solid rgba(184,200,218,0.14)", overflow: "hidden", boxSizing: "border-box" }}>
+              <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${fill * 100}%`, background: prod ? `repeating-linear-gradient(135deg, ${color}66 0 8px, ${color}33 8px 16px)` : color, opacity: prod ? 1 : i % 2 ? 0.72 : 0.95 }} />
+              {widthPct > 9 && <span style={{ position: "relative", display: "block", padding: "0 8px", lineHeight: `${H - 2}px`, fontSize: big ? 14 : 12.5, fontWeight: 600, color: prod ? "#E2EAF2" : fill > 0.45 ? "#0B1A33" : "#B8C8DA", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</span>}
+            </div>
+          );
+        })}
+      </div>
+      <p style={{ margin: "7px 0 0", fontSize: big ? 16 : 14.5, fontWeight: live ? 700 : 500, color: live ? color : "#D0DAE6", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{status}</p>
+    </div>
+  );
+
+  return (
+    <div ref={ref} style={{ marginBottom: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 14, flexWrap: "wrap" }}>
+          <span aria-hidden="true" style={{ fontFamily: MONO, fontSize: big ? 34 : 26, fontWeight: 700, color: "#FFFFFF", fontVariantNumeric: "tabular-nums", minWidth: big ? 170 : 128 }}>{"Week " + wk}</span>
+          <span style={{ fontSize: big ? 17 : 15, color: "#B8C8DA" }}>Drag the timeline to compare</span>
+        </div>
+        <button type="button" onClick={replay} style={{ background: "transparent", border: "1px solid rgba(184,200,218,0.35)", borderRadius: 8, cursor: "pointer", color: "#D0DAE6", fontSize: 14, fontWeight: 600, fontFamily: "inherit", padding: "6px 12px", display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24"><path d="M7 4v16l13-8L7 4Z" fill="currentColor" /></svg>
+          Play
+        </button>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(88px, 140px) minmax(0, 1fr)", gap: "0 16px" }}>
+        <div aria-hidden="true">
+          {([["Traditional", "#FFFFFF"], ["With Bolt", BOLT_COLOR]] as const).map(([label, color]) => (
+            <div key={label} style={{ height: H + 32, lineHeight: `${H}px`, fontSize: big ? 19 : 17, fontWeight: 600, color }}>{label}</div>
+          ))}
+        </div>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ position: "relative", borderRadius: 6, outline: focused ? "3px solid #FFFFFF" : "none", outlineOffset: 8 }}>
+            <div aria-hidden="true">
+              {lane(tlTrad, "#B8C8DA", tradStatus, tradLive)}
+              {lane(tlBolt, BOLT_COLOR, boltStatus, boltLive)}
+            </div>
+            <div aria-hidden="true" style={{ position: "absolute", top: -8, height: 2 * H + 32 + 16, left: pct(week), width: 2, marginLeft: -1, background: "#FFFFFF", boxShadow: "0 0 10px rgba(255,255,255,0.55)", pointerEvents: "none" }}>
+              <span style={{ position: "absolute", top: -10, left: -9, width: 20, height: 20, boxSizing: "border-box", borderRadius: "50%", background: BOLT_COLOR, border: "3px solid #FFFFFF", boxShadow: `0 0 16px ${BOLT_COLOR}` }} />
+            </div>
+            <input
+              type="range" className="bolt-range" min={0} max={TL_MAX} step={0.5}
+              value={Math.round(week * 2) / 2}
+              onChange={(ev) => { setManual(true); setWeek(Number(ev.target.value)); }}
+              onFocus={(ev) => setFocused(ev.currentTarget.matches(":focus-visible"))} onBlur={() => setFocused(false)}
+              aria-label="Weeks since kickoff"
+              aria-valuetext={`Week ${wk}. Traditional: ${tradStatus}. With Bolt: ${boltStatus}.`}
+              style={{ position: "absolute", left: 0, right: 0, top: -14, width: "100%", height: `calc(100% + 14px)`, margin: 0, opacity: 0, cursor: "ew-resize" }}
+            />
+          </div>
+          <div aria-hidden="true" style={{ position: "relative", height: 18, marginTop: 2 }}>
+            {[0, 4, 8, 12, 16, 20, 26].map((w) => (
+              <span key={w} style={{ position: "absolute", left: pct(w), transform: w === 0 ? "none" : w === TL_MAX ? "translateX(-100%)" : "translateX(-50%)", fontSize: 12, color: "#7F93AE", fontFamily: MONO, whiteSpace: "nowrap" }}>{w === TL_MAX ? "26 wk" : "" + w}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
+        <p className="bolt-anim" style={{ margin: 0, fontSize: big ? 18 : 16, fontWeight: 700, color: BOLT_COLOR, opacity: tradLive ? 1 : 0, transition: "opacity 0.5s ease" }}>{"Same 26 weeks: the Bolt app has been live for about 22 of them."}</p>
+        <p style={{ margin: 0, fontSize: 13, color: "#7F93AE" }}>{"Illustrative: midpoints of the stage timings below"}</p>
+      </div>
+    </div>
+  );
+}
+
+// Before/after split: drag the divider between today's handoff chain and the Bolt path
+function BoltSplitCompare() {
+  const [pos, setPos] = useState(50);
+  const [anim, setAnim] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const touched = useRef(false);
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.4);
+  useEffect(() => {
+    if (!inView || prefersReducedMotion()) return;
+    setAnim(true);
+    const steps: [number, number][] = [[350, 68], [1150, 34], [1950, 50], [2700, -1]];
+    const ids = steps.map(([ms, v]) => window.setTimeout(() => { if (v < 0) setAnim(false); else if (!touched.current) setPos(v); }, ms));
+    return () => ids.forEach((id) => window.clearTimeout(id));
+  }, [inView]);
+  const ease = "cubic-bezier(.4,0,.2,1)";
+  const [trad, bolt] = boltProcessPaths;
+  const stats = [
+    [{ v: "~6 months", l: "idea to production" }, { v: "4+", l: "handoffs" }],
+    [{ v: "2–4 weeks", l: "idea to production" }, { v: "1", l: "handoff" }],
+  ];
+  const pane = (isBolt: boolean) => {
+    const path = isBolt ? bolt : trad;
+    const color = isBolt ? BOLT_COLOR : "#B8C8DA";
+    return (
+      <div className="bolt-split-inner" style={{ width: "100%", minWidth: 340, flexShrink: 0, boxSizing: "border-box", padding: "clamp(18px, 2.5vw, 28px)" }}>
+        <p style={{ fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase", color, margin: "0 0 6px" }}>{isBolt ? "With Bolt" : "Today"}</p>
+        <h3 style={{ fontSize: 19, color: "#FFFFFF", margin: 0 }}>{path.title}</h3>
+        <div style={{ display: "flex", gap: 28, margin: "14px 0 18px", flexWrap: "wrap" }}>
+          {stats[isBolt ? 1 : 0].map((s) => (
+            <div key={s.l}><div style={{ fontSize: 28, fontWeight: 700, color, lineHeight: 1.1, letterSpacing: -0.4 }}>{s.v}</div><div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 2 }}>{s.l}</div></div>
+          ))}
+        </div>
+        <ol aria-label={path.title + " stages"} style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          {path.steps.map((step, i) => {
+            const handoff = i > 0 && (!isBolt || step.name === "AI + Engineer Review");
+            return (
+              <li key={step.name}>
+                {i > 0 && (
+                  <div aria-hidden="true" style={{ display: "flex", alignItems: "center", gap: 10, height: 26, paddingLeft: 12 }}>
+                    <span style={{ width: 2, alignSelf: "stretch", background: handoff ? "repeating-linear-gradient(#F59E0B 0 4px, transparent 4px 8px)" : color, opacity: handoff ? 1 : 0.7 }} />
+                    {handoff && (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12, fontWeight: 700, letterSpacing: 0.4, textTransform: "uppercase", color: "#FBBF24", border: "1px solid rgba(245,158,11,0.5)", background: "rgba(245,158,11,0.12)", borderRadius: 5, padding: "1px 7px" }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24"><path d="M4 8h14m-4-4 4 4-4 4M20 16H6m4-4-4 4 4 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        Handoff
+                      </span>
+                    )}
+                  </div>
+                )}
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span aria-hidden="true" style={{ width: 26, height: 26, flexShrink: 0, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", border: `1.5px solid ${color}`, color, fontSize: 13, fontWeight: 700, fontFamily: MONO }}>{i + 1}</span>
+                  <span style={{ minWidth: 0 }}>
+                    <span style={{ display: "block", fontSize: 16, fontWeight: 600, color: "#FFFFFF", lineHeight: 1.3 }}>{step.name}</span>
+                    <span style={{ display: "block", fontSize: 14, color: "#B8C8DA", lineHeight: 1.35 }}>{step.owner}</span>
+                  </span>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    );
+  };
+  return (
+    <div ref={ref}>
+      <div className="bolt-split" style={{ position: "relative", display: "flex", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(184,200,218,0.2)", outline: focused ? "3px solid #FFFFFF" : "none", outlineOffset: 3 }}>
+        <div className="bolt-split-pane bolt-anim" style={{ width: `${pos}%`, overflow: "hidden", display: "flex", background: "linear-gradient(160deg, rgba(184,200,218,0.10), rgba(16,34,66,0.55))", transition: anim ? `width 0.7s ${ease}` : "none" }}>{pane(false)}</div>
+        <div className="bolt-split-pane bolt-anim" style={{ width: `${100 - pos}%`, overflow: "hidden", display: "flex", justifyContent: "flex-end", background: "linear-gradient(160deg, rgba(45,212,191,0.06), rgba(45,212,191,0.16))", transition: anim ? `width 0.7s ${ease}` : "none" }}>{pane(true)}</div>
+        <div className="bolt-split-handle bolt-anim" aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: `${pos}%`, width: 0, pointerEvents: "none", transition: anim ? `left 0.7s ${ease}` : "none" }}>
+          <span style={{ position: "absolute", top: 0, bottom: 0, left: -1, width: 2, background: `linear-gradient(rgba(45,212,191,0.1), ${BOLT_COLOR}, rgba(45,212,191,0.1))` }} />
+          <span style={{ position: "absolute", top: "50%", left: -23, width: 46, height: 46, marginTop: -23, boxSizing: "border-box", borderRadius: "50%", background: "#0B1A33", border: `2px solid ${BOLT_COLOR}`, boxShadow: `0 0 20px ${BOLT_COLOR}88`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="24" height="24" viewBox="0 0 24 24"><path d="m9 7-5 5 5 5m6-10 5 5-5 5" fill="none" stroke={BOLT_COLOR} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </span>
+        </div>
+        <input
+          type="range" className="bolt-range bolt-split-input" min={18} max={82} step={1} value={pos}
+          onChange={(ev) => { touched.current = true; setAnim(false); setPos(Number(ev.target.value)); }}
+          onFocus={(ev) => setFocused(ev.currentTarget.matches(":focus-visible"))} onBlur={() => setFocused(false)}
+          aria-label="Divider between traditional development and Bolt"
+          aria-valuetext={`${pos}% traditional, ${100 - pos}% Bolt`}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", margin: 0, opacity: 0, cursor: "ew-resize" }}
+        />
+      </div>
+      <p className="bolt-split-hint" style={{ margin: "10px 0 0", textAlign: "center", fontSize: 14, color: "#7F93AE" }}>{"Drag the divider to compare"}</p>
+    </div>
+  );
+}
+
+// "Built live": a scripted Claude Code session, then the app it produced
+const BUILD_PROMPT = "Build a dashboard that tracks payer denials across our oncology practices by payer and reason, with a CSV export for the billing team. Use the Bolt app template.";
+const BUILD_LINES: { kind: "info" | "add" | "ok"; text: string }[] = [
+  { kind: "info", text: "Reading CLAUDE.md and the Bolt app template" },
+  { kind: "info", text: "Plan: 2 pages, 2 tables, 1 export" },
+  { kind: "add", text: "supabase/migrations/001_denials.sql" },
+  { kind: "add", text: "src/app/denials/page.tsx" },
+  { kind: "add", text: "src/components/DenialsByPayer.tsx" },
+  { kind: "add", text: "src/app/api/export/route.ts" },
+  { kind: "info", text: "Adding row-level security policies" },
+  { kind: "ok", text: "Build passed · 14 tests passed" },
+  { kind: "ok", text: "Pull request opened for Bolt review" },
+];
+const CHAR_MS = 20;
+const TYPE_END = BUILD_PROMPT.length * CHAR_MS;
+const buildLineAt = (i: number) => TYPE_END + 450 + i * 430;
+const BUILD_DONE = buildLineAt(BUILD_LINES.length - 1) + 600;
+const BUILD_END = BUILD_DONE + 2000;
+const sampleDenials = [{ payer: "Payer A", n: 42 }, { payer: "Payer B", n: 31 }, { payer: "Payer C", n: 24 }, { payer: "Payer D", n: 18 }, { payer: "Other", n: 13 }];
+
+function BoltLiveBuild({ autoStart = false, big = false, onShip }: { autoStart?: boolean; big?: boolean; onShip?: () => void }) {
+  const [e, setE] = useState(0);
+  const [run, setRun] = useState(0);
+  useEffect(() => {
+    if (!autoStart) return;
+    const id = window.setTimeout(() => setRun((r) => r + 1), 600);
+    return () => window.clearTimeout(id);
+  }, [autoStart]);
+  useEffect(() => {
+    if (!run) return;
+    if (prefersReducedMotion()) { setE(BUILD_END); return; }
+    setE(0);
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => { const v = now - start; setE(v); if (v < BUILD_END) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [run]);
+  const started = run > 0;
+  const typing = started && e < TYPE_END;
+  const typed = BUILD_PROMPT.slice(0, Math.min(BUILD_PROMPT.length, Math.floor(e / CHAR_MS)));
+  const shown = started ? BUILD_LINES.filter((_, i) => e >= buildLineAt(i)) : [];
+  const done = started && e >= BUILD_DONE;
+  const fs = big ? 1.12 : 1;
+  const paneMin = big ? 380 : 340;
+
+  return (
+    <Card style={{ padding: big ? "26px 30px" : "clamp(16px, 2.5vw, 24px)" }}>
+      <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", marginBottom: 18 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <h3 style={{ margin: 0, fontSize: 20 * fs, color: "#FFFFFF" }}>Build an app</h3>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative · sped up"}</span>
+        </div>
+        <div style={{ minHeight: 44, display: "flex", alignItems: "center" }}>
+          {(!started || done) && <BoltButton onClick={() => setRun((r) => r + 1)} style={started ? { background: "transparent" } : { background: BOLT_COLOR, color: "#0B1A33", borderColor: BOLT_COLOR }}><span>{started ? "Replay" : "Start building"}</span>{!started && <BoltIcon kind="arrow" />}</BoltButton>}
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))", gap: 16 }}>
+        <div style={{ background: "#050D1C", border: "1px solid rgba(184,200,218,0.18)", borderRadius: 12, overflow: "hidden", display: "flex", flexDirection: "column", minHeight: paneMin }}>
+          <div aria-hidden="true" style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 14px", borderBottom: "1px solid rgba(184,200,218,0.12)", background: "rgba(16,34,66,0.7)" }}>
+            {["#F87171", "#FBBF24", "#34D399"].map((c) => <span key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c, opacity: 0.8 }} />)}
+            <span style={{ marginLeft: 8, fontFamily: MONO, fontSize: 12.5, color: "#7F93AE" }}>{"claude · denials-tracker"}</span>
+          </div>
+          <div style={{ padding: "16px 18px", fontFamily: MONO, fontSize: 13.5 * fs, lineHeight: 1.7, color: "#D0DAE6", flex: 1 }}>
+            {!started ? (
+              <p style={{ margin: 0, color: "#7F93AE" }}>{"Press Start building to watch a business owner build with Claude Code."}</p>
+            ) : (
+              <>
+                <p style={{ margin: "0 0 12px", color: "#FFFFFF", fontWeight: 500 }}>
+                  <span style={{ color: BOLT_COLOR, fontWeight: 700 }}>{"> "}</span>{typed}
+                  {typing && <span className="bolt-anim" style={{ display: "inline-block", width: 8, height: "1.05em", verticalAlign: "text-bottom", background: BOLT_COLOR, marginLeft: 2, animation: "boltBlink 1s steps(1) infinite" }} />}
+                </p>
+                {shown.map((l, i) => {
+                  const latest = i === shown.length - 1 && !done;
+                  return (
+                    <div key={l.text} className="bolt-anim" style={{ display: "flex", gap: 10, alignItems: "flex-start", animation: "boltIn 0.35s ease-out both" }}>
+                      <span aria-hidden="true" style={{ width: 16, flexShrink: 0, display: "inline-flex", justifyContent: "center", paddingTop: 5 }}>
+                        {l.kind === "ok" ? (
+                          <svg width="14" height="14" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke={BOLT_COLOR} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        ) : l.kind === "add" ? (
+                          <svg width="12" height="12" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" fill="none" stroke="#86EFAC" strokeWidth="3" strokeLinecap="round" /></svg>
+                        ) : (
+                          <span className="bolt-anim" style={{ width: 8, height: 8, marginTop: 3, borderRadius: "50%", background: latest ? BOLT_COLOR : "#7F93AE", animation: latest ? "boltPulse 0.9s ease-in-out infinite" : undefined }} />
+                        )}
+                      </span>
+                      <span style={{ color: l.kind === "add" ? "#86EFAC" : l.kind === "ok" ? BOLT_COLOR : "#D0DAE6", fontWeight: l.kind === "ok" ? 700 : 400, wordBreak: "break-word" }}>{l.kind === "add" ? "Created " + l.text : l.text}</span>
+                    </div>
+                  );
+                })}
+              </>
+            )}
+          </div>
+        </div>
+
+        <div style={{ minHeight: paneMin, display: "flex" }}>
+          {!done ? (
+            <div style={{ flex: 1, borderRadius: 12, border: "1.5px dashed rgba(184,200,218,0.28)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, color: "#7F93AE", textAlign: "center", padding: 20 }}>
+              <span className="bolt-anim" style={{ display: "inline-flex", animation: started ? "boltPulse 1.4s ease-in-out infinite" : undefined }}><BoltGlyphIcon kind="app" size={36} color={started ? BOLT_COLOR : "#7F93AE"} /></span>
+              <span style={{ fontSize: 15 * fs }}>{started ? "Building the app..." : "The app appears here when the build finishes"}</span>
+            </div>
+          ) : (
+            <div className="bolt-anim" style={{ flex: 1, borderRadius: 12, overflow: "hidden", background: "#F8FAFC", color: "#0F172A", boxShadow: `0 0 0 1px rgba(45,212,191,0.5), 0 18px 48px rgba(0,0,0,0.35)`, animation: "boltFlip 0.7s ease-out both" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "12px 16px", background: "#0F2A52", color: "#FFFFFF" }}>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15 * fs, fontWeight: 700 }}><BoltGlyphIcon kind="app" size={18} color="#93C5FD" />Payer Denials</span>
+                <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: "#0F2A52", background: "#FDE68A", borderRadius: 4, padding: "2px 7px" }}>Sample data</span>
+              </div>
+              <div style={{ padding: 16 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10, marginBottom: 16 }}>
+                  {[{ l: "Open denials", v: "128" }, { l: "Top payer", v: "Payer A" }, { l: "Export", v: "CSV ready" }].map((tile, i) => (
+                    <div key={tile.l} className="bolt-anim" style={{ background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 8, padding: "10px 12px", animation: `boltIn 0.4s ease-out ${0.35 + i * 0.1}s both` }}>
+                      <div style={{ fontSize: 12, color: "#64748B" }}>{tile.l}</div>
+                      <div style={{ fontSize: 18 * fs, fontWeight: 700, color: "#0F172A", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{tile.v}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#334155", marginBottom: 8 }}>Denials by payer</div>
+                <div style={{ display: "grid", gap: 7 }}>
+                  {sampleDenials.map((d, i) => (
+                    <div key={d.payer} style={{ display: "grid", gridTemplateColumns: "64px 1fr 30px", alignItems: "center", gap: 8, fontSize: 13 }}>
+                      <span style={{ color: "#475569" }}>{d.payer}</span>
+                      <span style={{ height: 12, borderRadius: 3, background: "#E2E8F0", overflow: "hidden" }}>
+                        <span className="bolt-anim" style={{ display: "block", height: "100%", width: `${(d.n / 42) * 100}%`, background: i === 0 ? "#2563EB" : "#60A5FA", transformOrigin: "left center", animation: `boltGrowX 0.7s cubic-bezier(.2,.7,.2,1) ${0.6 + i * 0.09}s both` }} />
+                      </span>
+                      <span style={{ color: "#0F172A", fontWeight: 600, textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{d.n}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginTop: 16, minHeight: 44 }}>
+        <p aria-live="polite" style={{ margin: 0, fontSize: 15 * fs, color: done ? BOLT_COLOR : "#D0DAE6", fontWeight: done ? 700 : 400 }}>
+          {done ? "Built and in review. A plain-English request became a working app and a pull request." : started ? "Claude Code is building from a plain-English request" : "One request in plain English. Claude Code does the build."}
+        </p>
+        {done && onShip && (
+          <BoltButton onClick={onShip} className="bolt-anim" style={{ background: BOLT_COLOR, color: "#0B1A33", borderColor: BOLT_COLOR, animation: "boltPop 0.45s ease-out both" }}><span>Ship this app</span><BoltIcon kind="arrow" /></BoltButton>
+        )}
+      </div>
+    </Card>
+  );
+}
+
 function BoltPresenter({ onExit }: { onExit: () => void }) {
   const [scene, setScene] = useState(0);
   const boxRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const zoomRef = useRef<HTMLDivElement>(null);
+  const [spot, setSpot] = useState(false);
+  const [zoom, setZoom] = useState(false);
+  const [mouse, setMouse] = useState({ x: -999, y: -999 });
+  const [origin, setOrigin] = useState("50% 50%");
+  const mouseRef = useRef({ x: -999, y: -999 });
+  const liveRef = useRef({ spot: false, zoom: false });
+  liveRef.current = { spot, zoom };
+  const originFor = (x: number, y: number) => {
+    const outer = stageRef.current, inner = zoomRef.current;
+    if (!outer || !inner) return "50% 50%";
+    const r = outer.getBoundingClientRect();
+    return `${x - r.left + outer.scrollLeft - inner.offsetLeft}px ${y - r.top + outer.scrollTop - inner.offsetTop}px`;
+  };
+  const onMove = (ev: React.MouseEvent) => {
+    mouseRef.current = { x: ev.clientX, y: ev.clientY };
+    if (liveRef.current.spot) setMouse({ x: ev.clientX, y: ev.clientY });
+    if (liveRef.current.zoom) setOrigin(originFor(ev.clientX, ev.clientY));
+  };
   const rise = (delay: number): React.CSSProperties => ({ animation: `boltRise 0.7s cubic-bezier(.2,.7,.2,1) ${delay}s both` });
   const eyebrow = (text: string) => <p className="bolt-anim" style={{ ...rise(0), fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 600, letterSpacing: 1.6, textTransform: "uppercase", color: BOLT_COLOR, margin: "0 0 14px" }}>{text}</p>;
   const title = (text: string) => <h2 className="bolt-anim" style={{ ...rise(0.08), fontSize: "clamp(36px, 4.6vw, 60px)", lineHeight: 1.1, letterSpacing: -1, color: "#FFFFFF", margin: "0 0 32px" }}>{text}</h2>;
@@ -1659,7 +2013,7 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
         {eyebrow("01 · Why")}
         {title("From ~6 months to 2–4 weeks")}
         <div className="bolt-anim" style={rise(0.15)}><BoltKpis big /></div>
-        <div className="bolt-anim" style={{ ...rise(0.3), marginTop: 36 }}><BoltTimeBar /></div>
+        <div className="bolt-anim" style={{ ...rise(0.3), marginTop: 36 }}><BoltTimeBar big /></div>
       </div>
     ) },
     { id: "stack", render: () => (
@@ -1681,10 +2035,17 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
         </div>
       </div>
     ) },
+    { id: "build", render: () => (
+      <div>
+        {eyebrow("Live demo")}
+        {title("Watch a business owner build")}
+        <div className="bolt-anim" style={rise(0.15)}><BoltLiveBuild autoStart big onShip={() => setScene((v) => v + 1)} /></div>
+      </div>
+    ) },
     { id: "ship", render: () => (
       <div>
         {eyebrow("Live demo")}
-        {title("Watch an app ship")}
+        {title("Then ship it")}
         <div className="bolt-anim" style={rise(0.15)}><BoltShipDemo autoStart big /></div>
       </div>
     ) },
@@ -1755,28 +2116,38 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
       else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); setScene((v) => Math.max(0, v - 1)); }
       else if (e.key === "Home") setScene(0);
       else if (e.key === "End") setScene(last);
-      else if (e.key === "Escape") onExit();
+      else if (e.key === "l" || e.key === "L") { if (!e.repeat) { setMouse(mouseRef.current); setSpot(true); } }
+      else if (e.key === "z" || e.key === "Z") { if (!e.repeat) { setOrigin(originFor(mouseRef.current.x, mouseRef.current.y)); setZoom((z) => !z); } }
+      else if (e.key === "Escape") { if (liveRef.current.zoom) setZoom(false); else onExit(); }
     };
+    const onUp = (e: KeyboardEvent) => { if (e.key === "l" || e.key === "L") setSpot(false); };
+    const onBlurWin = () => setSpot(false);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keyup", onUp);
+    window.addEventListener("blur", onBlurWin);
+    return () => { window.removeEventListener("keydown", onKey); window.removeEventListener("keyup", onUp); window.removeEventListener("blur", onBlurWin); };
   }, [last, onExit]);
+  useEffect(() => { setZoom(false); }, [scene]);
   return (
-    <div ref={boxRef} role="dialog" aria-modal="true" aria-label="Bolt PaaS presentation" tabIndex={-1} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "radial-gradient(ellipse at 70% 20%, #12305A 0%, #0B1A33 55%, #071021 100%)", color: "#E2EAF2", display: "flex", flexDirection: "column", outline: "none", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+    <div ref={boxRef} onMouseMove={onMove} role="dialog" aria-modal="true" aria-label="Bolt PaaS presentation" tabIndex={-1} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "radial-gradient(ellipse at 70% 20%, #12305A 0%, #0B1A33 55%, #071021 100%)", color: "#E2EAF2", display: "flex", flexDirection: "column", outline: "none", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
       <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.14) 1px, transparent 1.2px)", backgroundSize: "26px 26px", WebkitMaskImage: "radial-gradient(ellipse at 75% 25%, black 0%, transparent 70%)", maskImage: "radial-gradient(ellipse at 75% 25%, black 0%, transparent 70%)" }} />
       <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 32px" }}>
         <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 600, color: "#B8C8DA" }}><BoltGlyphIcon kind="bolt" size={20} />Bolt PaaS</span>
         <BoltButton onClick={onExit} aria-label="Exit presentation" style={{ background: "transparent", padding: "8px 12px" }}><span style={{ fontSize: 14, fontWeight: 500, color: "#B8C8DA" }}>Esc</span><BoltIcon kind="close" /></BoltButton>
       </div>
-      <div style={{ position: "relative", flex: 1, display: "flex", alignItems: "center", overflowY: "auto" }}>
-        <div key={scenes[scene].id} style={{ width: "100%", maxWidth: 1240, margin: "0 auto", padding: "8px 48px 32px" }}>{scenes[scene].render()}</div>
+      <div ref={stageRef} style={{ position: "relative", flex: 1, display: "flex", alignItems: "center", overflowY: zoom ? "hidden" : "auto", overflowX: "hidden" }}>
+        <div ref={zoomRef} style={{ width: "100%", transform: zoom ? "scale(1.8)" : "none", transformOrigin: origin, transition: "transform 0.35s cubic-bezier(.2,.7,.2,1)" }}>
+          <div key={scenes[scene].id} style={{ width: "100%", maxWidth: 1240, margin: "0 auto", padding: "8px 48px 32px", boxSizing: "border-box" }}>{scenes[scene].render()}</div>
+        </div>
       </div>
+      <div aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 1001, pointerEvents: "none", opacity: spot ? 1 : 0, transition: "opacity 0.2s ease", background: `radial-gradient(circle at ${mouse.x}px ${mouse.y}px, transparent 0, transparent 130px, rgba(2,6,16,0.86) 190px)` }} />
       <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 32px 24px", gap: 16 }}>
         <BoltButton onClick={() => setScene((v) => Math.max(0, v - 1))} disabled={scene === 0} aria-label="Previous scene" style={{ background: "transparent", opacity: scene === 0 ? 0.35 : 1, padding: "8px 12px" }}><span style={{ display: "inline-flex", transform: "rotate(180deg)" }}><BoltIcon kind="arrow" /></span></BoltButton>
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
           {scenes.map((sc, i) => (
             <button key={sc.id} type="button" aria-label={`Go to scene ${i + 1}`} aria-current={i === scene ? "step" : undefined} onClick={() => setScene(i)} style={{ width: i === scene ? 30 : 10, height: 10, borderRadius: 5, border: "none", padding: 0, cursor: "pointer", background: i === scene ? BOLT_COLOR : "rgba(184,200,218,0.35)", transition: "width 0.3s ease, background 0.3s ease" }} />
           ))}
-          <span style={{ marginLeft: 12, fontSize: 14, color: "#7F93AE", fontVariantNumeric: "tabular-nums" }}>{`${scene + 1} / ${scenes.length} · ← → to navigate`}</span>
+          <span style={{ marginLeft: 12, fontSize: 14, color: "#7F93AE", fontVariantNumeric: "tabular-nums" }}>{`${scene + 1} / ${scenes.length} · ← → navigate · hold L spotlight · Z zoom`}</span>
         </div>
         <BoltButton onClick={() => setScene((v) => Math.min(last, v + 1))} disabled={scene === last} aria-label="Next scene" style={{ background: "transparent", opacity: scene === last ? 0.35 : 1, padding: "8px 12px" }}><BoltIcon kind="arrow" /></BoltButton>
       </div>
@@ -2001,6 +2372,11 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
   const [activeModule, setActiveModule] = useState<number | null>(null);
   const [visitedModules, setVisitedModules] = useState<number[]>([]);
   const [presenting, setPresenting] = useState(false);
+  const [shipTrigger, setShipTrigger] = useState(0);
+  const shipBuiltApp = () => {
+    setShipTrigger((n) => n + 1);
+    document.getElementById("bolt-ship-demo")?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "center" });
+  };
   const exitPresenter = React.useCallback(() => setPresenting(false), []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -2047,26 +2423,7 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
       <section id="why" aria-labelledby="bolt-01-title" style={sectionStyle}>
         <SectionTitle icon="bolt" num="01" label="Why" title="Business expertise, fewer handoffs" sub="The people who know the business build the software. Engineers own the production review gate." color={BOLT_COLOR} />
         <Reveal><BoltTimeBar /></Reveal>
-        <Reveal delay={0.1}>
-        <Card style={{ padding: "clamp(16px, 2.5vw, 24px)" }}>
-          {boltProcessPaths.map((path, pathIndex) => (
-            <div key={path.id} style={{ paddingTop: pathIndex ? 24 : 0, marginTop: pathIndex ? 24 : 0, borderTop: pathIndex ? "1px solid rgba(184,200,218,0.2)" : undefined }}>
-              <div style={{ display: "flex", gap: "4px 20px", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", marginBottom: 16 }}>
-                <h3 style={{ fontSize: 18, color: pathIndex ? BOLT_COLOR : "#E2EAF2", margin: 0 }}>{path.title}</h3>
-                <p style={{ fontSize: 16, color: "#B8C8DA", margin: 0 }}>{path.note}</p>
-              </div>
-              <ol aria-label={path.title + " stages"} style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${pathIndex ? 205 : 155}px), 1fr))`, gap: 12 }}>
-                {path.steps.map((step, index) => (
-                  <li key={step.name} style={{ borderTop: `2px solid ${pathIndex ? BOLT_COLOR : "#B8C8DA"}`, padding: "12px 0 0" }}>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}><span aria-hidden="true" style={{ fontSize: 15, color: pathIndex ? BOLT_COLOR : "#B8C8DA" }}>{index + 1 + "."}</span><span style={{ fontSize: 17, fontWeight: 600, color: "#FFFFFF", lineHeight: 1.4 }}>{step.name}</span></div>
-                    <p style={{ color: "#B8C8DA", fontSize: 16, lineHeight: 1.5, margin: "6px 0 0" }}>{step.owner}</p>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          ))}
-        </Card>
-        </Reveal>
+        <Reveal delay={0.1}><BoltSplitCompare /></Reveal>
         <BoltButton id="bolt-comparison-trigger" aria-expanded={showCompare} aria-controls="bolt-comparison" onClick={() => setShowCompare(!showCompare)} style={{ marginTop: 12, color: BOLT_COLOR, background: "transparent" }}><span>{showCompare ? "Hide timing & full comparison" : "Show timing & full comparison"}</span><BoltIcon expanded={showCompare} /></BoltButton>
         <div id="bolt-comparison" hidden={!showCompare} role="region" aria-labelledby="bolt-comparison-trigger" style={{ marginTop: 16 }}>
           <Card style={{ padding: "clamp(16px, 2.5vw, 24px)" }}>
@@ -2085,8 +2442,10 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
       </section>
 
       <section id="how" aria-labelledby="bolt-02-title" style={sectionStyle}>
-        <SectionTitle icon="layers" num="02" label="How" title="Build. Review. Run on Bolt." sub="Every app passes AI, engineer and security review before production. Explore the tools and shared services below." color={BOLT_COLOR} />
-        <Reveal><BoltShipDemo /></Reveal>
+        <SectionTitle icon="layers" num="02" label="How" title="Build. Review. Run on Bolt." sub="A business owner describes the app in plain English and Claude Code builds it. Every release passes AI, engineer and security review before production." color={BOLT_COLOR} />
+        <Reveal><BoltLiveBuild onShip={shipBuiltApp} /></Reveal>
+        <div style={{ height: 20 }} />
+        <div id="bolt-ship-demo" style={{ scrollMarginTop: 90 }}><Reveal><BoltShipDemo trigger={shipTrigger} /></Reveal></div>
         <div style={{ height: 20 }} />
         <Reveal delay={0.05}><BoltStackDiagram onNavigate={onNavigate} /></Reveal>
       </section>
