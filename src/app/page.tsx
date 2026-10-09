@@ -59,6 +59,7 @@ const projects = [
   { id: "xray", name: "X-Ray", tagline: "Drug pricing transparency", color: "#3B82F6", status: "Pilot", statusColor: "#8B5CF6", description: "Customer-facing solution delivering full drug pricing transparency and net cost recovery visibility to practices. Shows the complete cost walk from WAC through discounts and rebates to net price, then layers in reimbursement to reveal per-drug NCR. Built on the same shared data infrastructure as Nova.", capabilities: ["WAC-to-net-price cost walk per drug", "Net cost recovery (NCR) calculation", "Reimbursement vs. net price comparison", "Customer-facing and field rep views", "Real-time rebate feed integration"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools", "Agents"], impact: "Gives practices and field reps full visibility into drug economics \u2014 pricing transparency that drives competitive market response and enables data-driven drug decisions at the point of care." },
   { id: "skynet", name: PRACTICE_NAME, tagline: "Dynamic QBR portal", color: "#EF4444", status: "Pilot", statusColor: "#8B5CF6", description: "Replaces the static PowerPoint QBR process. Pulls data from disparate sources into a unified schema and delivers it through a dynamic, interactive customer portal. The rep or customer can ask any question in natural language \u2014 converted to SQL on the fly against a live database.", capabilities: ["Automated data aggregation from all sources", "Dynamic customer-facing portal", "Natural language to SQL query engine", "Real-time distribution purchase analytics", "GPO rebate, PMID, biosimilar reporting", "Technology adoption tracking"], dataInputs: ["GPO Rebates", "MID Data", "Biosimilar Utilization", "Customer & Account Data"], intelligenceUsed: ["AI Prompting Tools"], impact: "Moves from a static PowerPoint deck with manual data gathering to a live customer experience. Eliminates hours of rep prep time per QBR cycle." },
   { id: "savingsiq", name: "SavingsIQ", tagline: "GPO rebate modeling", color: "#A3E635", status: "Prototype", statusColor: "#F59E0B", description: "Replaces the multi-tab Excel workbook GPO analysts use to estimate rebate outcomes. Models rebate value for GPO prospects and members across contract programs, checks every assumed rate against contract ceilings, compares scenarios side by side, and keeps a full audit trail.", capabilities: ["Scenario comparison across contract programs", "Three-state contract ceiling check", "Native program resolution", "Append-only assumption audit trail", "Reconciled to the legacy workbook"], dataInputs: ["GPO Rebates", "Distribution Pricing & Rebates"], intelligenceUsed: [], impact: "Turns a three-week, cross-functional spreadsheet exercise into a live, defensible economic comparison for competitive GPO pursuits." },
+  { id: "retentioniq", name: "RetentionIQ", tagline: "Patient retention", color: "#F472B6", status: "Building", statusColor: "#F59E0B", description: "Finds patients falling behind on scheduled treatment, shows staff why each one is at risk, and helps coordinators reach the patient and record what happened. Built first for retina practices; oncology is next.", capabilities: ["Daily at-risk worklist", "Explained risk factors on every flag", "Call outcome and barrier logging", "Retention trends by physician", "Configurable expected treatment intervals"], dataInputs: ["Practice scheduling & treatment history"], intelligenceUsed: [], impact: "Turns quiet gaps in care into a daily, explained outreach list so fewer patients are lost to follow-up." },
 ];
 
 // ============================================================
@@ -120,7 +121,7 @@ function DataDomainsSection() {
 // SOLUTIONS OVERVIEW PAGE (former Glide Stack applications grid)
 // ============================================================
 
-const solutionPageIds: Record<string, string> = { titan: "titan", nova: "novaxray", xray: "novaxray", skynet: "skynet", savingsiq: "savingsiq" };
+const solutionPageIds: Record<string, string> = { titan: "titan", nova: "novaxray", xray: "novaxray", skynet: "skynet", savingsiq: "savingsiq", retentioniq: "retentioniq" };
 
 function SolutionsOverviewPage({ onNavigate }: { onNavigate: Navigate }) {
   const [activeProject, setActiveProject] = useState<number | null>(null);
@@ -219,136 +220,7 @@ const titanBeforeAfter = [
 // TITAN PAGE
 // ============================================================
 
-function TitanPage({ onNavigate }: { onNavigate: Navigate }) {
-  const [detected, setDetected] = useState(false);
-  const TITAN = "#F59E0B";
-
-  return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      {/* HERO */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Titan</h1>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Live</span>
-      </div>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>Payer Policy Intelligence</p>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>Ends the quarterly manual grind of tracking payer policy changes. Titan continuously monitors formularies, step therapy requirements, and preferred drug lists across oncology drugs and biosimilars, so the right drug is verified before treatment, not after a denial.</p>
-      <div style={{ display: "flex", gap: 16, marginBottom: 48, flexWrap: "wrap" }}>
-        {[{ label: "Surveillance", value: "24/7" }, { label: "Extracted", value: "Formulary + Step Therapy" }, { label: "Delivery", value: "UI + API" }, { label: "Coverage", value: "Oncology + Biosimilars" }].map((stat, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span>
-            <span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* HOW IT WORKS */}
-      <SectionHeader label="How Titan Works" />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10, marginBottom: 4 }}>
-        {titanStages.map((st, i) => (
-          <div key={st.id} style={{ background: `${st.color}0C`, border: `1px solid ${st.color}30`, borderRadius: 12, padding: "18px 16px", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: st.color, opacity: 0.7 }} />
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: st.color, marginBottom: 6 }}>{"0" + (i + 1)}</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 2 }}>{st.stage}</div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: st.color, marginBottom: 10 }}>{st.nickname}</div>
-            <div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.5 }}>{st.desc}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* POLICY CHANGE DETECTED (ILLUSTRATIVE) */}
-      <div style={{ marginTop: 28 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-          <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#E2EAF2" }}>Policy Change Detected</div>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#6BA3D4", background: "rgba(107,163,212,0.12)", border: "1px solid rgba(107,163,212,0.3)", borderRadius: 4, padding: "2px 8px" }}>ILLUSTRATIVE</span>
-        </div>
-        <Card style={{ padding: "24px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 56px 1fr", gap: 12, alignItems: "stretch" }}>
-            <div style={{ background: "rgba(148,163,184,0.06)", border: "1px solid rgba(148,163,184,0.15)", borderRadius: 10, padding: "18px 20px" }}>
-              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 10 }}>Payer policy document (excerpt)</div>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA", lineHeight: 1.7 }}>
-                {"Sample Commercial Plan — Medical Drug Policy, Section 4.2 (revised). Coverage of reference long-acting G-CSF products requires documented trial and failure of a preferred biosimilar unless a clinical exception applies. Preferred products are listed in Appendix B. Changes take effect on the first day of the following month."}
-              </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="36" height="24" viewBox="0 0 36 24"><path d="M2 12 H30 M23 5 L31 12 L23 19" fill="none" stroke={detected ? TITAN : "rgba(148,163,184,0.4)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </div>
-            <div style={{ background: detected ? `${TITAN}0C` : "rgba(16,34,66,0.4)", border: `1px solid ${detected ? TITAN + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 10, padding: "18px 20px", transition: "all 0.3s ease" }}>
-              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: detected ? TITAN : "#B8C8DA", marginBottom: 12 }}>Structured rule</div>
-              {detected ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, animation: "fadeIn 0.3s ease" }}>
-                  {[{ k: "Payer", v: "Sample Commercial Plan" }, { k: "Drug class", v: "Long-acting G-CSF" }, { k: "Preferred", v: "Biosimilar products (Appendix B)" }, { k: "Step therapy", v: "Required before reference product" }, { k: "Exception", v: "Clinical exception allowed" }, { k: "Effective", v: "First of next month" }].map((row) => (
-                    <div key={row.k} style={{ display: "grid", gridTemplateColumns: "110px 1fr", gap: 10 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: "#B8C8DA" }}>{row.k}</span>
-                      <span style={{ fontSize: 15, color: "#FFFFFF" }}>{row.v}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <span style={{ fontSize: 15, color: "#A8B8CC" }}>Run detection to see Titan turn the document into a structured coverage rule.</span>
-              )}
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
-            <button onClick={() => setDetected(!detected)} style={{ background: detected ? "transparent" : `${TITAN}20`, border: `1px solid ${TITAN}60`, borderRadius: 8, padding: "10px 18px", cursor: "pointer", outline: "none", fontSize: 15, fontWeight: 600, color: TITAN }}>{detected ? "Reset" : "Run detection"}</button>
-            <span style={{ fontSize: 13, color: "#A8B8CC" }}>Illustrative payer and policy text. Not a real policy.</span>
-          </div>
-        </Card>
-      </div>
-
-      {/* BEFORE & AFTER */}
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Before & After" />
-        <Card style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "180px 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(16,34,66,0.3)" }}>
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span>
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>The Old Way</span>
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>With Titan</span>
-          </div>
-          {titanBeforeAfter.map((row, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "180px 1fr 1fr", padding: "14px 20px", borderBottom: i < titanBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{row.dimension}</span>
-              <span style={{ fontSize: 14, color: "#B8C8DA" }}>{row.before}</span>
-              <span style={{ fontSize: 14, color: "#10B981" }}>{row.after}</span>
-            </div>
-          ))}
-        </Card>
-      </div>
-
-      {/* PLATFORM CONNECTIONS */}
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="On the Glide Platform" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-          <Card style={{ padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Intelligence services</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-              {["Agents", "AI Prompting Tools"].map((d) => (<span key={d} style={{ fontSize: 14, color: TITAN, background: `${TITAN}12`, border: `1px solid ${TITAN}25`, borderRadius: 6, padding: "4px 10px" }}>{d}</span>))}
-            </div>
-            <CrossLink label="Bolt PaaS" target="bolt" onNavigate={onNavigate} color="#8B5CF6" />
-          </Card>
-          <Card style={{ padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Data domains</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-              {["Payer Policy Surveillance", "Biosimilar Utilization"].map((d) => (<span key={d} style={{ fontSize: 14, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.15)", borderRadius: 6, padding: "4px 10px" }}>{d}</span>))}
-            </div>
-            <CrossLink label="Data Platform" target="dataplatform" onNavigate={onNavigate} color="#10B981" />
-          </Card>
-          <Card style={{ padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Feeds</div>
-            <p style={{ fontSize: 15, color: "#E2EAF2", margin: "0 0 14px", lineHeight: 1.5 }}>{"Titan’s payer policy intelligence is a live data source for " + PRACTICE_NAME + "’s partnership reviews."}</p>
-            <CrossLink label={PRACTICE_NAME} target="skynet" onNavigate={onNavigate} color="#EF4444" />
-          </Card>
-        </div>
-      </div>
-
-      {/* IMPACT CALLOUT */}
-      <div style={{ marginTop: 28, padding: "16px 20px", background: `${TITAN}0A`, border: `1px solid ${TITAN}25`, borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}>
-        <span style={{ color: TITAN, fontSize: 16, marginTop: 1 }}>{"◆"}</span>
-        <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>Removes administrative barriers for cancer patients. The right drug is verified before treatment, not after a denial.</span>
-      </div>
-      <div style={{ height: 64 }} />
-    </div>
-  );
-}
+// (TitanPage moved to the modern solution pages below)
 
 // ============================================================
 // AI FUTURES DATA
@@ -682,200 +554,7 @@ const novaXrayData = [
 // NOVA + X-RAY PAGE
 // ============================================================
 
-function NovaXrayPage() {
-  const [activeProject, setActiveProject] = useState<number | null>(null);
-  const [activePhase, setActivePhase] = useState<number | null>(null);
-  const [activeDataBucket, setActiveDataBucket] = useState<number | null>(null);
-  const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
-  const selectedProject = activeProject !== null ? novaXrayProjects[activeProject] : null;
-  const selectedPhase = activePhase !== null ? phases[activePhase] : null;
-  const selectedBucket = activeDataBucket !== null ? novaXrayData[activeDataBucket] : null;
-
-  return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: "0 0 8px", lineHeight: 1.15 }}>Nova + X-Ray</h1>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>Two applications, one shared data foundation</p>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 48px", lineHeight: 1.6 }}>Nova and X-Ray are built on the same underlying data infrastructure. X-Ray delivers drug pricing transparency and net cost recovery visibility to customers. Nova powers internal pricing intelligence for analysts and field teams.</p>
-
-      <SectionHeader label="The Platform" />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12, marginBottom: 4 }}>
-        {novaXrayProjects.map((p, i) => (
-          <div key={p.id} onClick={() => setActiveProject(activeProject === i ? null : i)} style={{ background: activeProject === i ? `${p.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeProject === i ? p.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "22px 20px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: p.color, opacity: activeProject === i ? 1 : 0.4 }} />
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-              <span style={{ fontSize: 20, fontWeight: 700, color: p.color }}>{p.name}</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: p.statusColor, background: `${p.statusColor}15`, border: `1px solid ${p.statusColor}30`, borderRadius: 4, padding: "2px 7px", letterSpacing: 0.5, whiteSpace: "nowrap" }}>{p.status}</span>
-            </div>
-            <div style={{ fontSize: 16, color: "#D0DAE6", lineHeight: 1.5 }}>{p.tagline}</div>
-          </div>
-        ))}
-      </div>
-
-      {selectedProject && (
-        <div style={{ margin: "12px 0 0", background: `${selectedProject.color}08`, border: `1px solid ${selectedProject.color}20`, borderRadius: 12, padding: "28px 28px 24px", animation: "fadeIn 0.2s ease" }}>
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedProject.color, marginBottom: 6 }}>Project overview</div>
-            <p style={{ fontSize: 17, color: "#E2EAF2", margin: 0, lineHeight: 1.65 }}>{selectedProject.description}</p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-            <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Capabilities</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-                {selectedProject.capabilities.map((c, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedProject.color, marginTop: 7, flexShrink: 0, boxShadow: `0 0 6px ${selectedProject.color}40` }} /><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span></div>))}
-              </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20, flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Data inputs</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{selectedProject.dataInputs.map((d, i) => (<span key={i} style={{ fontSize: 14, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.15)", borderRadius: 6, padding: "4px 10px" }}>{d}</span>))}</div>
-              </div>
-              <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20, flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Intelligence used</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{selectedProject.intelligenceUsed.map((d, i) => (<span key={i} style={{ fontSize: 14, color: selectedProject.color, background: `${selectedProject.color}12`, border: `1px solid ${selectedProject.color}25`, borderRadius: 6, padding: "4px 10px" }}>{d}</span>))}</div>
-              </div>
-            </div>
-          </div>
-          <div style={{ padding: "14px 18px", background: `${selectedProject.color}0A`, border: `1px solid ${selectedProject.color}18`, borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}>
-            <span style={{ color: selectedProject.color, fontSize: 16, marginTop: 1 }}>{"\u25C6"}</span>
-            <div><div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: selectedProject.color, marginBottom: 4 }}>Business impact</div><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>{selectedProject.impact}</span></div>
-          </div>
-        </div>
-      )}
-
-      {/* X-RAY DASHBOARD PREVIEW */}
-      <div style={{ margin: "48px 0 0" }}>
-        <SectionHeader label="X-Ray Dashboard &mdash; Drug Economics View" />
-        <div style={{ background: "rgba(16,34,66,0.8)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "12px 12px 0 0", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #10B981" }}>
-          <div><div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", letterSpacing: 0.3 }}>KEYTRUDA 25MG/ML 4ML SDV 2/PAC</div><div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 2 }}>Central Arkansas Radiation Therapy Institute</div></div>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 6, padding: "4px 12px" }}>Onmark</span>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "260px 1fr 1fr", gap: 0, background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.12)", borderTop: "none", borderRadius: "0 0 12px 12px", overflow: "hidden" }}>
-          {/* Col 1: Drug Info */}
-          <div style={{ padding: "24px", borderRight: "1px solid rgba(148,163,184,0.08)" }}>
-            <div style={{ display: "flex", gap: 12, marginBottom: 16 }}><div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#3B82F6" }}>&bull; Drug Information</div><div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#F59E0B" }}>&bull; Contract Details</div></div>
-            {[{ label: "Drug Name", value: "KEYTRUDA 25MG/ML 4ML SDV 2/PAC" }, { label: "Generic Name", value: "PEMBROLIZUMAB" }, { label: "NDC", value: "00006-3026-04" }, { label: "Drug Type", value: "Brand" }, { label: "Manufacturer", value: "MERCK HUMAN HEALTH DIVISION" }, { label: "Inventory Type", value: "Injectables" }, { label: "CMS Units Per Package", value: "200" }].map((row, i) => (<div key={i} style={{ marginBottom: 12 }}><div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{row.label}</div><div style={{ fontSize: 16, color: "#E2EAF2", fontWeight: 500, marginTop: 2 }}>{row.value}</div></div>))}
-            <div style={{ borderTop: "1px solid rgba(148,163,184,0.1)", paddingTop: 12, marginTop: 4 }}>
-              {[{ label: "Contract Effective Dates", value: "Jun 30, 2021 \u2013 Jun 29, 2026" }, { label: "GPO Affiliation", value: "Onmark" }, { label: "GPO Contract Type", value: "\u2014" }, { label: "GPO Rebate Basis", value: "Contract Price" }].map((row, i) => (<div key={i} style={{ marginBottom: 12 }}><div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{row.label}</div><div style={{ fontSize: 16, color: "#E2EAF2", fontWeight: 500, marginTop: 2 }}>{row.value}</div></div>))}
-            </div>
-          </div>
-
-          {/* Col 2: Donut */}
-          <div style={{ padding: "24px", borderRight: "1px solid rgba(148,163,184,0.08)", display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", alignSelf: "flex-start", marginBottom: 16 }}>&bull; Net Price Breakdown</div>
-            <div style={{ position: "relative", width: 220, height: 220, margin: "8px 0 20px" }}>
-              <svg viewBox="0 0 200 200" style={{ width: "100%", height: "100%", overflow: "visible" }}>
-                {(() => { const cxD = 100, cyD = 100, r = 80, r2 = 55, total = 12272; const segments = [{ value: 11320.98, color: "#1E3A5F", label: "Net Price", pct: "92.25%" }, { value: 369.39, color: "#F59E0B", label: "Contract Discount", pct: "3.01%" }, { value: 59.51, color: "#3B82F6", label: "Distributor Discount", pct: "0.48%" }, { value: 522.12, color: "#10B981", label: "Rebates & Incentives", pct: "4.25%" }]; let angle = -90; return segments.map((seg, i) => { const sweep = (seg.value / total) * 360; const startRad = (angle * Math.PI) / 180; const endRad = ((angle + sweep) * Math.PI) / 180; const largeArc = sweep > 180 ? 1 : 0; const x1o = cxD + r * Math.cos(startRad), y1o = cyD + r * Math.sin(startRad); const x2o = cxD + r * Math.cos(endRad), y2o = cyD + r * Math.sin(endRad); const x1i = cxD + r2 * Math.cos(endRad), y1i = cyD + r2 * Math.sin(endRad); const x2i = cxD + r2 * Math.cos(startRad), y2i = cyD + r2 * Math.sin(startRad); const d = `M ${x1o} ${y1o} A ${r} ${r} 0 ${largeArc} 1 ${x2o} ${y2o} L ${x1i} ${y1i} A ${r2} ${r2} 0 ${largeArc} 0 ${x2i} ${y2i} Z`; const isHovered = hoveredSegment === i; angle += sweep; return <path key={i} d={d} fill={seg.color} opacity={hoveredSegment !== null && !isHovered ? 0.4 : 1} style={{ transition: "opacity 0.2s ease, transform 0.2s ease", cursor: "pointer", transformOrigin: "100px 100px", transform: isHovered ? "scale(1.04)" : "scale(1)" }} onMouseEnter={() => setHoveredSegment(i)} onMouseLeave={() => setHoveredSegment(null)} />; }); })()}
-              </svg>
-              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center", pointerEvents: "none", transition: "all 0.2s ease" }}>
-                {hoveredSegment !== null ? (<><div style={{ fontSize: 12, color: [{ c: "#1E3A5F" }, { c: "#F59E0B" }, { c: "#3B82F6" }, { c: "#10B981" }][hoveredSegment].c, fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.5, fontWeight: 600 }}>{["Net Price", "Contract Discount", "Distributor Discount", "Rebates & Incentives"][hoveredSegment]}</div><div style={{ fontSize: 20, fontWeight: 700, color: "#FFFFFF", marginTop: 2 }}>{["$11,320.98", "-$369.39", "-$59.51", "-$522.12"][hoveredSegment]}</div><div style={{ fontSize: 12, color: "#B8C8DA" }}>{["92.25%", "3.01%", "0.48%", "4.25%"][hoveredSegment]} of WAC</div></>) : (<><div style={{ fontSize: 12, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.5 }}>NET PRICE</div><div style={{ fontSize: 22, fontWeight: 700, color: "#FFFFFF", marginTop: 2 }}>$11,320.98</div><div style={{ fontSize: 12, color: "#B8C8DA" }}>per unit</div></>)}
-              </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", padding: "0 8px" }}>
-              {[{ color: "#1E3A5F", label: "WAC (Base)", value: "$12,272" }, { color: "#F59E0B", label: "Contract Discount", value: "-$369.39" }, { color: "#3B82F6", label: "Distributor Discount", value: "-$59.51" }, { color: "#10B981", label: "Rebates & Incentives", value: "-$522.12" }].map((item, i) => (
-                <div key={i} onMouseEnter={() => setHoveredSegment(i)} onMouseLeave={() => setHoveredSegment(null)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", padding: "4px 6px", borderRadius: 6, background: hoveredSegment === i ? `${item.color}18` : "transparent", transition: "background 0.2s ease" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}><div style={{ width: 10, height: 10, borderRadius: 2, background: item.color, flexShrink: 0 }} /><span style={{ fontSize: 15, color: hoveredSegment === i ? "#FFFFFF" : "#D0DAE6", transition: "color 0.2s ease" }}>{item.label}</span></div>
-                  <span style={{ fontSize: 15, fontWeight: 600, color: "#E2EAF2", fontFamily: "'JetBrains Mono', monospace" }}>{item.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Col 3: Price Waterfall */}
-          <div style={{ padding: "24px" }}>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 16 }}>&bull; Price Waterfall &mdash; Cost Walk to Net Price</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: "8px 8px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>WAC Price</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Wholesale Acquisition Cost &mdash; starting point</div></div><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$12,272</span></div>
-              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.06)", borderTop: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Contract Price</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>GPO / McKesson negotiated price</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$11,902.61</span><div style={{ fontSize: 13, color: "#F59E0B", fontFamily: "'JetBrains Mono', monospace" }}>3.01%</div></div></div>
-              <div style={{ padding: "6px 16px", background: "rgba(236,72,153,0.06)", borderLeft: "2px solid #EC4899", marginTop: 8 }}><span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: "#EC4899" }}>Distributor Pricing</span></div>
-              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Distributor Discount</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Invoice markdown applied at distribution</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$59.51</span><div style={{ fontSize: 13, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>0.50%</div></div></div>
-              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Invoice Price</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>As billed on invoice</div></div><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$11,843.1</span></div>
-              <div style={{ padding: "6px 16px", background: "rgba(245,158,11,0.06)", borderLeft: "2px solid #F59E0B", marginTop: 8 }}><span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: "#F59E0B" }}>Rebates &amp; Incentives</span></div>
-              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Distributor Rebate</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Annual rebate value</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$171.72</span><div style={{ fontSize: 13, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>1.45%</div></div></div>
-              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.06)", borderTop: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>GPO Rebate / Value</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Quarterly rebate distribution</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$350.39</span><div style={{ fontSize: 13, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>2.94%</div></div></div>
-              <div style={{ padding: "14px 16px", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: "0 0 8px 8px", marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#10B981", letterSpacing: 0.5 }}>NET PRICE / UNIT</span><span style={{ fontSize: 22, fontWeight: 700, color: "#10B981", fontFamily: "'JetBrains Mono', monospace" }}>$11,320.98</span></div>
-            </div>
-          </div>
-        </div>
-
-        {/* KPI Row */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginTop: 12 }}>
-          {[{ label: "NET PRICE / UNIT", value: "$11,320.98", sub: "After all discounts & rebates", color: "#FFFFFF", bg: "rgba(16,34,66,0.6)" }, { label: "REIMBURSEMENT / UNIT", value: "$11,945.2", sub: "ASP benchmark", color: "#FFFFFF", bg: "rgba(16,34,66,0.6)" }, { label: "NET COST RECOVERY", value: "$624.22", sub: "Reimbursement minus net price", color: "#10B981", bg: "rgba(16,185,129,0.08)" }, { label: "EFFECTIVE DISCOUNT VS WAC", value: "7.75%", sub: "Combined discount rate", color: "#FFFFFF", bg: "rgba(16,34,66,0.6)" }].map((kpi, i) => (
-            <div key={i} style={{ background: kpi.bg, border: `1px solid ${kpi.color === "#10B981" ? "rgba(16,185,129,0.2)" : "rgba(148,163,184,0.12)"}`, borderRadius: 10, padding: "18px 20px" }}>
-              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: kpi.color === "#10B981" ? "#10B981" : "#B8C8DA", marginBottom: 8 }}>{kpi.label}</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: kpi.color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{kpi.value}</div>
-              <div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 6 }}>{kpi.sub}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 12, padding: "12px 16px", background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 10 }}>
-          <span style={{ color: "#3B82F6", fontSize: 16, marginTop: 1 }}>{"\u25C6"}</span>
-          <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>X-Ray POC &mdash; real Keytruda economics for a single account. Both X-Ray and Nova are built on the same shared data infrastructure. X-Ray surfaces this view for customers and field reps. Nova consumes the same foundation to generate internal pricing intelligence across the full book of business.</span>
-        </div>
-      </div>
-
-      {/* PHASE ROADMAP */}
-      <div style={{ margin: "48px 0 0" }}>
-        <SectionHeader label="Platform Roadmap" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
-          {phases.map((phase, i) => (
-            <div key={phase.id} onClick={() => setActivePhase(activePhase === i ? null : i)} style={{ background: activePhase === i ? `${phase.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activePhase === i ? phase.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: phase.color, opacity: activePhase === i ? 1 : 0.4 }} />
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: phase.color, letterSpacing: 0.5 }}>{phase.label}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: phase.statusColor, background: `${phase.statusColor}15`, border: `1px solid ${phase.statusColor}30`, borderRadius: 4, padding: "2px 7px", letterSpacing: 0.5, whiteSpace: "nowrap" }}>{phase.status}</span></div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", lineHeight: 1.35 }}>{phase.title}</div>
-            </div>
-          ))}
-        </div>
-        {selectedPhase && (
-          <div style={{ margin: "12px 0 0", background: `${selectedPhase.color}08`, border: `1px solid ${selectedPhase.color}20`, borderRadius: 12, padding: "28px 28px 24px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedPhase.color, marginBottom: 6 }}>{selectedPhase.label} &middot; {selectedPhase.title}</div>
-            <p style={{ fontSize: 17, color: "#E2EAF2", margin: "0 0 20px", lineHeight: 1.65, maxWidth: 800 }}>{selectedPhase.summary}</p>
-            <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Key highlights</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>{selectedPhase.highlights.map((h, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedPhase.color, marginTop: 7, flexShrink: 0, boxShadow: `0 0 6px ${selectedPhase.color}40` }} /><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{h}</span></div>))}</div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* DIVIDERS + INTELLIGENCE + DATA */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "32px 40px 20px" }}><div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#D0DAE6", whiteSpace: "nowrap" }}>builds on</span><div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} /></div>
-
-      <SectionHeader label="Intelligence layer" />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
-        {novaXrayIntelligence.map((layer) => (
-          <div key={layer.id} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} />
-            <div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA", marginBottom: 16 }}>{layer.subtitle}</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 16 }}>{layer.capabilities.map((c, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}><div style={{ width: 4, height: 4, borderRadius: "50%", background: layer.color, marginTop: 6, flexShrink: 0, opacity: 1 }} /><span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span></div>))}</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>{layer.usedBy.map((proj, i) => { const p = novaXrayProjects.find((x) => x.name === proj); return (<span key={i} style={{ fontSize: 13, color: p ? p.color : "#D0DAE6", background: p ? `${p.color}12` : "rgba(148,163,184,0.08)", border: `1px solid ${p ? p.color + "25" : "rgba(148,163,184,0.15)"}`, borderRadius: 5, padding: "2px 8px", fontFamily: "'JetBrains Mono', monospace" }}>{proj}</span>); })}</div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "20px 40px" }}><div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#D0DAE6", whiteSpace: "nowrap" }}>powered by</span><div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} /></div>
-
-      <SectionHeader label="Data layer" />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-        {novaXrayData.map((bucket, i) => (
-          <div key={bucket.id} onClick={() => setActiveDataBucket(activeDataBucket === i ? null : i)} style={{ background: activeDataBucket === i ? `${bucket.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeDataBucket === i ? bucket.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: bucket.color, opacity: activeDataBucket === i ? 1 : 0.35 }} />
-            <div style={{ fontSize: 15, fontWeight: 600, color: bucket.color, marginBottom: 10, lineHeight: 1.3, minHeight: 34 }}>{bucket.title}</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>{bucket.items.slice(0, 3).map((item, j) => (<span key={j} style={{ fontSize: 13, color: "#E2EAF2", background: "rgba(148,163,184,0.10)", border: "1px solid rgba(148,163,184,0.2)", borderRadius: 4, padding: "2px 7px" }}>{item}</span>))}{bucket.items.length > 3 && <span style={{ fontSize: 13, color: "#D0DAE6", padding: "2px 4px" }}>+{bucket.items.length - 3} more</span>}</div>
-          </div>
-        ))}
-      </div>
-      {selectedBucket && (
-        <div style={{ margin: "12px 0 0", background: `${selectedBucket.color}08`, border: `1px solid ${selectedBucket.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedBucket.color, marginBottom: 16 }}>{selectedBucket.title} &mdash; full data inventory</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>{selectedBucket.items.map((item, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedBucket.color, flexShrink: 0, boxShadow: `0 0 6px ${selectedBucket.color}50` }} /><span style={{ fontSize: 16, color: "#E2EAF2" }}>{item}</span></div>))}</div>
-        </div>
-      )}
-      <div style={{ height: 64 }} />
-    </div>
-  );
-}
+// (NovaXrayPage moved to the modern solution pages below)
 
 // ============================================================
 // MERIDIAN DATA
@@ -919,98 +598,7 @@ const meridianIntelligence = [
 // MERIDIAN PAGE
 // ============================================================
 
-function MeridianPage() {
-  const [activePage, setActivePage] = useState<number | null>(null);
-  const [activeDataSource, setActiveDataSource] = useState<number | null>(null);
-  const selectedPage = activePage !== null ? meridianPages[activePage] : null;
-  const selectedSource = activeDataSource !== null ? meridianData[activeDataSource] : null;
-
-  return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Meridian</h1>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Live</span>
-      </div>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>Oncology Expansion Intelligence Platform</p>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>Scores ~2,500 ZIP codes across 6 southeastern US states to identify optimal oncology clinic expansion opportunities. Turns months of manual market analysis into a 30-second AI-generated board report.</p>
-      <div style={{ display: "flex", gap: 16, marginBottom: 48 }}>
-        {[{ label: "ZIP codes scored", value: "~2,500" }, { label: "States", value: "6" }, { label: "Providers loaded", value: "4,500+" }, { label: "Build method", value: "Claude Code" }, { label: "E2E tests", value: "~60" }].map((stat, i) => (<div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span><span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span></div>))}
-      </div>
-
-      <SectionHeader label="Application" />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
-        {meridianPages.slice(0, 4).map((page, i) => (<div key={page.id} onClick={() => setActivePage(activePage === i ? null : i)} style={{ background: activePage === i ? `${page.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activePage === i ? page.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: page.color, opacity: activePage === i ? 1 : 0.4 }} /><div style={{ fontSize: 16, fontWeight: 600, color: page.color, marginBottom: 4 }}>{page.name}</div><div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{page.description.split(".")[0]}.</div></div>))}
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginTop: 12, marginBottom: 4 }}>
-        {meridianPages.slice(4).map((page, i) => { const idx = i + 4; return (<div key={page.id} onClick={() => setActivePage(activePage === idx ? null : idx)} style={{ background: activePage === idx ? `${page.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activePage === idx ? page.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: page.color, opacity: activePage === idx ? 1 : 0.4 }} /><div style={{ fontSize: 16, fontWeight: 600, color: page.color, marginBottom: 4 }}>{page.name}</div><div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{page.description.split(".")[0]}.</div></div>); })}
-      </div>
-
-      {selectedPage && (
-        <div style={{ margin: "12px 0 0", background: `${selectedPage.color}08`, border: `1px solid ${selectedPage.color}20`, borderRadius: 12, padding: "28px 28px 24px", animation: "fadeIn 0.2s ease" }}>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedPage.color, marginBottom: 6 }}>{selectedPage.name}</div>
-          <p style={{ fontSize: 17, color: "#E2EAF2", margin: "0 0 20px", lineHeight: 1.65, maxWidth: 800 }}>{selectedPage.description}</p>
-          <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Key capabilities</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>{selectedPage.highlights.map((h, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedPage.color, marginTop: 7, flexShrink: 0, boxShadow: `0 0 6px ${selectedPage.color}40` }} /><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{h}</span></div>))}</div>
-          </div>
-        </div>
-      )}
-
-      <div style={{ margin: "48px 0 0" }}>
-        <SectionHeader label="Scoring Model" />
-        <Card style={{ padding: "24px" }}>
-          <div style={{ fontSize: 15, color: "#B8C8DA", marginBottom: 20, lineHeight: 1.6 }}>Every ZIP code is scored across 4 domains. Weights are user-configurable. Tier 1 = P90, Tier 2 = P70, remainder = Tier 3. Quarterly recalibration.</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {meridianScoring.map((s, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 0, background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8, overflow: "hidden" }}><div style={{ width: 4, background: s.color, alignSelf: "stretch", flexShrink: 0 }} /><div style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 16, flex: 1 }}><div style={{ minWidth: 52, textAlign: "center" }}><span style={{ fontSize: 18, fontWeight: 700, color: s.color, fontFamily: "'JetBrains Mono', monospace" }}>{s.weight}</span></div><div style={{ flex: 1 }}><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 2 }}>{s.domain}</div><div style={{ fontSize: 14, color: "#B8C8DA" }}>{s.direction}</div></div><div style={{ fontSize: 14, color: "#D0DAE6", maxWidth: 320, lineHeight: 1.4 }}>{s.inputs}</div></div></div>))}
-          </div>
-        </Card>
-      </div>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "32px 40px 20px" }}><div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#D0DAE6", whiteSpace: "nowrap" }}>builds on</span><div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} /></div>
-
-      <SectionHeader label="Intelligence layer" />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
-        {meridianIntelligence.map((layer) => (<div key={layer.id} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} /><div style={{ fontSize: 17, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA", marginBottom: 14 }}>{layer.subtitle}</div><div style={{ display: "flex", flexDirection: "column", gap: 7 }}>{layer.capabilities.map((c, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}><div style={{ width: 4, height: 4, borderRadius: "50%", background: layer.color, marginTop: 6, flexShrink: 0 }} /><span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span></div>))}</div></div>))}
-      </div>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "20px 40px" }}><div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#D0DAE6", whiteSpace: "nowrap" }}>powered by</span><div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} /></div>
-
-      <SectionHeader label="Data sources" />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-        {meridianData.slice(0, 4).map((source, i) => (<div key={source.id} onClick={() => setActiveDataSource(activeDataSource === i ? null : i)} style={{ background: activeDataSource === i ? `${source.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeDataSource === i ? source.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: source.color, opacity: activeDataSource === i ? 1 : 0.35 }} /><div style={{ fontSize: 15, fontWeight: 600, color: source.color, marginBottom: 6, lineHeight: 1.3 }}>{source.title}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 6px" }}>{source.refresh}</span></div>))}
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginTop: 12 }}>
-        {meridianData.slice(4).map((source, i) => { const idx = i + 4; return (<div key={source.id} onClick={() => setActiveDataSource(activeDataSource === idx ? null : idx)} style={{ background: activeDataSource === idx ? `${source.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeDataSource === idx ? source.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: source.color, opacity: activeDataSource === idx ? 1 : 0.35 }} /><div style={{ fontSize: 15, fontWeight: 600, color: source.color, marginBottom: 6, lineHeight: 1.3 }}>{source.title}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 6px" }}>{source.refresh}</span></div>); })}
-      </div>
-
-      {selectedSource && (
-        <div style={{ margin: "12px 0 0", background: `${selectedSource.color}08`, border: `1px solid ${selectedSource.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedSource.color }}>{selectedSource.title}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", background: "rgba(148,163,184,0.1)", borderRadius: 4, padding: "2px 8px" }}>Refresh: {selectedSource.refresh}</span></div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>{selectedSource.items.map((item, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedSource.color, flexShrink: 0, boxShadow: `0 0 6px ${selectedSource.color}50` }} /><span style={{ fontSize: 16, color: "#E2EAF2" }}>{item}</span></div>))}</div>
-        </div>
-      )}
-
-      <div style={{ margin: "48px 0 0" }}>
-        <SectionHeader label="Technology &amp; Security" />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          <Card style={{ padding: "20px" }}>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Stack</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {[{ layer: "Frontend", tech: "Next.js 16.2.2 (React 19, Tailwind 4)" }, { layer: "Map", tech: "Mapbox GL JS" }, { layer: "Database", tech: "Supabase PostgreSQL + PostGIS" }, { layer: "AI", tech: "Claude API (Sonnet)" }, { layer: "ETL", tech: "Python pipelines (--state parameterized)" }, { layer: "Drive-Time", tech: "OSRM Docker (per-state OSM extracts)" }, { layer: "Auth", tech: "Supabase Auth \u2014 invite-only, 3 roles" }, { layer: "Deploy", tech: "Vercel (meridianiq.tech)" }].map((row, i) => (<div key={i} style={{ display: "flex", gap: 12 }}><span style={{ fontSize: 14, fontWeight: 600, color: "#B8C8DA", minWidth: 80, fontFamily: "'JetBrains Mono', monospace" }}>{row.layer}</span><span style={{ fontSize: 15, color: "#E2EAF2" }}>{row.tech}</span></div>))}
-            </div>
-          </Card>
-          <Card style={{ padding: "20px" }}>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Security &amp; Compliance</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-              {["Row-level security on all 23 tables with org-scoped isolation", "HIPAA Safe Harbor enforcement (k \u2265 5 anonymity threshold)", "4-tier data classification (Restricted / Confidential / Internal / Public)", "CMS Data Use Agreement compliance for claims data", "Invite-only auth with signups disabled", "Audit logging on claims access, exports, and scenario changes"].map((item, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: "#10B981", marginTop: 7, flexShrink: 0, boxShadow: "0 0 6px rgba(16,185,129,0.4)" }} /><span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.5 }}>{item}</span></div>))}
-            </div>
-          </Card>
-        </div>
-      </div>
-      <div style={{ height: 64 }} />
-    </div>
-  );
-}
+// (MeridianPage moved to the modern solution pages below)
 
 // ============================================================
 // SKYNET DATA
@@ -1082,133 +670,7 @@ const skynetBeforeAfter = [
 // SKYNET PAGE
 // ============================================================
 
-function SkynetPage() {
-  const [activeSection, setActiveSection] = useState<number | null>(null);
-  const [activeSource, setActiveSource] = useState<number | null>(null);
-  const selectedSection = activeSection !== null ? skynetSections[activeSection] : null;
-  const selectedSource = activeSource !== null ? skynetDataSources[activeSource] : null;
-
-  return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>{PRACTICE_NAME}</h1>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#8B5CF6", background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Pilot</span>
-      </div>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>Dynamic QBR Portal</p>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>Replaces the static PowerPoint QBR with a live, interactive customer portal. Pulls data from 6+ disparate sources into a unified schema. Sales reps and customers ask any question in natural language &mdash; converted to SQL on the fly against a live database.</p>
-      <div style={{ display: "flex", gap: 16, marginBottom: 48 }}>
-        {[{ label: "QBR sections", value: "8" }, { label: "Data sources", value: "6+" }, { label: "Query engine", value: "NL \u2192 SQL" }, { label: "Accounts", value: "200+" }].map((stat, i) => (<div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span><span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span></div>))}
-      </div>
-
-      <SectionHeader label="Dashboard Preview" />
-      <div style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "12px 12px 0 0", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div><div style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF" }}>Springfield Medical Center</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Q1 2026 &middot; Powered by your McKesson partnership</div></div>
-        <span style={{ fontSize: 12, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>Data Last Refreshed: Feb 28, 2026</span>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }}>
-        {skynetKPIs.map((kpi, i) => (<div key={i} style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", padding: "20px", borderLeft: i === 0 ? "1px solid rgba(148,163,184,0.12)" : "none", borderRight: "1px solid rgba(148,163,184,0.12)" }}><div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 8 }}>{kpi.label}</div><div style={{ fontSize: 28, fontWeight: 700, color: kpi.color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{kpi.value}</div><div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 6 }}>{kpi.sub}</div></div>))}
-      </div>
-      <div style={{ display: "flex", gap: 0, background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "0 0 12px 12px", overflow: "hidden", marginBottom: 4 }}>
-        {skynetSections.map((sec, i) => (<button key={sec.id} onClick={() => setActiveSection(activeSection === i ? null : i)} style={{ flex: 1, padding: "12px 4px", background: activeSection === i ? `${sec.color}12` : "transparent", border: "none", borderBottom: activeSection === i ? `2px solid ${sec.color}` : "2px solid transparent", cursor: "pointer", outline: "none", transition: "all 0.2s ease" }}><span style={{ fontSize: 12, fontWeight: activeSection === i ? 600 : 500, color: activeSection === i ? sec.color : "#B8C8DA", letterSpacing: 0.3 }}>{sec.label}</span></button>))}
-      </div>
-      {selectedSection && (<div style={{ margin: "12px 0 0", background: `${selectedSection.color}08`, border: `1px solid ${selectedSection.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}><div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 20, background: `${selectedSection.color}15`, border: `1px solid ${selectedSection.color}30`, marginBottom: 16 }}><span style={{ fontSize: 13, color: selectedSection.color }}>{"\u25C8"}</span><span style={{ fontSize: 13, color: selectedSection.color, fontWeight: 500 }}>{selectedSection.label}</span></div><p style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.65, margin: 0 }}>{selectedSection.description}</p></div>)}
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 28 }}>
-        <Card>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 4 }}>Purchase Volume Trajectory</div>
-          <div style={{ fontSize: 14, color: "#B8C8DA", marginBottom: 20 }}>6-month trend with McKesson partnership</div>
-          <svg viewBox="0 0 420 140" style={{ width: "100%", height: 140 }}>
-            {[0, 1, 2, 3].map(i => (<line key={i} x1={40} y1={10 + i * 40} x2={400} y2={10 + i * 40} stroke="rgba(148,163,184,0.08)" strokeWidth={1} />))}
-            <text x={35} y={15} fill="#B8C8DA" fontSize={10} textAnchor="end" fontFamily="JetBrains Mono">$1M</text>
-            <text x={35} y={55} fill="#B8C8DA" fontSize={10} textAnchor="end" fontFamily="JetBrains Mono">$750K</text>
-            <text x={35} y={95} fill="#B8C8DA" fontSize={10} textAnchor="end" fontFamily="JetBrains Mono">$500K</text>
-            <text x={35} y={135} fill="#B8C8DA" fontSize={10} textAnchor="end" fontFamily="JetBrains Mono">$250K</text>
-            {["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"].map((m, i) => (<text key={m} x={70 + i * 62} y={135} fill="#B8C8DA" fontSize={10} textAnchor="middle" fontFamily="JetBrains Mono">{m}</text>))}
-            <polyline points="70,42 132,40 194,37 256,34 318,32 380,30" fill="none" stroke="#B8C8DA" strokeWidth={1.5} strokeDasharray="4,4" opacity={0.5} />
-            <polyline points="70,44 132,40 194,42 256,34 318,30 380,26" fill="none" stroke="#3B82F6" strokeWidth={2} />
-            {[[70, 44], [132, 40], [194, 42], [256, 34], [318, 30], [380, 26]].map(([cx, cy], i) => (<circle key={i} cx={cx} cy={cy} r={4} fill="#3B82F6" stroke="#0B1A33" strokeWidth={2} />))}
-          </svg>
-          <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}><div style={{ width: 16, height: 2, background: "#3B82F6", borderRadius: 1 }} /><span style={{ fontSize: 12, color: "#B8C8DA" }}>Actual</span></div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}><div style={{ width: 16, height: 2, background: "#B8C8DA", borderRadius: 1, opacity: 0.5 }} /><span style={{ fontSize: 12, color: "#B8C8DA" }}>Expected</span></div>
-          </div>
-        </Card>
-        <Card>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 4 }}>Portfolio Distribution</div>
-          <div style={{ fontSize: 14, color: "#B8C8DA", marginBottom: 20 }}>Product mix by therapeutic area</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            <svg viewBox="0 0 120 120" style={{ width: 120, height: 120, flexShrink: 0, transform: "rotate(-90deg)" }}>
-              <circle cx={60} cy={60} r={48} fill="none" stroke="#3B82F6" strokeWidth={18} strokeDasharray={`${0.45 * 301.59} ${0.55 * 301.59}`} strokeDashoffset={0} />
-              <circle cx={60} cy={60} r={48} fill="none" stroke="#8B5CF6" strokeWidth={18} strokeDasharray={`${0.30 * 301.59} ${0.70 * 301.59}`} strokeDashoffset={`${-0.45 * 301.59}`} />
-              <circle cx={60} cy={60} r={48} fill="none" stroke="#A8B8CC" strokeWidth={18} strokeDasharray={`${0.25 * 301.59} ${0.75 * 301.59}`} strokeDashoffset={`${-0.75 * 301.59}`} />
-            </svg>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
-              {skynetPortfolio.map((p, i) => (<div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><div style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: p.color }} /><span style={{ fontSize: 14, color: "#E2EAF2" }}>{p.area}</span></div><div style={{ textAlign: "right" }}><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{p.value}</span><span style={{ fontSize: 12, color: "#B8C8DA", marginLeft: 8 }}>{p.pct}%</span></div></div>))}
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Top 10 Drugs by Spend" />
-        <Card style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 60px 20px 1fr 100px 70px 80px", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(16,34,66,0.3)" }}>
-            {["#", "Drug Name", "Type", "", "Category", "Q3 Spend", "Units", "vs Prior"].map((h, i) => (<span key={i} style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>{h}</span>))}
-          </div>
-          {skynetTopDrugs.map((drug, i) => (<div key={i} style={{ display: "grid", gridTemplateColumns: "40px 1fr 60px 20px 1fr 100px 70px 80px", padding: "12px 20px", borderBottom: i < 9 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA" }}>{drug.rank}</span><span style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{drug.name}</span><span style={{ fontSize: 12, color: drug.type === "IV" ? "#3B82F6" : "#10B981", background: drug.type === "IV" ? "rgba(59,130,246,0.12)" : "rgba(16,185,129,0.12)", border: `1px solid ${drug.type === "IV" ? "rgba(59,130,246,0.25)" : "rgba(16,185,129,0.25)"}`, borderRadius: 4, padding: "2px 8px", textAlign: "center", fontWeight: 600 }}>{drug.type}</span><span /><span style={{ fontSize: 13, color: "#D0DAE6" }}>{drug.category}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>{drug.spend}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA" }}>{drug.units}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: drug.change.startsWith("+") ? "#10B981" : "#EF4444" }}>{drug.change}</span></div>))}
-          <div style={{ padding: "14px 20px", background: "rgba(59,130,246,0.06)", borderTop: "1px solid rgba(59,130,246,0.12)", display: "flex", alignItems: "flex-start", gap: 10 }}><span style={{ color: "#3B82F6", fontSize: 14, marginTop: 1 }}>{"\u25C6"}</span><span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>Portfolio Insight:</strong> Top 10 drugs account for $2.86M in quarterly spend. Immunotherapy drugs (Keytruda, Opdivo) represent 36% of top 10 spend, reflecting this practice&apos;s specialty focus.</span></div>
-        </Card>
-      </div>
-
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="GPO Savings Overview" />
-        <Card>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 32, fontWeight: 700, color: "#F59E0B" }}>$5.8M+</span><span style={{ fontSize: 15, color: "#D0DAE6" }}>Performance rebates, purchase rebates, and discounts</span></div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-            {skynetGPO.map((g, i) => (<div key={i} style={{ background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: 10, padding: "16px" }}><div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 8, lineHeight: 1.3 }}>{g.category}</div><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700, color: "#F59E0B", lineHeight: 1 }}>{g.value}</div><div style={{ fontSize: 12, color: "#B8C8DA", marginTop: 6 }}>vs Q2 &apos;25: {g.prior}</div></div>))}
-          </div>
-        </Card>
-      </div>
-
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Natural Language Query Engine" />
-        <div style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 12, padding: "28px 28px 24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.18)", borderRadius: 10, marginBottom: 20 }}><span style={{ fontSize: 16, color: "#EF4444" }}>{"\u2756"}</span><span style={{ fontSize: 15, color: "#B8C8DA", fontStyle: "italic" }}>Ask anything &mdash; &quot;Show me Keytruda spend trend over the last 4 quarters&quot;</span></div>
-          <div style={{ fontSize: 15, color: "#D0DAE6", lineHeight: 1.65, marginBottom: 16 }}>The customer or sales rep types a plain-English question. An LLM trained on the database schema converts it to SQL, executes against live data, and returns a formatted answer with optional visualizations.</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {["What are my top 5 drugs by NCR?", "Compare Q3 vs Q4 biosimilar adoption", "Which providers have the highest waste?", "Show GPO rebate trend by quarter"].map((q, i) => (<span key={i} style={{ fontSize: 13, color: "#EF4444", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 20, padding: "6px 14px", cursor: "pointer" }}>{q}</span>))}
-          </div>
-        </div>
-      </div>
-
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Before &amp; After" />
-        <Card style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(16,34,66,0.3)" }}><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Static PowerPoint QBR</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>{PRACTICE_NAME} Dynamic Portal</span></div>
-          {skynetBeforeAfter.map((row, i) => (<div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: i < skynetBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}><span style={{ fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{row.dimension}</span><span style={{ fontSize: 14, color: "#B8C8DA" }}>{row.before}</span><span style={{ fontSize: 14, color: "#10B981" }}>{row.after}</span></div>))}
-        </Card>
-      </div>
-
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Intelligence Layer" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-          {[{ title: "AI Prompting Tools", subtitle: "LLM interfaces", color: "#3B82F6", capabilities: ["Natural language to SQL", "Conversational Q&A on live data", "Portfolio insight generation", "Cross-section trend detection", "Payer policy summaries (via Titan)"] }, { title: "Machine Learning", subtitle: "Pattern recognition", color: "#8B5CF6", capabilities: ["Recommended actions scoring", "Biosimilar adoption forecasting", "Anomaly detection on spend shifts", "Provider performance clustering", "GPO tier optimization signals"] }, { title: "Agents", subtitle: "Automated workflows", color: "#F59E0B", capabilities: ["Scheduled data aggregation", "Multi-source pipeline orchestration", "QBR auto-assembly", "Payer surveillance feed (Titan)", "Alert generation on threshold breaches"] }].map((layer) => (<div key={layer.title} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} /><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", marginBottom: 16 }}>{layer.subtitle}</div><div style={{ display: "flex", flexDirection: "column", gap: 7 }}>{layer.capabilities.map((c, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}><div style={{ width: 4, height: 4, borderRadius: "50%", background: layer.color, marginTop: 7, flexShrink: 0, opacity: 1 }} /><span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span></div>))}</div></div>))}
-        </div>
-      </div>
-
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Data Sources" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
-          {skynetDataSources.map((src, i) => (<div key={i} onClick={() => setActiveSource(activeSource === i ? null : i)} style={{ background: activeSource === i ? `${src.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeSource === i ? src.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: src.color, opacity: activeSource === i ? 1 : 0.35 }} /><div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}><div style={{ fontSize: 14, fontWeight: 600, color: src.color }}>{src.name}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 4, padding: "2px 7px" }}>{src.refresh}</span></div><div style={{ fontSize: 13, color: "#D0DAE6", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{src.desc.split("\u2014")[0]}.</div></div>))}
-        </div>
-        {selectedSource && (<div style={{ margin: "12px 0 0", background: `${selectedSource.color}08`, border: `1px solid ${selectedSource.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedSource.color, marginBottom: 8 }}>{selectedSource.name}</div><p style={{ fontSize: 15, color: "#E2EAF2", margin: 0, lineHeight: 1.65 }}>{selectedSource.desc}</p></div>)}
-      </div>
-
-      <div style={{ marginTop: 28, padding: "16px 20px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}><span style={{ color: "#EF4444", fontSize: 16, marginTop: 1 }}>{"\u25C6"}</span><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>{PRACTICE_NAME} replaces the single most time-consuming sales deliverable at McKesson Specialty Health. Every QBR today requires 4&ndash;8 hours of manual data gathering and PowerPoint assembly per account. With 200+ accounts on quarterly cycles, that&apos;s 800&ndash;1,600 hours per quarter of rep time redirected from selling to slide-building.</span></div>
-      <div style={{ height: 64 }} />
-    </div>
-  );
-}
+// (SkynetPage moved to the modern solution pages below)
 
 // ============================================================
 // BOLT PAAS DATA
@@ -1296,6 +758,9 @@ const BOLT_CSS = `
 @media (max-width: 760px) { .dp-hub { display: none !important; } .dp-hub-grid { display: grid !important; } .dp-reuse { grid-template-columns: 1fr !important; } .dp-reuse-gutter-wrap { display: none; } }
 @keyframes siqGlow { 0%, 18%, 100% { box-shadow: none; border-color: rgba(163,230,53,0.25); } 7% { box-shadow: 0 0 18px rgba(163,230,53,0.4); border-color: #A3E635; } }
 @media (max-width: 760px) { .siq-legs { grid-template-columns: 1fr !important; } }
+@keyframes solGlow { 0%, 18%, 100% { box-shadow: none; } 7% { box-shadow: 0 0 18px var(--sol); border-color: var(--sol); } }
+@keyframes titanScan { from { top: 0; } to { top: 100%; } }
+@media (max-width: 760px) { .xray-grid { grid-template-columns: 1fr !important; } }
 @media (prefers-reduced-motion: reduce) { .bolt-anim { animation: none !important; transition: none !important; } }
 `;
 
@@ -2507,7 +1972,7 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => vo
 const SectionTitle = ({ num, label, title, sub, color, icon }: { num: string; label: string; title: string; sub?: string; color: string; icon?: BoltGlyph }) => (
   <header style={{ marginBottom: 24, display: "flex", gap: 18, alignItems: "flex-start" }}>
     {icon && (
-      <span aria-hidden="true" style={{ flexShrink: 0, width: 52, height: 52, borderRadius: 14, display: "inline-flex", alignItems: "center", justifyContent: "center", background: "rgba(45,212,191,0.10)", border: "1px solid rgba(45,212,191,0.35)", boxShadow: "0 0 24px rgba(45,212,191,0.12)" }}>
+      <span aria-hidden="true" style={{ flexShrink: 0, width: 52, height: 52, borderRadius: 14, display: "inline-flex", alignItems: "center", justifyContent: "center", background: `${color}1A`, border: `1px solid ${color}59`, boxShadow: `0 0 24px ${color}1F` }}>
         <BoltGlyphIcon kind={icon} size={26} color={color} />
       </span>
     )}
@@ -4204,7 +3669,7 @@ function SiqHeroTiles() {
   const [ref, inView] = useInViewOnce<HTMLDivElement>(0.2);
   const tiles = [
     { head: "~3 weeks", label: "Today, per comparison", sub: "Cross-functional effort, static spreadsheet" },
-    { head: "50 → 270", label: "Opportunities per analyst", sub: "Rebate opportunities under management" },
+    { head: "Traceable", label: "Every assumption", sub: "Who changed what, when and why" },
     { head: "Reconciled", label: "To the legacy workbook", sub: "Zero unexplained differences" },
   ];
   return (
@@ -4286,6 +3751,789 @@ function SavingsIQPage({ onNavigate }: { onNavigate: Navigate }) {
 }
 
 // ============================================================
+// SOLUTION PAGE KIT
+// ============================================================
+
+// ============================================================
+// SOLUTION PAGE KIT — shared modern layout for every solution page
+// ============================================================
+
+const solSectionStyle: React.CSSProperties = { marginTop: 56, paddingTop: 48, borderTop: "1px solid rgba(184,200,218,0.16)", scrollMarginTop: 84 };
+const solVar = (color: string) => ({ "--sol": color } as React.CSSProperties);
+
+function solJump(id: string, index: number) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "instant", block: "start" });
+  document.getElementById(`bolt-0${index + 1}-title`)?.focus({ preventScroll: true });
+}
+
+function SolPage({ id, children }: { id: string; children: React.ReactNode }) {
+  return (
+    <main id={id} style={{ maxWidth: 1100, margin: "0 auto", padding: "40px clamp(16px, 2.5vw, 24px) 48px", color: "#E2EAF2", fontSize: 16, lineHeight: 1.5 }}>
+      <style>{BOLT_CSS}</style>
+      {children}
+    </main>
+  );
+}
+
+type SolTile = { head: string; label: string; sub: string };
+
+function SolHero({ eyebrow, name, status, statusColor, color, line1, line2, tiles, sections, visual }: { eyebrow: string; name: string; status: string; statusColor: string; color: string; line1: string; line2: string; tiles: SolTile[]; sections: { id: string; label: string }[]; visual?: React.ReactNode }) {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.2);
+  return (
+    <header style={{ position: "relative", marginBottom: 8 }}>
+      <div aria-hidden="true" style={{ position: "absolute", top: -40, left: 0, right: 0, height: 320, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.2) 1px, transparent 1.2px)", backgroundSize: "22px 22px", WebkitMaskImage: "radial-gradient(ellipse 60% 80% at 80% 30%, black 10%, transparent 75%)", maskImage: "radial-gradient(ellipse 60% 80% at 80% 30%, black 10%, transparent 75%)" }} />
+      <div style={{ position: "relative", display: "flex", gap: "16px 32px", alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ flex: "1 1 520px", minWidth: 0, maxWidth: visual ? undefined : 780 }}>
+          <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color }}>{eyebrow}</p>
+          <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
+            <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>{name}</h1>
+            <span style={{ fontFamily: MONO, fontSize: 12, fontWeight: 600, color: statusColor, background: `${statusColor}1F`, border: `1px solid ${statusColor}55`, borderRadius: 4, padding: "3px 8px" }}>{status}</span>
+          </div>
+          <p style={{ fontSize: 22, color: "#FFFFFF", fontWeight: 600, margin: "14px 0 0", lineHeight: 1.4 }}>{line1}</p>
+          <p style={{ fontSize: 18, color: "#D0DAE6", margin: "10px 0 0", lineHeight: 1.55 }}>{line2}</p>
+        </div>
+        {visual && <div style={{ flex: "0 1 380px", minWidth: 260, marginLeft: "auto" }}>{visual}</div>}
+      </div>
+      <div ref={ref} style={{ marginTop: 24, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 250px), 1fr))", gap: 12 }}>
+        {tiles.map((t, i) => (
+          <div key={t.head + t.label} className="bolt-anim" style={{ background: "rgba(16,34,66,0.6)", border: `1px solid ${color}4D`, borderRadius: 12, padding: "22px 24px", boxShadow: inView ? `0 0 32px ${color}14` : "none", transition: "box-shadow 1s ease", ...(inView ? { animation: `boltRise 0.6s cubic-bezier(.2,.7,.2,1) ${i * 0.12}s both` } : { opacity: 0 }) }}>
+            <p style={{ fontSize: 30, fontWeight: 700, letterSpacing: -0.5, color, margin: 0, lineHeight: 1.15 }}>{t.head}</p>
+            <p style={{ color: "#FFFFFF", fontSize: 17, fontWeight: 600, margin: "10px 0 3px" }}>{t.label}</p>
+            <p style={{ fontSize: 15.5, color: "#B8C8DA", margin: 0 }}>{t.sub}</p>
+          </div>
+        ))}
+      </div>
+      <nav aria-label={`${name} page sections`} style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 20 }}>
+        {sections.map((section, index) => <BoltButton key={section.id} onClick={() => solJump(section.id, index)} style={{ background: "transparent", padding: "8px 14px" }}><span style={{ color, fontFamily: MONO }}>{"0" + (index + 1)}</span><span>{section.label}</span><BoltIcon kind="down" /></BoltButton>)}
+      </nav>
+    </header>
+  );
+}
+
+function SolSection({ id, num, label, title, sub, icon, color, children }: { id: string; num: string; label: string; title: string; sub?: string; icon: BoltGlyph; color: string; children: React.ReactNode }) {
+  return (
+    <section id={id} aria-labelledby={`bolt-${num}-title`} style={solSectionStyle}>
+      <SectionTitle icon={icon} num={num} label={label} title={title} sub={sub} color={color} />
+      <Reveal>{children}</Reveal>
+    </section>
+  );
+}
+
+// Drag-to-compare built from a before/after table
+function SolSplit({ rows, color, todayTitle, newTitle, newLabel, label }: { rows: { dimension: string; before: string; after: string }[]; color: string; todayTitle: string; newTitle: string; newLabel: string; label: string }) {
+  const eb = (c: string): React.CSSProperties => ({ fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase", color: c, margin: "0 0 6px" });
+  const list = (good: boolean) => (
+    <ul style={{ listStyle: "none", margin: "14px 0 0", padding: 0, display: "grid", gap: 12 }}>
+      {rows.map((r) => (
+        <li key={r.dimension} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 3 }}>{good ? <path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke={color} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /> : <path d="M7 7l10 10M17 7 7 17" fill="none" stroke="#F87171" strokeWidth="2.4" strokeLinecap="round" />}</svg>
+          <span style={{ minWidth: 0 }}>
+            <span style={{ display: "block", fontSize: 12.5, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: "#7F93AE" }}>{r.dimension}</span>
+            <span style={{ display: "block", fontSize: 15, color: good ? "#E2EAF2" : "#D0DAE6", lineHeight: 1.4 }}>{good ? r.after : r.before}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+  const left = <div><p style={eb("#B8C8DA")}>{"Today"}</p><h3 style={{ fontSize: 19, color: "#FFFFFF", margin: 0 }}>{todayTitle}</h3>{list(false)}</div>;
+  const right = <div><p style={eb(color)}>{newLabel}</p><h3 style={{ fontSize: 19, color: "#FFFFFF", margin: 0 }}>{newTitle}</h3>{list(true)}</div>;
+  return <SplitCompareShell left={left} right={right} accent={color} label={label} />;
+}
+
+// Steps that light in sequence
+function SolSteps({ steps, color, big = false }: { steps: { title: string; sub: string; icon?: BoltGlyph; nick?: string }[]; color: string; big?: boolean }) {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
+  return (
+    <div ref={ref} style={solVar(color)}>
+      <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${steps.length > 5 ? 160 : 180}px), 1fr))`, gap: 10 }}>
+        {steps.map((st, i) => (
+          <li key={st.title} className="bolt-anim" style={{ borderRadius: 12, padding: big ? "18px 16px" : "16px 14px", background: `${color}0F`, border: `1px solid ${color}40`, ...(inView ? { animation: `boltIn 0.4s ease-out ${i * 0.08}s both, solGlow 6s ease-in-out ${0.8 + i * 0.45}s infinite` } : { opacity: 0 }) }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <span aria-hidden="true" style={{ display: "inline-flex", width: 34, height: 34, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: `${color}24` }}><BoltGlyphIcon kind={st.icon || "bolt"} size={18} color={color} /></span>
+              <span style={{ fontFamily: MONO, fontSize: 13, color }}>{"0" + (i + 1)}</span>
+            </div>
+            <p style={{ margin: 0, fontSize: big ? 18 : 16, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.3 }}>{st.title}</p>
+            {st.nick && <p style={{ margin: "2px 0 0", fontSize: 13.5, fontWeight: 600, color }}>{st.nick}</p>}
+            <p style={{ margin: "6px 0 0", fontSize: big ? 15 : 14, color: "#B8C8DA", lineHeight: 1.45 }}>{st.sub}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+// Selectable tabs with an animated detail panel
+function SolTabs({ items, color }: { items: { name: string; color?: string; status?: string; statusColor?: string; description: string; highlights: string[] }[]; color: string }) {
+  const [active, setActive] = useState(0);
+  const sel = items[active];
+  const c = sel.color || color;
+  return (
+    <div>
+      <div role="tablist" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {items.map((it, i) => {
+          const on = i === active;
+          const ic = it.color || color;
+          return (
+            <button key={it.name} type="button" role="tab" aria-selected={on} onClick={() => setActive(i)} style={{ fontFamily: "inherit", display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 700, padding: "9px 14px", borderRadius: 9, cursor: "pointer", border: `1.5px solid ${on ? ic : "rgba(184,200,218,0.25)"}`, background: on ? `${ic}22` : "rgba(16,34,66,0.6)", color: on ? "#FFFFFF" : "#D0DAE6", boxShadow: on ? `0 0 16px ${ic}44` : "none", transition: "all 0.2s ease" }}>
+              <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: "50%", background: ic }} />{it.name}
+              {it.status && <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 600, color: it.statusColor || "#B8C8DA", border: `1px solid ${(it.statusColor || "#B8C8DA")}66`, borderRadius: 4, padding: "1px 6px" }}>{it.status}</span>}
+            </button>
+          );
+        })}
+      </div>
+      <div role="tabpanel" key={sel.name} className="bolt-anim" style={{ marginTop: 12, borderRadius: 14, padding: "20px 24px", background: `linear-gradient(160deg, ${c}14, rgba(16,34,66,0.65) 60%)`, border: `1px solid ${c}55`, animation: "boltIn 0.35s ease-out both" }}>
+        <p style={{ margin: "0 0 14px", fontSize: 17, color: "#E2EAF2", lineHeight: 1.6, maxWidth: 860 }}>{sel.description}</p>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: "8px 20px" }}>
+          {sel.highlights.map((h, k) => (
+            <li key={h} className="bolt-anim" style={{ display: "flex", alignItems: "flex-start", gap: 9, fontSize: 15, color: "#E2EAF2", lineHeight: 1.45, animation: `boltIn 0.3s ease-out ${0.08 + k * 0.05}s both` }}>
+              <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 3 }}><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke={c} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>{h}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+// Glide Platform connections: intelligence services, data domains, extra card
+function SolPlatform({ color, intelligence, data, extra, onNavigate }: { color: string; intelligence: string[]; data: string[]; extra?: { title: string; text: string; label: string; target: string; linkColor: string }; onNavigate: Navigate }) {
+  const card = (title: string, body: React.ReactNode, link: React.ReactNode) => (
+    <div style={{ borderRadius: 14, padding: "18px 20px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)", display: "flex", flexDirection: "column", gap: 14 }}>
+      <p style={{ margin: 0, fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{title}</p>
+      <div style={{ flex: 1 }}>{body}</div>
+      <div>{link}</div>
+    </div>
+  );
+  const chips = (items: string[], colorFor: (s: string) => string) => (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+      {items.map((d) => { const cc = colorFor(d); return <span key={d} style={{ display: "inline-flex", alignItems: "center", gap: 7, fontSize: 14, color: "#E2EAF2", background: `${cc}1A`, border: `1px solid ${cc}55`, borderRadius: 999, padding: "5px 12px" }}><span aria-hidden="true" style={{ width: 7, height: 7, borderRadius: "50%", background: cc }} />{d}</span>; })}
+    </div>
+  );
+  const domainColor = (name: string) => (dataLayer.find((d) => d.title === name) || { color: DP_COLOR }).color;
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: 12 }}>
+      {intelligence.length > 0 && card("Built on Bolt · intelligence services", chips(intelligence, () => color), <BoltButton onClick={() => onNavigate("bolt")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR, padding: "8px 14px" }}><span>Bolt PaaS</span><BoltIcon kind="arrow" /></BoltButton>)}
+      {data.length > 0 && card("Data Platform · governed domains", chips(data, domainColor), <BoltButton onClick={() => onNavigate("dataplatform")} style={{ color: DP_COLOR, borderColor: DP_COLOR, padding: "8px 14px" }}><span>Data Platform</span><BoltIcon kind="arrow" /></BoltButton>)}
+      {extra && card(extra.title, <p style={{ margin: 0, fontSize: 15.5, color: "#E2EAF2", lineHeight: 1.55 }}>{extra.text}</p>, <BoltButton onClick={() => onNavigate(extra.target)} style={{ color: extra.linkColor, borderColor: extra.linkColor, padding: "8px 14px" }}><span>{extra.label}</span><BoltIcon kind="arrow" /></BoltButton>)}
+    </div>
+  );
+}
+
+function SolFooter({ strong, text, onNavigate }: { strong: string; text: string; onNavigate: Navigate }) {
+  return (
+    <footer style={{ marginTop: 48, paddingTop: 28, borderTop: "1px solid rgba(184,200,218,0.25)", display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+      <p style={{ flex: "1 1 480px", fontSize: 18, color: "#D0DAE6", margin: 0, lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>{strong}</strong>{" " + text}</p>
+      <BoltButton onClick={() => onNavigate("solutions")} style={{ color: "#93C5FD", borderColor: "#60A5FA" }}><span>All Solutions</span><BoltIcon kind="arrow" /></BoltButton>
+    </footer>
+  );
+}
+
+
+// ============================================================
+// TITAN PAGE (modern)
+// ============================================================
+
+const TITAN_COLOR = "#F59E0B";
+const titanStepIcons: BoltGlyph[] = ["eye", "list", "layers", "shield", "app"];
+
+function TitanDetectDemo() {
+  const [detected, setDetected] = useState(false);
+  const rows = [{ k: "Payer", v: "Sample Commercial Plan" }, { k: "Drug class", v: "Long-acting G-CSF" }, { k: "Preferred", v: "Biosimilar products (Appendix B)" }, { k: "Step therapy", v: "Required before reference product" }, { k: "Exception", v: "Clinical exception allowed" }, { k: "Effective", v: "First of next month" }];
+  return (
+    <Card style={{ padding: "clamp(16px, 2.5vw, 24px)" }}>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <h3 style={{ margin: 0, fontSize: 20, color: "#FFFFFF" }}>Policy change detected</h3>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative"}</span>
+        </div>
+        <BoltButton onClick={() => setDetected(!detected)} style={detected ? { background: "transparent" } : { background: TITAN_COLOR, color: "#0B1A33", borderColor: TITAN_COLOR }}><span>{detected ? "Reset" : "Run detection"}</span>{!detected && <BoltIcon kind="arrow" />}</BoltButton>
+      </div>
+      <div className="bolt-harness" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)", gap: 12, alignItems: "stretch" }}>
+        <div style={{ background: "#071226", border: "1px solid rgba(184,200,218,0.2)", borderRadius: 12, padding: "16px 18px", position: "relative", overflow: "hidden" }}>
+          <p style={{ margin: "0 0 10px", fontSize: 12.5, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"Payer policy document (excerpt)"}</p>
+          <p style={{ margin: 0, fontFamily: MONO, fontSize: 13.5, color: "#B8C8DA", lineHeight: 1.75 }}>{"Sample Commercial Plan, Medical Drug Policy, Section 4.2 (revised). Coverage of reference long-acting G-CSF products requires documented trial and failure of a preferred biosimilar unless a clinical exception applies. Preferred products are listed in Appendix B. Changes take effect on the first day of the following month."}</p>
+          {detected && <span aria-hidden="true" className="bolt-anim" style={{ position: "absolute", left: 0, right: 0, height: 40, background: `linear-gradient(transparent, ${TITAN_COLOR}33, transparent)`, animation: "titanScan 1.2s ease-in-out 1 both" }} />}
+        </div>
+        <span aria-hidden="true" className="bolt-harness-arrow" style={{ alignSelf: "center", display: "inline-flex", width: 36, height: 36, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: detected ? `${TITAN_COLOR}2A` : "rgba(184,200,218,0.06)", border: `1px solid ${detected ? TITAN_COLOR : "rgba(184,200,218,0.25)"}`, transition: "all 0.3s ease" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6" fill="none" stroke={detected ? TITAN_COLOR : "#7F93AE"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </span>
+        <div aria-live="polite" style={{ background: detected ? `${TITAN_COLOR}10` : "rgba(16,34,66,0.5)", border: `1px solid ${detected ? TITAN_COLOR + "66" : "rgba(184,200,218,0.15)"}`, borderRadius: 12, padding: "16px 18px", transition: "all 0.3s ease" }}>
+          <p style={{ margin: "0 0 12px", fontSize: 12.5, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: detected ? TITAN_COLOR : "#B8C8DA" }}>{"Structured coverage rule"}</p>
+          {detected ? (
+            <div style={{ display: "grid", gap: 9 }}>
+              {rows.map((row, i) => (
+                <div key={row.k} className="bolt-anim" style={{ display: "grid", gridTemplateColumns: "110px 1fr", gap: 10, animation: `boltIn 0.35s ease-out ${0.9 + i * 0.15}s both` }}>
+                  <span style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", color: "#B8C8DA" }}>{row.k}</span>
+                  <span style={{ fontSize: 15, color: "#FFFFFF" }}>{row.v}</span>
+                </div>
+              ))}
+            </div>
+          ) : <p style={{ margin: 0, fontSize: 15, color: "#B8C8DA" }}>{"Run detection to see Titan turn the document into a structured coverage rule."}</p>}
+        </div>
+      </div>
+      <p style={{ margin: "12px 0 0", fontSize: 13, color: "#7F93AE" }}>{"Illustrative payer and policy text. Not a real policy."}</p>
+    </Card>
+  );
+}
+
+function TitanPage({ onNavigate }: { onNavigate: Navigate }) {
+  const sections = [{ id: "ti-why", label: "Why" }, { id: "ti-how", label: "How" }, { id: "ti-see", label: "See it" }, { id: "ti-platform", label: "Platform" }];
+  return (
+    <SolPage id="titan-page">
+      <SolHero eyebrow="Solutions · Payer policy intelligence" name="Titan" status="Live" statusColor="#10B981" color={TITAN_COLOR}
+        line1="The right drug, verified before treatment, not after a denial."
+        line2="Titan continuously monitors formularies, step therapy requirements and preferred drug lists across oncology drugs and biosimilars, ending the quarterly manual grind of tracking payer policy."
+        tiles={[{ head: "24/7", label: "Payer surveillance", sub: "Oncology drugs and biosimilars" }, { head: "Structured", label: "Formulary + step therapy", sub: "Rules extracted automatically" }, { head: "UI + API", label: "Delivered where needed", sub: "Clean interface and real-time API" }]}
+        sections={sections} />
+      <SolSection id="ti-why" num="01" label="Why" title="Policy changes don't wait for the quarter" sub="Payer policies shift mid-quarter. Checking them by hand means treatment decisions are made on information that may already be out of date." icon="eye" color={TITAN_COLOR}>
+        <SolSplit rows={titanBeforeAfter} color={TITAN_COLOR} todayTitle="Quarterly, manual policy checks" newTitle="Continuous, verified coverage intelligence" newLabel="With Titan" label="Divider between manual policy tracking and Titan" />
+      </SolSection>
+      <SolSection id="ti-how" num="02" label="How" title="From messy documents to verified rules" sub="Five stages run continuously, so practices act on current coverage information." icon="layers" color={TITAN_COLOR}>
+        <SolSteps color={TITAN_COLOR} steps={titanStages.map((s, i) => ({ title: s.stage, nick: s.nickname, sub: s.desc, icon: titanStepIcons[i] }))} />
+      </SolSection>
+      <SolSection id="ti-see" num="03" label="See it" title="A policy update, structured in seconds" sub="Titan reads the revised policy and turns it into a rule a practice can act on." icon="target" color={TITAN_COLOR}>
+        <TitanDetectDemo />
+      </SolSection>
+      <SolSection id="ti-platform" num="04" label="Platform" title="On the Glide Platform" sub="Titan runs on Bolt, draws on governed data domains, and feeds other solutions." icon="link" color={TITAN_COLOR}>
+        <SolPlatform color={TITAN_COLOR} intelligence={["Agents", "AI Prompting Tools"]} data={["Payer Policy Surveillance", "Biosimilar Utilization"]} extra={{ title: "Feeds", text: "Titan's payer policy intelligence is a live data source for " + PRACTICE_NAME + "'s partnership reviews.", label: PRACTICE_NAME, target: "skynet", linkColor: "#F87171" }} onNavigate={onNavigate} />
+      </SolSection>
+      <SolFooter strong="Removes administrative barriers for cancer patients." text="The right drug is verified before treatment, not after a denial." onNavigate={onNavigate} />
+    </SolPage>
+  );
+}
+
+// ============================================================
+// NOVA + X-RAY PAGE (modern)
+// ============================================================
+
+const NOVA_COLOR = "#34D399";
+
+function XrayEconomics() {
+  const [hoveredSegment, setHoveredSegment] = useState<number | null>(null);
+  return (
+    <div>
+      <div style={{ background: "rgba(16,34,66,0.8)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "12px 12px 0 0", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", borderBottom: "2px solid #10B981" }}>
+        <div><div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", letterSpacing: 0.3 }}>{"KEYTRUDA 25MG/ML 4ML SDV 2/PAC"}</div><div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 2 }}>{"Sample oncology practice"}</div></div>
+        <span style={{ fontFamily: MONO, fontSize: 13, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 6, padding: "4px 12px" }}>{"Onmark"}</span>
+      </div>
+      <div className="xray-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1.4fr)", gap: 0, background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.12)", borderTop: "none", borderRadius: "0 0 12px 12px", overflow: "hidden" }}>
+        <div style={{ padding: "24px", borderRight: "1px solid rgba(148,163,184,0.08)", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", alignSelf: "flex-start", marginBottom: 16 }}>{"Net price breakdown"}</div>
+          <div style={{ position: "relative", width: 220, height: 220, margin: "8px 0 20px" }}>
+            <svg viewBox="0 0 200 200" style={{ width: "100%", height: "100%", overflow: "visible" }}>
+              {(() => { const cxD = 100, cyD = 100, r = 80, r2 = 55, total = 12272; const segments = [{ value: 11320.98, color: "#1E3A5F" }, { value: 369.39, color: "#F59E0B" }, { value: 59.51, color: "#3B82F6" }, { value: 522.12, color: "#10B981" }]; let angle = -90; return segments.map((seg, i) => { const sweep = (seg.value / total) * 360; const startRad = (angle * Math.PI) / 180; const endRad = ((angle + sweep) * Math.PI) / 180; const largeArc = sweep > 180 ? 1 : 0; const x1o = cxD + r * Math.cos(startRad), y1o = cyD + r * Math.sin(startRad); const x2o = cxD + r * Math.cos(endRad), y2o = cyD + r * Math.sin(endRad); const x1i = cxD + r2 * Math.cos(endRad), y1i = cyD + r2 * Math.sin(endRad); const x2i = cxD + r2 * Math.cos(startRad), y2i = cyD + r2 * Math.sin(startRad); const d = `M ${x1o} ${y1o} A ${r} ${r} 0 ${largeArc} 1 ${x2o} ${y2o} L ${x1i} ${y1i} A ${r2} ${r2} 0 ${largeArc} 0 ${x2i} ${y2i} Z`; const isHovered = hoveredSegment === i; angle += sweep; return <path key={i} d={d} fill={seg.color} opacity={hoveredSegment !== null && !isHovered ? 0.4 : 1} style={{ transition: "opacity 0.2s ease, transform 0.2s ease", cursor: "pointer", transformOrigin: "100px 100px", transform: isHovered ? "scale(1.04)" : "scale(1)" }} onMouseEnter={() => setHoveredSegment(i)} onMouseLeave={() => setHoveredSegment(null)} />; }); })()}
+            </svg>
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center", pointerEvents: "none" }}>
+              {hoveredSegment !== null ? (<><div style={{ fontSize: 12, color: ["#93A9C2", "#F59E0B", "#3B82F6", "#10B981"][hoveredSegment], fontFamily: MONO, fontWeight: 600 }}>{["Net Price", "Contract Discount", "Distributor Discount", "Rebates & Incentives"][hoveredSegment]}</div><div style={{ fontSize: 20, fontWeight: 700, color: "#FFFFFF", marginTop: 2 }}>{["$11,320.98", "-$369.39", "-$59.51", "-$522.12"][hoveredSegment]}</div><div style={{ fontSize: 12, color: "#B8C8DA" }}>{["92.25%", "3.01%", "0.48%", "4.25%"][hoveredSegment] + " of WAC"}</div></>) : (<><div style={{ fontSize: 12, color: "#B8C8DA", fontFamily: MONO }}>{"NET PRICE"}</div><div style={{ fontSize: 22, fontWeight: 700, color: "#FFFFFF", marginTop: 2 }}>{"$11,320.98"}</div><div style={{ fontSize: 12, color: "#B8C8DA" }}>{"per unit"}</div></>)}
+            </div>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
+            {[{ color: "#1E3A5F", label: "WAC (base)", value: "$12,272" }, { color: "#F59E0B", label: "Contract discount", value: "-$369.39" }, { color: "#3B82F6", label: "Distributor discount", value: "-$59.51" }, { color: "#10B981", label: "Rebates & incentives", value: "-$522.12" }].map((item, i) => (
+              <div key={item.label} onMouseEnter={() => setHoveredSegment(i)} onMouseLeave={() => setHoveredSegment(null)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", padding: "4px 6px", borderRadius: 6, background: hoveredSegment === i ? `${item.color}22` : "transparent" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}><div style={{ width: 10, height: 10, borderRadius: 2, background: item.color }} /><span style={{ fontSize: 15, color: "#D0DAE6" }}>{item.label}</span></div>
+                <span style={{ fontSize: 15, fontWeight: 600, color: "#E2EAF2", fontFamily: MONO }}>{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: "24px" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 16 }}>{"Price waterfall: cost walk to net price"}</div>
+          {[
+            { k: "WAC price", s: "Wholesale acquisition cost, the starting point", v: "$12,272", p: "", neg: false },
+            { k: "Contract price", s: "GPO / McKesson negotiated price", v: "$11,902.61", p: "3.01%", neg: false },
+            { k: "Distributor discount", s: "Invoice markdown applied at distribution", v: "-$59.51", p: "0.50%", neg: true },
+            { k: "Invoice price", s: "As billed on invoice", v: "$11,843.10", p: "", neg: false },
+            { k: "Distributor rebate", s: "Annual rebate value", v: "-$171.72", p: "1.45%", neg: true },
+            { k: "GPO rebate / value", s: "Quarterly rebate distribution", v: "-$350.39", p: "2.94%", neg: true },
+          ].map((row, i) => (
+            <div key={row.k} className="bolt-anim" style={{ padding: "11px 14px", background: i % 2 ? "rgba(16,34,66,0.4)" : "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.08)", borderTop: i ? "none" : undefined, borderRadius: i === 0 ? "8px 8px 0 0" : 0, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, animation: `boltIn 0.35s ease-out ${i * 0.08}s both` }}>
+              <div><div style={{ fontSize: 15.5, fontWeight: 600, color: "#FFFFFF" }}>{row.k}</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>{row.s}</div></div>
+              <div style={{ textAlign: "right" }}><span style={{ fontSize: 15.5, fontWeight: 700, color: row.neg ? "#F87171" : "#FFFFFF", fontFamily: MONO }}>{row.v}</span>{row.p && <div style={{ fontSize: 12.5, color: "#B8C8DA", fontFamily: MONO }}>{row.p}</div>}</div>
+            </div>
+          ))}
+          <div style={{ padding: "13px 14px", background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: "0 0 8px 8px", marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontSize: 15.5, fontWeight: 700, color: "#10B981" }}>{"NET PRICE / UNIT"}</span><span style={{ fontSize: 22, fontWeight: 700, color: "#10B981", fontFamily: MONO }}>{"$11,320.98"}</span></div>
+        </div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 12, marginTop: 12 }}>
+        {[{ label: "Net price / unit", value: "$11,320.98", sub: "After all discounts & rebates", hi: false }, { label: "Reimbursement / unit", value: "$11,945.20", sub: "ASP benchmark", hi: false }, { label: "Net cost recovery", value: "$624.22", sub: "Reimbursement minus net price", hi: true }, { label: "Effective discount vs WAC", value: "7.75%", sub: "Combined discount rate", hi: false }].map((kpi) => (
+          <div key={kpi.label} style={{ background: kpi.hi ? "rgba(16,185,129,0.1)" : "rgba(16,34,66,0.6)", border: `1px solid ${kpi.hi ? "rgba(16,185,129,0.3)" : "rgba(148,163,184,0.12)"}`, borderRadius: 10, padding: "16px 18px" }}>
+            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase", color: kpi.hi ? "#10B981" : "#B8C8DA", marginBottom: 8 }}>{kpi.label}</div>
+            <div style={{ fontSize: 26, fontWeight: 700, color: kpi.hi ? "#10B981" : "#FFFFFF", fontFamily: MONO, lineHeight: 1 }}>{kpi.value}</div>
+            <div style={{ fontSize: 13.5, color: "#B8C8DA", marginTop: 6 }}>{kpi.sub}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function NovaXrayPage({ onNavigate }: { onNavigate: Navigate }) {
+  const sections = [{ id: "nx-two", label: "Two apps" }, { id: "nx-see", label: "See it" }, { id: "nx-road", label: "Roadmap" }, { id: "nx-platform", label: "Platform" }];
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
+  return (
+    <SolPage id="novaxray-page">
+      <SolHero eyebrow="Solutions · Pricing intelligence" name="Nova + X-Ray" status="Pilot" statusColor="#A78BFA" color={NOVA_COLOR}
+        line1="Two applications, one shared view of drug economics."
+        line2="X-Ray shows practices the full cost walk from WAC to net price and net cost recovery. Nova turns the same foundation into internal pricing intelligence for analysts and field teams."
+        tiles={[{ head: "X-Ray", label: "Customer-facing transparency", sub: "WAC to net price, drug by drug" }, { head: "Nova 2.0", label: "Internal pricing engine", sub: "Replaces the Excel pricing model" }, { head: "One foundation", label: "Shared economics layer", sub: "Both built on the same data" }]}
+        sections={sections} />
+      <SolSection id="nx-two" num="01" label="Two apps" title="Built once, used two ways" sub="X-Ray and Nova share one economics layer, so customers and analysts see the same numbers." icon="layers" color={NOVA_COLOR}>
+        <div ref={ref}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 12 }}>
+            {novaXrayProjects.map((p, i) => (
+              <div key={p.id} className="bolt-anim" style={{ borderRadius: 14, padding: "20px 22px", background: `linear-gradient(165deg, ${p.color}16, rgba(16,34,66,0.7) 55%)`, border: `1px solid ${p.color}55`, borderTop: `3px solid ${p.color}`, ...(inView ? { animation: `boltRise 0.55s cubic-bezier(.2,.7,.2,1) ${i * 0.15}s both` } : { opacity: 0 }) }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                  <h3 style={{ margin: 0, fontSize: 21, color: "#FFFFFF" }}>{p.name}</h3>
+                  <span style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 600, color: "#A78BFA", border: "1px solid rgba(167,139,250,0.45)", borderRadius: 4, padding: "2px 7px" }}>{p.status}</span>
+                </div>
+                <p style={{ margin: "4px 0 12px", fontSize: 14.5, fontWeight: 600, color: p.color }}>{p.id === "nova" ? "Internal pricing intelligence engine" : p.tagline}</p>
+                <p style={{ margin: "0 0 14px", fontSize: 15, color: "#D0DAE6", lineHeight: 1.55 }}>{p.description}</p>
+                <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 7 }}>
+                  {p.capabilities.map((c) => <li key={c} style={{ display: "flex", gap: 9, fontSize: 14.5, color: "#E2EAF2", lineHeight: 1.45 }}><svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 3 }}><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke={p.color} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>{c}</li>)}
+                </ul>
+                <p style={{ margin: "14px 0 0", padding: "10px 12px", borderRadius: 8, background: `${p.color}12`, fontSize: 14.5, color: "#E2EAF2", lineHeight: 1.5 }}>{p.impact}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bolt-anim" style={{ marginTop: 12, borderRadius: 12, padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "center", gap: 12, background: "rgba(16,185,129,0.08)", border: "1px dashed rgba(52,211,153,0.5)", ...(inView ? { animation: "boltIn 0.5s ease-out 0.5s both" } : { opacity: 0 }) }}>
+            <BoltGlyphIcon kind="db" size={20} color={NOVA_COLOR} />
+            <span style={{ fontSize: 15.5, fontWeight: 600, color: "#E2EAF2" }}>{"Shared economics layer: pricing, rebates and account data"}</span>
+          </div>
+        </div>
+      </SolSection>
+      <SolSection id="nx-see" num="02" label="See it" title="The full cost walk for one drug" sub="X-Ray proof of concept: drug economics for a single account. Hover the chart to explore each component." icon="chart" color={NOVA_COLOR}>
+        <XrayEconomics />
+      </SolSection>
+      <SolSection id="nx-road" num="03" label="Roadmap" title="From bid comparison to pricing strategist" sub="Four phases, each building on the data foundation the last one laid." icon="trend" color={NOVA_COLOR}>
+        <SolTabs color={NOVA_COLOR} items={phases.map((ph) => ({ name: ph.label + " · " + ph.title, color: ph.color, status: ph.status, statusColor: ph.statusColor, description: ph.summary, highlights: ph.highlights }))} />
+      </SolSection>
+      <SolSection id="nx-platform" num="04" label="Platform" title="On the Glide Platform" sub="Both apps draw on the same intelligence services and governed data domains." icon="link" color={NOVA_COLOR}>
+        <SolPlatform color={NOVA_COLOR} intelligence={novaXrayIntelligence.map((l) => l.title)} data={novaXrayData.map((d) => d.title)} onNavigate={onNavigate} />
+      </SolSection>
+      <SolFooter strong="Pricing transparency for practices, pricing intelligence for McKesson." text="One foundation, two audiences." onNavigate={onNavigate} />
+    </SolPage>
+  );
+}
+
+// ============================================================
+// MERIDIAN PAGE (modern)
+// ============================================================
+
+const MERIDIAN_COLOR = "#A78BFA";
+
+const meridianBeforeAfter = [
+  { dimension: "Market analysis", before: "Months of manual analysis per market", after: "AI-generated, 14-section board report in about 30 seconds" },
+  { dimension: "Coverage", before: "A handful of markets studied at a time", after: "~2,500 ZIP codes scored on four domains" },
+  { dimension: "Acquisition diligence", before: "Weeks of business-development legwork before an LOI", after: "Acquire / Investigate / Pass recommendation from target locations" },
+  { dimension: "Questions", before: "Ad hoc data requests to analysts", after: "Ask Meridian in plain English for a sourced answer" },
+];
+
+const meridianZips = [
+  { name: "ZIP A", scores: [88, 72, 40, 64] },
+  { name: "ZIP B", scores: [62, 90, 70, 48] },
+  { name: "ZIP C", scores: [75, 55, 85, 80] },
+  { name: "ZIP D", scores: [50, 68, 60, 92] },
+];
+
+function MeridianScoreDemo() {
+  const [w, setW] = useState([35, 30, 20, 15]);
+  const total = w.reduce((a, b) => a + b, 0) || 1;
+  const scored = meridianZips.map((z) => ({ ...z, score: Math.round(z.scores.reduce((s, v, i) => s + v * w[i], 0) / total) })).sort((a, b) => b.score - a.score);
+  const order = meridianZips.map((z) => scored.findIndex((s) => s.name === z.name));
+  const ROW = 52;
+  return (
+    <Card style={{ padding: "clamp(16px, 2.5vw, 24px)" }}>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 16 }}>
+        <h3 style={{ margin: 0, fontSize: 20, color: "#FFFFFF" }}>Tune the scoring model</h3>
+        <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative ZIPs"}</span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: 24 }}>
+        <div style={{ display: "grid", gap: 14 }}>
+          {meridianScoring.map((s, i) => (
+            <label key={s.domain} style={{ display: "block" }}>
+              <span style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 600, color: "#FFFFFF" }}><span>{s.domain}</span><span style={{ fontFamily: MONO, color: s.color }}>{Math.round((w[i] / total) * 100) + "%"}</span></span>
+              <span style={{ display: "block", fontSize: 13, color: "#B8C8DA", margin: "2px 0 6px" }}>{s.direction}</span>
+              <input type="range" min={0} max={60} value={w[i]} onChange={(e) => { const v = Number(e.target.value); setW((cur) => cur.map((x, k) => (k === i ? v : x))); }} aria-label={`${s.domain} weight`} style={{ width: "100%", accentColor: s.color }} />
+            </label>
+          ))}
+          <BoltButton onClick={() => setW([35, 30, 20, 15])} style={{ background: "transparent", justifySelf: "start", padding: "6px 12px", minHeight: 36 }}><span>Reset to default weights</span></BoltButton>
+        </div>
+        <div>
+          <p style={{ margin: "0 0 10px", fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"Composite ranking"}</p>
+          <div style={{ position: "relative", height: meridianZips.length * ROW }}>
+            {meridianZips.map((z, i) => {
+              const s = scored[order[i]];
+              const tier = order[i] === 0 ? "Tier 1" : order[i] === 1 ? "Tier 2" : "Tier 3";
+              return (
+                <div key={z.name} className="bolt-anim" style={{ position: "absolute", left: 0, right: 0, top: order[i] * ROW, height: ROW - 8, transition: "top 0.5s cubic-bezier(.2,.7,.2,1)", display: "grid", gridTemplateColumns: "28px 64px minmax(0, 1fr) 46px 64px", alignItems: "center", gap: 10, padding: "0 12px", borderRadius: 10, background: order[i] === 0 ? `${MERIDIAN_COLOR}22` : "rgba(16,34,66,0.6)", border: `1px solid ${order[i] === 0 ? MERIDIAN_COLOR : "rgba(184,200,218,0.18)"}` }}>
+                  <span style={{ fontFamily: MONO, fontSize: 13, color: "#B8C8DA" }}>{"#" + (order[i] + 1)}</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF" }}>{z.name}</span>
+                  <span style={{ height: 10, borderRadius: 4, background: "rgba(184,200,218,0.1)", overflow: "hidden" }}><span style={{ display: "block", height: "100%", width: `${s.score}%`, background: MERIDIAN_COLOR, transition: "width 0.4s ease" }} /></span>
+                  <span style={{ fontFamily: MONO, fontSize: 15, fontWeight: 700, color: "#FFFFFF", textAlign: "right" }}>{s.score}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: order[i] === 0 ? MERIDIAN_COLOR : "#B8C8DA", textAlign: "right" }}>{tier}</span>
+                </div>
+              );
+            })}
+          </div>
+          <p style={{ margin: "8px 0 0", fontSize: 13.5, color: "#B8C8DA", lineHeight: 1.5 }}>{"Shift the weights and the ranking re-sorts. In Meridian, weights are configurable, scenarios can be saved and compared, and tiers are recalibrated quarterly."}</p>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function MeridianPage({ onNavigate }: { onNavigate: Navigate }) {
+  const sections = [{ id: "me-why", label: "Why" }, { id: "me-score", label: "Scoring" }, { id: "me-modules", label: "Modules" }, { id: "me-under", label: "Under the hood" }, { id: "me-trust", label: "Trust" }];
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.2);
+  return (
+    <SolPage id="meridian-page">
+      <SolHero eyebrow="Solutions · Oncology expansion intelligence" name="Meridian" status="Live" statusColor="#10B981" color={MERIDIAN_COLOR}
+        line1="Months of market analysis, turned into a 30-second board report."
+        line2="Meridian scores ZIP codes across six southeastern states to find the best places to expand oncology services, assess acquisitions and model consolidation."
+        tiles={[{ head: "~2,500", label: "ZIP codes scored", sub: "Across 6 southeastern states" }, { head: "4,500+", label: "Oncology providers", sub: "Loaded from the national registry" }, { head: "~30 sec", label: "AI market report", sub: "14 sections, fully sourced" }]}
+        sections={sections} />
+      <SolSection id="me-why" num="01" label="Why" title="Expansion decisions, made in days instead of months" sub="Where to open, acquire or consolidate used to take months of manual analysis." icon="target" color={MERIDIAN_COLOR}>
+        <SolSplit rows={meridianBeforeAfter} color={MERIDIAN_COLOR} todayTitle="Manual market analysis" newTitle="Scored, explainable market intelligence" newLabel="With Meridian" label="Divider between manual market analysis and Meridian" />
+      </SolSection>
+      <SolSection id="me-score" num="02" label="Scoring" title="Every ZIP code, scored on four domains" sub="Demand, access, competition and financial viability combine into one composite score." icon="chart" color={MERIDIAN_COLOR}>
+        <MeridianScoreDemo />
+      </SolSection>
+      <SolSection id="me-modules" num="03" label="Modules" title="Seven modules, one decision surface" sub="From the market map to AI-generated reports." icon="app" color={MERIDIAN_COLOR}>
+        <SolTabs color={MERIDIAN_COLOR} items={meridianPages.map((p) => ({ name: p.name, color: p.color, description: p.description, highlights: p.highlights }))} />
+      </SolSection>
+      <SolSection id="me-under" num="04" label="Under the hood" title="Spatial analysis, real drive times and AI" sub="Public data sources refreshed on a schedule, combined with routing, scoring and generation engines." icon="layers" color={MERIDIAN_COLOR}>
+        <div ref={ref}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 230px), 1fr))", gap: 12 }}>
+            {meridianIntelligence.map((l, i) => (
+              <div key={l.id} className="bolt-anim" style={{ borderRadius: 12, padding: "16px 18px", background: "rgba(16,34,66,0.6)", border: `1px solid ${l.color}55`, borderTop: `3px solid ${l.color}`, ...(inView ? { animation: `boltRise 0.5s cubic-bezier(.2,.7,.2,1) ${i * 0.1}s both` } : { opacity: 0 }) }}>
+                <p style={{ margin: 0, fontSize: 16.5, fontWeight: 700, color: "#FFFFFF" }}>{l.title}</p>
+                <p style={{ margin: "2px 0 10px", fontFamily: MONO, fontSize: 12.5, color: "#B8C8DA" }}>{l.subtitle}</p>
+                <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>{l.capabilities.map((c) => <li key={c} style={{ display: "flex", gap: 8, fontSize: 14, color: "#E2EAF2", lineHeight: 1.45 }}><span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: l.color, marginTop: 7, flexShrink: 0 }} />{c}</li>)}</ul>
+              </div>
+            ))}
+          </div>
+          <p style={{ margin: "20px 0 10px", fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"Data sources"}</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {meridianData.map((d, i) => (
+              <span key={d.id} className="bolt-anim" style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, color: "#E2EAF2", background: `${d.color}14`, border: `1px solid ${d.color}55`, borderRadius: 999, padding: "6px 12px", ...(inView ? { animation: `boltPop 0.35s ease-out ${0.5 + i * 0.07}s both` } : { opacity: 0 }) }}>
+                <span aria-hidden="true" style={{ width: 7, height: 7, borderRadius: "50%", background: d.color }} />{d.title}<span style={{ fontFamily: MONO, fontSize: 11.5, color: "#B8C8DA" }}>{d.refresh}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </SolSection>
+      <SolSection id="me-trust" num="05" label="Trust" title="Built for sensitive healthcare data" sub="Claims data and provider information are handled under strict controls." icon="shield" color={MERIDIAN_COLOR}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: 12 }}>
+          {["Row-level security on all 23 tables with org-scoped isolation", "HIPAA Safe Harbor enforcement (k ≥ 5 anonymity threshold)", "4-tier data classification (Restricted / Confidential / Internal / Public)", "CMS Data Use Agreement compliance for claims data", "Invite-only access with signups disabled", "Audit logging on claims access, exports and scenario changes"].map((item) => (
+            <div key={item} style={{ display: "flex", gap: 10, alignItems: "flex-start", borderRadius: 12, padding: "14px 16px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(167,139,250,0.3)" }}>
+              <BoltGlyphIcon kind="shield" size={18} color={MERIDIAN_COLOR} /><span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.45 }}>{item}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 16 }}><SolPlatform color={MERIDIAN_COLOR} intelligence={["Claude API (Sonnet)", "Spatial analysis", "Routing engine", "Scoring models"]} data={[]} onNavigate={onNavigate} /></div>
+      </SolSection>
+      <SolFooter strong="Expansion strategy, grounded in data." text="Where demand, access, competition and economics meet." onNavigate={onNavigate} />
+    </SolPage>
+  );
+}
+
+// ============================================================
+// PRACTICEIQ PAGE (modern; formerly Skynet)
+// ============================================================
+
+const PIQ_COLOR = "#F87171";
+
+const piqQuestions: { q: string; a: string; rows: { k: string; v: string; pct: number }[] }[] = [
+  { q: "What are my top 5 drugs by NCR?", a: "Top 5 drugs by net cost recovery this quarter", rows: [{ k: "Keytruda", v: "$41.2K", pct: 100 }, { k: "Darzalex IV", v: "$28.7K", pct: 70 }, { k: "Opdivo", v: "$19.4K", pct: 47 }, { k: "Imfinzi", v: "$11.8K", pct: 29 }, { k: "Injectafer", v: "$9.6K", pct: 23 }] },
+  { q: "Compare Q3 vs Q4 biosimilar adoption", a: "Biosimilar adoption by quarter", rows: [{ k: "Q3", v: "81%", pct: 81 }, { k: "Q4", v: "88%", pct: 88 }, { k: "Target", v: "95%", pct: 95 }] },
+  { q: "Which providers have the highest waste?", a: "Non-billable waste by provider, this quarter", rows: [{ k: "Provider 1", v: "$6.1K", pct: 100 }, { k: "Provider 2", v: "$4.3K", pct: 70 }, { k: "Provider 3", v: "$2.9K", pct: 48 }] },
+  { q: "Show GPO rebate trend by quarter", a: "Performance rebates by quarter", rows: [{ k: "Q1", v: "$198K", pct: 74 }, { k: "Q2", v: "$212K", pct: 79 }, { k: "Q3", v: "$231K", pct: 86 }, { k: "Q4", v: "$268K", pct: 100 }] },
+];
+
+function PiqAskDemo() {
+  const [active, setActive] = useState<number | null>(null);
+  const [typed, setTyped] = useState("");
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (active === null) return;
+    const q = piqQuestions[active].q;
+    setReady(false);
+    if (prefersReducedMotion()) { setTyped(q); setReady(true); return; }
+    let i = 0;
+    setTyped("");
+    const id = window.setInterval(() => { i += 1; setTyped(q.slice(0, i)); if (i >= q.length) { window.clearInterval(id); window.setTimeout(() => setReady(true), 450); } }, 22);
+    return () => window.clearInterval(id);
+  }, [active]);
+  const sel = active !== null ? piqQuestions[active] : null;
+  return (
+    <Card style={{ padding: "clamp(16px, 2.5vw, 24px)" }}>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 14 }}>
+        <h3 style={{ margin: 0, fontSize: 20, color: "#FFFFFF" }}>Ask anything</h3>
+        <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative answers"}</span>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: "#071226", border: `1px solid ${PIQ_COLOR}55`, borderRadius: 10, minHeight: 50, fontFamily: MONO, fontSize: 14.5, color: "#FFFFFF" }}>
+        <BoltGlyphIcon kind="target" size={18} color={PIQ_COLOR} />
+        {sel ? typed : <span style={{ color: "#7F93AE" }}>{"Pick a question below to see it answered from live data"}</span>}
+        {sel && !ready && <span className="bolt-anim" style={{ display: "inline-block", width: 8, height: "1.05em", background: PIQ_COLOR, animation: "boltBlink 1s steps(1) infinite" }} />}
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "12px 0" }}>
+        {piqQuestions.map((p, i) => <button key={p.q} type="button" onClick={() => setActive(i)} aria-pressed={active === i} style={{ fontFamily: "inherit", fontSize: 14, color: active === i ? "#FFFFFF" : PIQ_COLOR, background: active === i ? `${PIQ_COLOR}2A` : `${PIQ_COLOR}10`, border: `1px solid ${PIQ_COLOR}66`, borderRadius: 999, padding: "7px 14px", cursor: "pointer" }}>{p.q}</button>)}
+      </div>
+      <div aria-live="polite" style={{ minHeight: 150 }}>
+        {sel && ready && (
+          <div key={sel.q} className="bolt-anim" style={{ borderRadius: 12, padding: "16px 18px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)", animation: "boltIn 0.35s ease-out both" }}>
+            <p style={{ margin: "0 0 4px", fontSize: 12.5, fontFamily: MONO, color: "#7F93AE" }}>{"Plain English → SQL → live data"}</p>
+            <p style={{ margin: "0 0 12px", fontSize: 16, fontWeight: 700, color: "#FFFFFF" }}>{sel.a}</p>
+            <div style={{ display: "grid", gap: 8 }}>
+              {sel.rows.map((r, k) => (
+                <div key={r.k} style={{ display: "grid", gridTemplateColumns: "120px minmax(0, 1fr) 64px", gap: 10, alignItems: "center", fontSize: 14 }}>
+                  <span style={{ color: "#E2EAF2" }}>{r.k}</span>
+                  <span style={{ height: 10, borderRadius: 4, background: "rgba(184,200,218,0.1)", overflow: "hidden" }}><span className="bolt-anim" style={{ display: "block", height: "100%", width: `${r.pct}%`, background: PIQ_COLOR, transformOrigin: "left center", animation: `boltGrowX 0.6s cubic-bezier(.2,.7,.2,1) ${k * 0.08}s both` }} /></span>
+                  <span style={{ fontFamily: MONO, fontWeight: 700, color: "#FFFFFF", textAlign: "right" }}>{r.v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+function PracticeDashboard() {
+  const [activeSection, setActiveSection] = useState(0);
+  const sec = skynetSections[activeSection];
+  return (
+    <div>
+      <div style={{ background: "rgba(16,34,66,0.75)", border: "1px solid rgba(148,163,184,0.15)", borderRadius: "12px 12px 0 0", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <div><div style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF" }}>{"Springfield Medical Center"}</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>{"Q1 2026 · Powered by your McKesson partnership"}</div></div>
+        <span style={{ fontSize: 12, color: "#B8C8DA", fontFamily: MONO }}>{"Sample practice · illustrative data"}</span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))" }}>
+        {skynetKPIs.map((kpi) => (<div key={kpi.label} style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.1)", padding: "18px 20px" }}><div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 8 }}>{kpi.label}</div><div style={{ fontSize: 28, fontWeight: 700, color: kpi.color, fontFamily: MONO, lineHeight: 1 }}>{kpi.value}</div><div style={{ fontSize: 13.5, color: "#B8C8DA", marginTop: 6 }}>{kpi.sub}</div></div>))}
+      </div>
+      <div role="tablist" style={{ display: "flex", flexWrap: "wrap", background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.12)", borderTop: "none", borderRadius: "0 0 12px 12px", overflow: "hidden" }}>
+        {skynetSections.map((s, i) => (<button key={s.id} type="button" role="tab" aria-selected={activeSection === i} onClick={() => setActiveSection(i)} style={{ flex: "1 1 120px", fontFamily: "inherit", padding: "12px 8px", background: activeSection === i ? `${s.color}18` : "transparent", border: "none", borderBottom: `2px solid ${activeSection === i ? s.color : "transparent"}`, cursor: "pointer", fontSize: 13, fontWeight: activeSection === i ? 700 : 500, color: activeSection === i ? "#FFFFFF" : "#B8C8DA" }}>{s.label}</button>))}
+      </div>
+      <div role="tabpanel" key={sec.id} className="bolt-anim" style={{ margin: "12px 0 0", background: `${sec.color}10`, border: `1px solid ${sec.color}44`, borderRadius: 12, padding: "16px 20px", animation: "boltIn 0.3s ease-out both" }}>
+        <p style={{ margin: 0, fontSize: 15.5, color: "#E2EAF2", lineHeight: 1.6 }}><strong style={{ color: sec.color }}>{sec.label + ": "}</strong>{sec.description}</p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, marginTop: 12 }}>
+        <Card>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 4 }}>{"Top 10 drugs by spend"}</div>
+          <div style={{ fontSize: 13.5, color: "#B8C8DA", marginBottom: 12 }}>{"Quarter spend and change vs prior quarter"}</div>
+          <div style={{ display: "grid", gap: 6 }}>
+            {skynetTopDrugs.map((d, i) => { const max = 542800; const val = Number(d.spend.replace(/[$,]/g, "")); return (
+              <div key={d.name} style={{ display: "grid", gridTemplateColumns: "100px minmax(0, 1fr) 76px 48px", gap: 8, alignItems: "center", fontSize: 13.5 }}>
+                <span style={{ color: "#FFFFFF", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{d.name}</span>
+                <span style={{ height: 8, borderRadius: 4, background: "rgba(184,200,218,0.1)", overflow: "hidden" }}><span className="bolt-anim" style={{ display: "block", height: "100%", width: `${(val / max) * 100}%`, background: d.type === "IV" ? "#3B82F6" : "#10B981", transformOrigin: "left center", animation: `boltGrowX 0.6s ease ${i * 0.05}s both` }} /></span>
+                <span style={{ fontFamily: MONO, color: "#E2EAF2", textAlign: "right" }}>{d.spend}</span>
+                <span style={{ fontFamily: MONO, fontWeight: 700, color: d.change.startsWith("+") ? "#34D399" : "#F87171", textAlign: "right" }}>{d.change}</span>
+              </div>
+            ); })}
+          </div>
+          <div style={{ display: "flex", gap: 14, marginTop: 10, fontSize: 12.5, color: "#B8C8DA" }}><span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "#3B82F6", marginRight: 6 }} />{"IV"}</span><span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "#10B981", marginRight: 6 }} />{"MID"}</span></div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 4 }}>{"GPO savings overview"}</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12, margin: "6px 0 14px" }}><span style={{ fontFamily: MONO, fontSize: 32, fontWeight: 700, color: "#F59E0B" }}>{"$5.8M+"}</span><span style={{ fontSize: 14.5, color: "#D0DAE6" }}>{"Rebates and discounts"}</span></div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {skynetGPO.map((g) => (<div key={g.category} style={{ background: "rgba(245,158,11,0.07)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 10, padding: "12px 14px" }}><div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 6 }}>{g.category}</div><div style={{ fontFamily: MONO, fontSize: 19, fontWeight: 700, color: "#F59E0B", lineHeight: 1 }}>{g.value}</div><div style={{ fontSize: 12, color: "#B8C8DA", marginTop: 5 }}>{"Prior: " + g.prior}</div></div>))}
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function SkynetPage({ onNavigate }: { onNavigate: Navigate }) {
+  const sections = [{ id: "pq-why", label: "Why" }, { id: "pq-see", label: "See it" }, { id: "pq-ask", label: "Ask" }, { id: "pq-platform", label: "Platform" }];
+  return (
+    <SolPage id="practiceiq-page">
+      <SolHero eyebrow="Solutions · Dynamic QBR portal" name={PRACTICE_NAME} status="Pilot" statusColor="#A78BFA" color={PIQ_COLOR}
+        line1="The quarterly business review, live instead of a static deck."
+        line2="Brings data from six-plus sources into one interactive customer portal. Reps and practices explore any metric and ask questions in plain English, answered from live data."
+        tiles={[{ head: "4–8 hrs → 15 min", label: "QBR prep per account", sub: "Review instead of build" }, { head: "6+", label: "Data sources unified", sub: "Purchases, GPO, MID, inventory, policy" }, { head: "Ask anything", label: "Plain English to SQL", sub: "Answers from live data" }]}
+        sections={sections} />
+      <SolSection id="pq-why" num="01" label="Why" title="From slide-building back to selling" sub="Every QBR used to mean hours of manual data gathering and PowerPoint assembly per account." icon="briefcase" color={PIQ_COLOR}>
+        <SolSplit rows={skynetBeforeAfter} color={PIQ_COLOR} todayTitle="Static PowerPoint QBR" newTitle="A live, interactive customer portal" newLabel={"With " + PRACTICE_NAME} label={"Divider between the static QBR and " + PRACTICE_NAME} />
+      </SolSection>
+      <SolSection id="pq-see" num="02" label="See it" title="Eight sections, one partnership view" sub="Select a section to see what it covers. Sample practice and illustrative data." icon="chart" color={PIQ_COLOR}>
+        <PracticeDashboard />
+      </SolSection>
+      <SolSection id="pq-ask" num="03" label="Ask" title="Ask the portal, not an analyst" sub="A plain-English question is converted to SQL, run against live data, and returned as an answer." icon="target" color={PIQ_COLOR}>
+        <PiqAskDemo />
+      </SolSection>
+      <SolSection id="pq-platform" num="04" label="Platform" title="On the Glide Platform" sub="Powered by Bolt intelligence services and data from across the partnership, including Titan." icon="link" color={PIQ_COLOR}>
+        <SolPlatform color={PIQ_COLOR} intelligence={["AI Prompting Tools", "Machine Learning", "Agents"]} data={["Distribution Pricing & Rebates", "GPO Rebates", "MID Data", "Biosimilar Utilization", "Inventory Management", "Payer Policy Surveillance"]} extra={{ title: "Fed by", text: "Titan's payer policy intelligence powers the policy and market section of every review.", label: "Titan", target: "titan", linkColor: TITAN_COLOR }} onNavigate={onNavigate} />
+      </SolSection>
+      <SolFooter strong="Hundreds of rep hours a quarter, redirected from slide-building to selling." text={"With 200+ accounts on quarterly cycles, " + PRACTICE_NAME + " turns QBR prep from hours into minutes."} onNavigate={onNavigate} />
+    </SolPage>
+  );
+}
+
+// ============================================================
+// RETENTIONIQ PAGE
+// ============================================================
+
+const RIQ_COLOR = "#F472B6";
+
+const riqBeforeAfter = [
+  { dimension: "Finding at-risk patients", before: "Someone runs reports and works lists by hand", after: "A daily worklist of patients slipping out of care" },
+  { dimension: "Missed appointments", before: "Often no follow-up", after: "Flagged automatically against the expected treatment interval" },
+  { dimension: "Why a patient is at risk", before: "Unclear without digging through records", after: "Each flag explained with its risk factors" },
+  { dimension: "Outreach", before: "Calls tracked in notes or spreadsheets", after: "Call outcome and barrier logged in one place" },
+  { dimension: "Oversight", before: "Little visibility into retention trends", after: "Trends, at-risk breakdowns and lost-to-follow-up by physician" },
+];
+
+const riqSteps: { title: string; sub: string; icon: BoltGlyph }[] = [
+  { title: "Expected interval", sub: "Administrators set treatment intervals by disease and drug", icon: "sliders" },
+  { title: "Compare visits", sub: "Actual visits checked against each patient's interval", icon: "repeat" },
+  { title: "Flag and explain", sub: "Patients slipping out of care flagged, with the reasons why", icon: "eye" },
+  { title: "Worklist", sub: "Coordinators work a daily queue of at-risk patients", icon: "list" },
+  { title: "Reach out and log", sub: "Call the patient, record the outcome and any barrier", icon: "person" },
+  { title: "Watch the trend", sub: "Retention and lost-to-follow-up tracked over time", icon: "chart" },
+];
+
+const riqFactors = ["Overdue for injection", "No next visit booked", "Missed last visit", "Lengthening interval"];
+const riqPatientsSeed: { id: string; init: string; factor: number; overdue: number }[] = [
+  { id: "RX-1042", init: "J.M.", factor: 0, overdue: 21 }, { id: "RX-1187", init: "A.T.", factor: 0, overdue: 16 }, { id: "RX-1203", init: "L.K.", factor: 0, overdue: 9 },
+  { id: "RX-1311", init: "D.P.", factor: 1, overdue: 12 }, { id: "RX-1350", init: "S.R.", factor: 1, overdue: 7 },
+  { id: "RX-1422", init: "M.B.", factor: 2, overdue: 14 }, { id: "RX-1478", init: "C.W.", factor: 2, overdue: 6 },
+  { id: "RX-1519", init: "E.H.", factor: 3, overdue: 5 },
+];
+
+function RetentionDemo() {
+  const [factor, setFactor] = useState<number | null>(null);
+  const [done, setDone] = useState<string[]>([]);
+  const [open, setOpen] = useState<string | null>(null);
+  const [outcome, setOutcome] = useState("Scheduled");
+  const [barrier, setBarrier] = useState("Transportation");
+  const [toast, setToast] = useState<string | null>(null);
+  const remaining = riqPatientsSeed.filter((p) => !done.includes(p.id));
+  const list = remaining.filter((p) => factor === null || p.factor === factor).sort((a, b) => b.overdue - a.overdue);
+  const current = remaining.find((p) => p.id === open) || null;
+  const saveNext = () => {
+    if (!current) return;
+    const nextList = list.filter((p) => p.id !== current.id);
+    setDone((d) => [...d, current.id]);
+    setToast(`${current.init} logged: ${outcome}${barrier !== "None" ? " · " + barrier : ""}`);
+    window.setTimeout(() => setToast(null), 2200);
+    setOpen(nextList.length ? nextList[0].id : null);
+    setOutcome("Scheduled"); setBarrier("Transportation");
+  };
+  const reset = () => { setFactor(null); setDone([]); setOpen(null); setToast(null); };
+  const sel: React.CSSProperties = { fontFamily: "inherit", fontSize: 14, color: "#FFFFFF", background: "#071226", border: "1px solid rgba(184,200,218,0.35)", borderRadius: 8, padding: "8px 10px", width: "100%" };
+  return (
+    <Card style={{ padding: "clamp(16px, 2.5vw, 24px)" }}>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", marginBottom: 12 }}>
+        <h3 style={{ margin: 0, fontSize: 20, color: "#FFFFFF" }}>A coordinator's morning</h3>
+        <BoltButton onClick={reset} style={{ background: "transparent", padding: "6px 12px", minHeight: 36 }}><span>Reset</span></BoltButton>
+      </div>
+      <div role="note" style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderRadius: 8, background: "rgba(147,197,253,0.1)", border: "1px solid rgba(147,197,253,0.4)", fontSize: 13.5, fontWeight: 600, color: "#BFDBFE", marginBottom: 14 }}>
+        <BoltGlyphIcon kind="shield" size={16} color="#93C5FD" />{"Illustrative: no real patient data. Initials and synthetic IDs only; risk factor names are examples."}
+      </div>
+      <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"1 · Pick a risk factor"}</p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+        {riqFactors.map((f, i) => { const n = remaining.filter((p) => p.factor === i).length; const on = factor === i; return (
+          <button key={f} type="button" aria-pressed={on} onClick={() => { setFactor(on ? null : i); setOpen(null); }} style={{ fontFamily: "inherit", display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, padding: "8px 12px", borderRadius: 9, cursor: "pointer", border: `1.5px solid ${on ? RIQ_COLOR : "rgba(184,200,218,0.3)"}`, background: on ? `${RIQ_COLOR}22` : "rgba(16,34,66,0.6)", color: "#FFFFFF" }}>
+            {f}<span key={n} className="bolt-anim" style={{ fontFamily: MONO, fontSize: 13, fontWeight: 700, color: "#0B1A33", background: on ? RIQ_COLOR : "#B8C8DA", borderRadius: 999, padding: "1px 8px", animation: "boltPop 0.35s ease-out both" }}>{n}</span>
+          </button>
+        ); })}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: 14 }}>
+        <div>
+          <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"2 · Worklist · " + list.length + " at risk"}</p>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
+            {list.map((p) => (
+              <li key={p.id}>
+                <button type="button" onClick={() => setOpen(p.id)} aria-pressed={open === p.id} style={{ width: "100%", fontFamily: "inherit", display: "grid", gridTemplateColumns: "54px 76px minmax(0, 1fr) auto", gap: 8, alignItems: "center", textAlign: "left", padding: "9px 12px", borderRadius: 9, cursor: "pointer", border: `1px solid ${open === p.id ? RIQ_COLOR : "rgba(184,200,218,0.2)"}`, background: open === p.id ? `${RIQ_COLOR}1A` : "rgba(16,34,66,0.6)", color: "#FFFFFF", fontSize: 14 }}>
+                  <span style={{ fontWeight: 700 }}>{p.init}</span>
+                  <span style={{ fontFamily: MONO, fontSize: 12.5, color: "#B8C8DA" }}>{p.id}</span>
+                  <span style={{ color: "#D0DAE6", fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{riqFactors[p.factor]}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: p.overdue >= 14 ? "#F87171" : "#FBBF24", whiteSpace: "nowrap" }}>{p.overdue + "d overdue"}</span>
+                </button>
+              </li>
+            ))}
+            {list.length === 0 && <li style={{ fontSize: 15, color: "#34D399", fontWeight: 700, padding: "10px 4px" }}>{"Worklist clear for this factor."}</li>}
+          </ul>
+        </div>
+        <div>
+          <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"3 · Patient · log the call"}</p>
+          {current ? (
+            <div key={current.id} className="bolt-anim" style={{ borderRadius: 12, padding: "14px 16px", background: "rgba(16,34,66,0.7)", border: `1px solid ${RIQ_COLOR}66`, animation: "boltIn 0.3s ease-out both" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}><span style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF" }}>{current.init}</span><span style={{ fontFamily: MONO, fontSize: 12.5, color: "#B8C8DA" }}>{current.id}</span></div>
+              <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", color: RIQ_COLOR }}>{"Why flagged"}</p>
+              <ul style={{ margin: "0 0 12px", paddingLeft: 18, fontSize: 14, color: "#E2EAF2", lineHeight: 1.6 }}>
+                <li>{riqFactors[current.factor]}</li>
+                <li>{current.overdue + " days past expected treatment interval"}</li>
+              </ul>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+                <label style={{ fontSize: 12.5, color: "#B8C8DA" }}>{"Outcome"}<select value={outcome} onChange={(e) => setOutcome(e.target.value)} style={{ ...sel, marginTop: 4 }}>{["Scheduled", "No answer", "Left message", "Declined"].map((o) => <option key={o}>{o}</option>)}</select></label>
+                <label style={{ fontSize: 12.5, color: "#B8C8DA" }}>{"Barrier"}<select value={barrier} onChange={(e) => setBarrier(e.target.value)} style={{ ...sel, marginTop: 4 }}>{["Transportation", "Cost", "Scheduling", "Health", "None"].map((o) => <option key={o}>{o}</option>)}</select></label>
+              </div>
+              <BoltButton onClick={saveNext} style={{ width: "100%", justifyContent: "center", background: RIQ_COLOR, color: "#0B1A33", borderColor: RIQ_COLOR }}><span>{"Save & Next"}</span><BoltIcon kind="arrow" /></BoltButton>
+            </div>
+          ) : (
+            <div style={{ borderRadius: 12, padding: "16px", border: "1.5px dashed rgba(184,200,218,0.3)", fontSize: 14.5, color: "#7F93AE", minHeight: 120, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center" }}>{list.length ? "Open the most overdue patient to see why they were flagged." : "Pick another risk factor, or reset."}</div>
+          )}
+          <p aria-live="polite" style={{ margin: "10px 0 0", minHeight: 22, fontSize: 14, fontWeight: 700, color: "#34D399" }}>{toast}</p>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function RetentionIQPage({ onNavigate }: { onNavigate: Navigate }) {
+  const sections = [{ id: "rq-why", label: "Why" }, { id: "rq-how", label: "How" }, { id: "rq-try", label: "Try it" }, { id: "rq-who", label: "Who" }, { id: "rq-status", label: "Status" }];
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.25);
+  return (
+    <SolPage id="retentioniq-page">
+      <SolHero eyebrow="Solutions · Patient retention" name="RetentionIQ" status="Building" statusColor="#F59E0B" color={RIQ_COLOR}
+        line1="Find the patient who's slipping past their treatment window before they're lost to follow-up."
+        line2="RetentionIQ finds patients falling behind on scheduled treatment, shows staff why each one is at risk, and helps them reach the patient and record what happened. Built first for retina practices; oncology is next."
+        tiles={[{ head: "Retina first", label: "Oncology next", sub: "Scheduled-treatment specialties" }, { head: "Explained", label: "Every flag has a reason", sub: "Risk factors, not a black box" }, { head: "Customer-facing", label: "Used by practices directly", sub: "Coordinators and administrators" }]}
+        sections={sections} />
+      <SolSection id="rq-why" num="01" label="Why" title="Patients fall through the cracks quietly" sub="A missed appointment with no follow-up, or a visit that never gets booked, becomes a gap in care." icon="eye" color={RIQ_COLOR}>
+        <SolSplit rows={riqBeforeAfter} color={RIQ_COLOR} todayTitle="Reports and manual lists" newTitle="A daily worklist with reasons" newLabel="With RetentionIQ" label="Divider between manual follow-up and RetentionIQ" />
+      </SolSection>
+      <SolSection id="rq-how" num="02" label="How" title="From expected interval to outreach" sub="Each patient's actual visits are compared with their expected treatment interval, refreshed nightly." icon="repeat" color={RIQ_COLOR}>
+        <SolSteps color={RIQ_COLOR} steps={riqSteps} />
+      </SolSection>
+      <SolSection id="rq-try" num="03" label="Try it" title="Work the list, watch it shrink" sub="Pick a risk factor, open the most overdue patient, log the call and move to the next." icon="target" color={RIQ_COLOR}>
+        <RetentionDemo />
+      </SolSection>
+      <SolSection id="rq-who" num="04" label="Who" title="Built for the people who keep patients in care" sub="Two roles, four features." icon="people" color={RIQ_COLOR}>
+        <div ref={ref} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 12 }}>
+          {[{ role: "Care coordinators", text: "Work a daily list of at-risk patients, call them, and log outcomes.", feats: [{ n: "Worklist", d: "Daily queue with counts, filters, location scope and a risk badge on each patient" }, { n: "Patient detail", d: "Why they were flagged, visit and treatment history, do-not-call, call log and Save & Next" }] },
+            { role: "Practice administrators", text: "Watch retention trends and set the expected treatment intervals.", feats: [{ n: "Admin overview", d: "Retention trends, at-risk breakdowns and lost-to-follow-up by physician; click a factor to filter the worklist" }, { n: "Admin config", d: "Expected intervals at global, disease and drug-code level, applied at the next nightly refresh" }] }].map((r, i) => (
+            <div key={r.role} className="bolt-anim" style={{ borderRadius: 14, padding: "18px 20px", background: `linear-gradient(165deg, ${RIQ_COLOR}14, rgba(16,34,66,0.7) 55%)`, border: `1px solid ${RIQ_COLOR}55`, ...(inView ? { animation: `boltRise 0.55s cubic-bezier(.2,.7,.2,1) ${i * 0.15}s both` } : { opacity: 0 }) }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}><BoltGlyphIcon kind="person" size={20} color={RIQ_COLOR} /><h3 style={{ margin: 0, fontSize: 18, color: "#FFFFFF" }}>{r.role}</h3></div>
+              <p style={{ margin: "6px 0 12px", fontSize: 15, color: "#D0DAE6" }}>{r.text}</p>
+              {r.feats.map((f) => <div key={f.n} style={{ borderRadius: 10, padding: "10px 12px", background: "rgba(7,18,38,0.7)", border: "1px solid rgba(184,200,218,0.15)", marginBottom: 8 }}><p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "#FFFFFF" }}>{f.n}</p><p style={{ margin: "2px 0 0", fontSize: 14, color: "#B8C8DA", lineHeight: 1.45 }}>{f.d}</p></div>)}
+            </div>
+          ))}
+        </div>
+      </SolSection>
+      <SolSection id="rq-status" num="05" label="Status" title="Building on Bolt" sub="The screens are built; the connection to practice data is next." icon="trend" color={RIQ_COLOR}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 230px), 1fr))", gap: 12 }}>
+          {[{ k: "Screens", v: "All four features built on the platform, running on sample data", c: "#34D399", s: "Built" }, { k: "Services", v: "Worklist and patient-detail services scaffolded", c: "#FBBF24", s: "In progress" }, { k: "Practice data feed", v: "Connection from the practice's system not yet built", c: "#93A9C2", s: "Next" }, { k: "Oncology", v: "Next specialty after retina", c: "#93A9C2", s: "Roadmap" }].map((x) => (
+            <div key={x.k} style={{ borderRadius: 12, padding: "16px 18px", background: "rgba(16,34,66,0.6)", border: `1px solid ${x.c}55`, borderTop: `3px solid ${x.c}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}><p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#FFFFFF" }}>{x.k}</p><span style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 600, color: x.c, border: `1px solid ${x.c}77`, borderRadius: 4, padding: "1px 6px" }}>{x.s}</span></div>
+              <p style={{ margin: "6px 0 0", fontSize: 14.5, color: "#D0DAE6", lineHeight: 1.5 }}>{x.v}</p>
+            </div>
+          ))}
+        </div>
+        <p style={{ margin: "14px 0 0", fontSize: 14.5, color: "#B8C8DA", lineHeight: 1.6 }}>{"RetentionIQ handles identified patient data under HIPAA, so it inherits the platform's security, access and audit controls."}</p>
+        <div style={{ marginTop: 16 }}><SolPlatform color={RIQ_COLOR} intelligence={["Bolt Product Ownership"]} data={[]} onNavigate={onNavigate} /></div>
+      </SolSection>
+      <SolFooter strong="Keeping patients in care." text="A missed treatment window is a care gap, so RetentionIQ leads with the patient." onNavigate={onNavigate} />
+    </SolPage>
+  );
+}
+
+
+// ============================================================
 // MAIN APP — TAB NAVIGATION
 // ============================================================
 
@@ -4301,6 +4549,7 @@ const navGroups = [
     { id: "meridian", label: "Meridian" },
     { id: "skynet", label: PRACTICE_NAME },
     { id: "savingsiq", label: "SavingsIQ" },
+    { id: "retentioniq", label: "RetentionIQ" },
   ]},
   { label: "Roadmap", items: [
     { id: "roadmap", label: "MPTS Roadmap" },
@@ -4378,9 +4627,10 @@ export default function App() {
         {activePage === "solutions" && <SolutionsOverviewPage onNavigate={navigate} />}
         {activePage === "titan" && <TitanPage onNavigate={navigate} />}
         {activePage === "savingsiq" && <SavingsIQPage onNavigate={navigate} />}
-        {activePage === "novaxray" && <NovaXrayPage />}
-        {activePage === "meridian" && <MeridianPage />}
-        {activePage === "skynet" && <SkynetPage />}
+        {activePage === "novaxray" && <NovaXrayPage onNavigate={navigate} />}
+        {activePage === "meridian" && <MeridianPage onNavigate={navigate} />}
+        {activePage === "skynet" && <SkynetPage onNavigate={navigate} />}
+        {activePage === "retentioniq" && <RetentionIQPage onNavigate={navigate} />}
         {activePage === "bolt" && <BoltPaaSPage onNavigate={navigate} />}
         {activePage === "dataplatform" && <DataPlatformPage onNavigate={navigate} />}
         {activePage === "roadmap" && <MptsRoadmapPage />}
