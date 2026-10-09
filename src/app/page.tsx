@@ -1363,7 +1363,7 @@ function BoltKpis({ big = false }: { big?: boolean }) {
   const p = useCountUp(inView, 1500);
   const kpis = [
     { shown: `${Math.round(2 * p)}–${Math.round(4 * p)} weeks`, final: "2–4 weeks", label: "Idea to production", sub: `vs. ~6 months; up to ${Math.round(12 * p)}× faster`, subFinal: "vs. ~6 months; up to 12× faster", fade: false },
-    { shown: `${Math.round(p)} handoff`, final: "1 handoff", label: "Builder to code review", sub: "vs. 4+ across teams", subFinal: "vs. 4+ across teams", fade: false },
+    { shown: `${Math.round(p)} handoff`, final: "1 handoff", label: "Builder to code review", sub: "vs. 4+ matrix teams", subFinal: "vs. 4+ matrix teams", fade: false },
     { shown: "AI + Human", final: "AI + Human", label: "Review on every release", sub: "Governed production on Bolt", subFinal: "Governed production on Bolt", fade: true },
   ];
   return (
@@ -2003,7 +2003,7 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
         <div style={{ flex: "1 1 520px" }}>
           {eyebrow("Glide Platform · Bolt PaaS")}
           <h2 className="bolt-anim" style={{ ...rise(0.08), fontSize: "clamp(44px, 6vw, 80px)", lineHeight: 1.05, letterSpacing: -1.5, color: "#FFFFFF", margin: 0 }}>Build in weeks,<br />not months.</h2>
-          <p className="bolt-anim" style={{ ...rise(0.2), fontSize: 24, lineHeight: 1.5, color: "#D0DAE6", margin: "24px 0 0", maxWidth: 620 }}>Business owners build with Claude Code and ship on McKesson{"’"}s governed AWS platform.</p>
+          <p className="bolt-anim" style={{ ...rise(0.2), fontSize: 24, lineHeight: 1.5, color: "#D0DAE6", margin: "24px 0 0", maxWidth: 620 }}>{"Business experts, product owners and engineers build with Claude Code and ship on McKesson’s governed AWS platform."}</p>
         </div>
         <div className="bolt-anim" style={{ ...rise(0.3), flex: "0 1 460px" }}><BoltHeroStack autoExplode maxWidth={460} /></div>
       </div>
@@ -2057,7 +2057,7 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
           <span />
           {boltEngagementRoles.map((r, ri) => (
             <span key={r} className="bolt-anim" style={{ ...rise(0.1 + ri * 0.05), display: "flex", flexDirection: "column", alignItems: "center", gap: 8, fontSize: 18, fontWeight: 600, color: "#B8C8DA", textAlign: "center" }}>
-              <span style={{ width: 44, height: 44, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(184,200,218,0.35)" }}><BoltGlyphIcon kind={(["briefcase", "code", "app", "server"] as BoltGlyph[])[ri]} size={22} color="#D0DAE6" /></span>{r}
+              <span style={{ width: 44, height: 44, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(184,200,218,0.35)" }}><BoltGlyphIcon kind={(["briefcase", "code", "app", "server"] as BoltGlyph[])[ri]} size={22} color="#D0DAE6" /></span><span style={{ lineHeight: 1.3 }}>{r.split(" ").map((word) => <span key={word} style={{ display: "block" }}>{word}</span>)}</span>
             </span>
           ))}
           {boltEngagementModels.map((m, mi) => (
@@ -2356,7 +2356,7 @@ function BoltEngagementMatrix() {
           <thead>
             <tr>
               <th scope="col" style={{ padding: "12px 8px", color: "#B8C8DA", fontWeight: 600, borderBottom: "1px solid rgba(184,200,218,0.24)" }}>Engagement model</th>
-              {boltEngagementRoles.map((role, roleIndex) => <th key={role} scope="col" onMouseEnter={() => setHoverRole(roleIndex)} onMouseLeave={() => setHoverRole(null)} style={{ padding: "12px 8px", color: hoverRole === roleIndex ? "#FFFFFF" : "#B8C8DA", fontWeight: 600, textAlign: "center", borderBottom: "1px solid rgba(184,200,218,0.24)", verticalAlign: "bottom", background: hoverRole === roleIndex ? "rgba(45,212,191,0.07)" : "transparent", transition: "background 0.2s ease, color 0.2s ease" }}><span style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}><span aria-hidden="true" className="bolt-anim" style={{ width: 40, height: 40, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", background: "rgba(16,34,66,0.9)", border: `1px solid ${hoverRole === roleIndex ? BOLT_COLOR : "rgba(184,200,218,0.35)"}`, boxShadow: hoverRole === roleIndex ? `0 0 16px ${BOLT_COLOR}66` : "none", transform: hoverRole === roleIndex ? "translateY(-3px)" : "none", transition: "all 0.25s ease" }}><BoltGlyphIcon kind={(["briefcase", "code", "app", "server"] as BoltGlyph[])[roleIndex]} size={20} color="#D0DAE6" /></span>{role}</span></th>)}
+              {boltEngagementRoles.map((role, roleIndex) => <th key={role} scope="col" onMouseEnter={() => setHoverRole(roleIndex)} onMouseLeave={() => setHoverRole(null)} style={{ padding: "12px 8px", color: hoverRole === roleIndex ? "#FFFFFF" : "#B8C8DA", fontWeight: 600, textAlign: "center", borderBottom: "1px solid rgba(184,200,218,0.24)", verticalAlign: "bottom", background: hoverRole === roleIndex ? "rgba(45,212,191,0.07)" : "transparent", transition: "background 0.2s ease, color 0.2s ease" }}><span style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}><span aria-hidden="true" className="bolt-anim" style={{ width: 40, height: 40, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", background: "rgba(16,34,66,0.9)", border: `1px solid ${hoverRole === roleIndex ? BOLT_COLOR : "rgba(184,200,218,0.35)"}`, boxShadow: hoverRole === roleIndex ? `0 0 16px ${BOLT_COLOR}66` : "none", transform: hoverRole === roleIndex ? "translateY(-3px)" : "none", transition: "all 0.25s ease" }}><BoltGlyphIcon kind={(["briefcase", "code", "app", "server"] as BoltGlyph[])[roleIndex]} size={20} color="#D0DAE6" /></span><span style={{ display: "block", lineHeight: 1.35 }}>{role.split(" ").map((word) => <span key={word} style={{ display: "block" }}>{word}</span>)}</span></span></th>)}
               <th scope="col" style={{ padding: "12px 12px", color: "#B8C8DA", fontWeight: 600, borderBottom: "1px solid rgba(184,200,218,0.24)" }}>Examples</th>
             </tr>
           </thead>
@@ -2462,13 +2462,12 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
           <div style={{ flex: "1 1 480px", minWidth: 0 }}>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
               <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Bolt PaaS</h1>
-              <span style={{ color: "#B8C8DA", fontSize: 15, border: "1px solid rgba(184,200,218,0.3)", borderRadius: 6, padding: "4px 10px" }}>Building</span>
               <BoltButton onClick={() => setPresenting(true)} aria-keyshortcuts="P" style={{ background: "rgba(45,212,191,0.12)", borderColor: BOLT_COLOR, color: BOLT_COLOR, padding: "6px 14px", minHeight: 38 }}>
                 <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"><path d="M7 4v16l13-8L7 4Z" fill="currentColor" /></svg>
                 <span>Present</span><span style={{ fontSize: 12, fontWeight: 500, color: "#B8C8DA", border: "1px solid rgba(184,200,218,0.35)", borderRadius: 4, padding: "0 5px" }}>P</span>
               </BoltButton>
             </div>
-            <p style={{ fontSize: 20, color: "#E2EAF2", margin: "14px 0 0", maxWidth: 620, lineHeight: 1.55 }}>Business owners and product people build with Claude Code and ship on McKesson{"’"}s governed AWS platform.</p>
+            <p style={{ fontSize: 20, color: "#E2EAF2", margin: "14px 0 0", maxWidth: 620, lineHeight: 1.55 }}>{"Business experts, product owners and engineers build with Claude Code and ship on McKesson’s governed AWS platform."}</p>
           </div>
           <div style={{ flex: "0 1 370px", minWidth: 260, marginLeft: "auto" }}>
             <BoltHeroStack onLayer={(layer) => layer === "apps" ? onNavigate("solutions") : layer === "data" ? onNavigate("dataplatform") : jump("how", 1)} />
