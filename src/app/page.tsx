@@ -1535,11 +1535,46 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer 
   useEffect(() => { setMotionOk(!prefersReducedMotion()); }, []);
   const exploded = hover || auto || focusLayer !== null;
   const cx = 112, w = 84, h = 34, t = 10;
-  const slab = (y: number, color: string, lit: boolean) => (
+  const slab = (y: number, color: string, lit: boolean, t: number = 10) => (
     <g>
       <polygon points={`${cx - w},${y} ${cx},${y + h} ${cx},${y + h + t} ${cx - w},${y + t}`} fill={color} fillOpacity={0.16} stroke={color} strokeOpacity={0.5} />
       <polygon points={`${cx},${y + h} ${cx + w},${y} ${cx + w},${y + t} ${cx},${y + h + t}`} fill={color} fillOpacity={0.26} stroke={color} strokeOpacity={0.5} />
       <polygon points={`${cx},${y - h} ${cx + w},${y} ${cx},${y + h} ${cx - w},${y}`} fill={color} fillOpacity={lit ? 0.38 : 0.22} stroke={color} strokeWidth={lit ? 2.2 : 1.4} />
+    </g>
+  );
+  // Map square face coords (-1..1) onto a slab's isometric top face
+  const face = (y: number) => `matrix(${w / 2}, ${h / 2}, ${-w / 2}, ${h / 2}, ${cx}, ${y})`;
+  const BOLT_CYAN = "#22D3EE";
+  const boltSlab = (y: number, isLit: boolean) => (
+    <g>
+      {slab(y, BOLT_CYAN, isLit)}
+      <g transform={face(y)}>
+        <g className="bolt-anim" style={{ animation: "boltPulse 3.2s ease-in-out infinite" }}>
+          {["M -0.92 -0.32 H -0.42", "M 0.42 0.32 H 0.92", "M -0.32 0.92 V 0.42", "M 0.32 -0.92 V -0.42", "M -0.92 0.4 H -0.55 V 0.62", "M 0.92 -0.4 H 0.55 V -0.62"].map((d) => (
+            <path key={d} d={d} fill="none" stroke={BOLT_CYAN} strokeOpacity={0.75} strokeWidth={1.1} vectorEffect="non-scaling-stroke" />
+          ))}
+          {[[-0.42, -0.32], [0.42, 0.32], [-0.32, 0.42], [0.32, -0.42], [-0.55, 0.62], [0.55, -0.62]].map(([u, v]) => <circle key={`${u}${v}`} cx={u} cy={v} r={0.05} fill={BOLT_CYAN} />)}
+        </g>
+      </g>
+      <ellipse cx={cx} cy={y} rx={22} ry={9} fill={BOLT_CYAN} fillOpacity={0.25} />
+      <g transform={`translate(${cx - 12.5}, ${y - 21}) scale(1.05)`} style={{ filter: `drop-shadow(0 0 6px ${BOLT_CYAN})` }}>
+        <path d="M13 2 4.5 13H12l-1 9 8.5-11H12l1-9Z" fill={BOLT_CYAN} fillOpacity={isLit ? 0.95 : 0.8} stroke="#ECFEFF" strokeWidth={1.3} strokeLinejoin="round" />
+      </g>
+    </g>
+  );
+  const DATA_GREEN = "#10B981";
+  const dataSlab = (y: number, isLit: boolean) => (
+    <g>
+      {slab(y + 14, DATA_GREEN, false, 4)}
+      {slab(y + 7, DATA_GREEN, false, 4)}
+      {slab(y, DATA_GREEN, isLit, 4)}
+      <g transform={face(y)}>
+        {dataLayer.map((d, k) => {
+          const col = k % 4, row = Math.floor(k / 4);
+          const u = -0.78 + col * 0.4, v = -0.42 + row * 0.46;
+          return <rect key={d.id} x={u} y={v} width={0.3} height={0.36} rx={0.05} fill={d.color} fillOpacity={isLit ? 0.75 : 0.55} stroke={d.color} strokeWidth={0.8} vectorEffect="non-scaling-stroke" className="bolt-anim" style={{ animation: `boltPulse 4s ease-in-out ${k * 0.5}s infinite` }} />;
+        })}
+      </g>
     </g>
   );
   const cube = (x: number, y: number) => {
@@ -1554,7 +1589,7 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer 
   };
   const layers: { id: HeroLayer; y: number; dy: number; title: string; sub: string; color: string; action: string }[] = [
     { id: "apps", y: 62, dy: -22, title: "Applications", sub: "Built by the business", color: "#60A5FA", action: "Open Solutions" },
-    { id: "bolt", y: 126, dy: 0, title: "Bolt Platform", sub: "Build fast with AI", color: BOLT_COLOR, action: "See how it works" },
+    { id: "bolt", y: 126, dy: 0, title: "Bolt Platform", sub: "Build fast with AI", color: "#22D3EE", action: "See how it works" },
     { id: "data", y: 190, dy: 20, title: "Data Platform", sub: "Governed data", color: "#34D399", action: "Open Data Platform" },
   ];
   const interactive = !!onLayer;
@@ -1581,7 +1616,7 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer 
             <g className="bolt-anim" style={{ animation: exploded ? undefined : "boltFloat 4s ease-in-out infinite" }}>
               {cube(80, 54)}{cube(112, 40)}{cube(144, 54)}{cube(112, 68)}
             </g>
-          ) : slab(l.y, l.id === "bolt" ? BOLT_COLOR : "#10B981", lit(l.id))}
+          ) : l.id === "bolt" ? boltSlab(l.y, lit("bolt")) : dataSlab(l.y, lit("data"))}
           <line x1={cx + w + 4} y1={l.y} x2={212} y2={l.y} stroke={l.color} strokeOpacity={exploded ? 0.9 : 0.5} strokeDasharray="3 3" />
           <text x={218} y={l.y - 2} fontSize={14} fontWeight={700} fill="#FFFFFF" fontFamily="DM Sans, sans-serif">{l.title}</text>
           <text x={218} y={l.y + 15} fontSize={12} fill={exploded && interactive ? l.color : "#B8C8DA"} fontFamily="DM Sans, sans-serif">{exploded && interactive ? l.action + " →" : l.sub}</text>
@@ -1591,7 +1626,7 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer 
         <g aria-hidden="true" style={{ pointerEvents: "none", filter: `drop-shadow(0 0 4px ${BOLT_COLOR})` }}>
           {[-34, 18, -10, 30, -22, 6, 40, -40].map((dx, i) => (
             <circle key={i} cx={cx + dx} cy={212} r={i % 3 === 0 ? 3.6 : 2.7} fill="#34D399" opacity={0}>
-              <animate attributeName="cy" values="214;126;46" keyTimes="0;0.5;1" dur="3.6s" begin={`${i * 0.45}s`} repeatCount="indefinite" />
+              <animate attributeName="cy" values="196;126;46" keyTimes="0;0.5;1" dur="3.6s" begin={`${i * 0.45}s`} repeatCount="indefinite" />
               <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.8;1" dur="3.6s" begin={`${i * 0.45}s`} repeatCount="indefinite" />
               <animate attributeName="fill" values="#34D399;#2DD4BF;#93C5FD" keyTimes="0;0.5;1" dur="3.6s" begin={`${i * 0.45}s`} repeatCount="indefinite" />
             </circle>
