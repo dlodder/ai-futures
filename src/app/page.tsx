@@ -1289,6 +1289,10 @@ const BOLT_CSS = `
 @media (max-width: 720px) { .bolt-split { flex-direction: column; } .bolt-split-pane { width: 100% !important; } .bolt-split-inner { min-width: 0 !important; } .bolt-split-handle, .bolt-split-input, .bolt-split-hint { display: none !important; } }
 @keyframes boltTileGlow { 0%, 22%, 100% { box-shadow: none; border-color: rgba(45,212,191,0.25); background: rgba(45,212,191,0.07); } 8% { box-shadow: 0 0 18px rgba(45,212,191,0.45); border-color: #2DD4BF; background: rgba(45,212,191,0.2); } }
 @media (max-width: 760px) { .bolt-harness, .bolt-next { grid-template-columns: 1fr !important; } .bolt-harness-arrow { transform: rotate(90deg); justify-self: center; } .bolt-harness-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+@keyframes dpDash { to { stroke-dashoffset: -17; } }
+@keyframes dpDashRev { to { stroke-dashoffset: -20; } }
+@keyframes dpSpin { to { transform: rotate(360deg); } }
+@media (max-width: 760px) { .dp-hub { display: none !important; } .dp-hub-grid { display: grid !important; } .dp-reuse { grid-template-columns: 1fr !important; } .dp-reuse-gutter-wrap { display: none; } }
 @media (prefers-reduced-motion: reduce) { .bolt-anim { animation: none !important; transition: none !important; } }
 `;
 
@@ -1518,7 +1522,7 @@ function BoltShipDemo({ autoStart = false, big = false, trigger = 0 }: { autoSta
 // Isometric stack: Applications on Bolt on the Data Platform
 type HeroLayer = "apps" | "bolt" | "data";
 
-function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370 }: { onLayer?: (layer: HeroLayer) => void; autoExplode?: boolean; maxWidth?: number }) {
+function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer }: { onLayer?: (layer: HeroLayer) => void; autoExplode?: boolean; maxWidth?: number; litLayer?: HeroLayer }) {
   const [hover, setHover] = useState(false);
   const [focusLayer, setFocusLayer] = useState<HeroLayer | null>(null);
   const [auto, setAuto] = useState(false);
@@ -1561,7 +1565,7 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370 }: { onLay
     onFocus: () => setFocusLayer(l.id), onBlur: () => setFocusLayer(null),
     style: { cursor: "pointer", outline: "none", transform: `translateY(${exploded ? l.dy : 0}px)`, transition: "transform 0.55s cubic-bezier(.2,.7,.2,1)" } as React.CSSProperties,
   } : { style: { transform: `translateY(${exploded ? l.dy : 0}px)`, transition: "transform 0.55s cubic-bezier(.2,.7,.2,1)" } as React.CSSProperties };
-  const lit = (id: HeroLayer) => focusLayer === id;
+  const lit = (id: HeroLayer) => focusLayer === id || litLayer === id;
   return (
     <svg role={interactive ? "group" : "img"} aria-label="Applications built on the Bolt platform, which runs on the Data Platform" viewBox="0 -20 370 290" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{ width: "100%", maxWidth, height: "auto", display: "block", overflow: "visible" }}>
       <defs>
@@ -2244,7 +2248,7 @@ function BoltBuilders({ autoFill = false }: { autoFill?: boolean }) {
   );
 }
 
-function BoltPresenter({ onExit, onNavigate }: { onExit: () => void; onNavigate: Navigate }) {
+function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => void; onNavigate: Navigate; deck?: "bolt" | "data" }) {
   const [scene, setScene] = useState(0);
   const boxRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -2270,7 +2274,7 @@ function BoltPresenter({ onExit, onNavigate }: { onExit: () => void; onNavigate:
   const rise = (delay: number): React.CSSProperties => ({ animation: `boltRise 0.7s cubic-bezier(.2,.7,.2,1) ${delay}s both` });
   const eyebrow = (text: string) => <p className="bolt-anim" style={{ ...rise(0), fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 600, letterSpacing: 1.6, textTransform: "uppercase", color: BOLT_COLOR, margin: "0 0 14px" }}>{text}</p>;
   const title = (text: string) => <h2 className="bolt-anim" style={{ ...rise(0.08), fontSize: "clamp(36px, 4.6vw, 60px)", lineHeight: 1.1, letterSpacing: -1, color: "#FFFFFF", margin: "0 0 32px" }}>{text}</h2>;
-  const scenes: { id: string; render: () => React.ReactNode }[] = [
+  const boltScenes: { id: string; render: () => React.ReactNode }[] = [
     { id: "title", render: () => (
       <div style={{ display: "flex", gap: 48, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ flex: "1 1 520px" }}>
@@ -2369,6 +2373,39 @@ function BoltPresenter({ onExit, onNavigate }: { onExit: () => void; onNavigate:
       </div>
     ) },
   ];
+  const dataScenes: { id: string; render: () => React.ReactNode }[] = [
+    { id: "title", render: () => (
+      <div style={{ display: "flex", gap: 48, alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ flex: "1 1 520px" }}>
+          {eyebrow("Glide Platform · Data Platform")}
+          <h2 className="bolt-anim" style={{ ...rise(0.08), fontSize: "clamp(44px, 5.6vw, 76px)", lineHeight: 1.05, letterSpacing: -1.5, color: "#FFFFFF", margin: 0 }}>{"Enterprise data,"}<br />{"turned into capabilities."}</h2>
+          <p className="bolt-anim" style={{ ...rise(0.2), fontSize: 24, lineHeight: 1.5, color: "#D0DAE6", margin: "24px 0 0", maxWidth: 640 }}>{"A connected, governed foundation where applications, data products, analytics and AI are built once, reused everywhere, and inherit enterprise controls by default."}</p>
+        </div>
+        <div className="bolt-anim" style={{ ...rise(0.3), flex: "0 1 460px" }}><BoltHeroStack autoExplode litLayer="data" maxWidth={460} /></div>
+      </div>
+    ) },
+    { id: "foundation", render: () => (
+      <div>
+        {eyebrow("Provider Solutions Data Platform")}
+        {title("Transforming enterprise data into business capabilities through intent")}
+        <div className="bolt-anim" style={rise(0.15)}><DpHeroTiles big /></div>
+      </div>
+    ) },
+    { id: "why", render: () => (<div>{eyebrow("01 · Why")}{title("Value trapped in silos")}<div className="bolt-anim" style={rise(0.15)}><DpRelayCompare /></div></div>) },
+    { id: "domains", render: () => (<div>{eyebrow("02 · Domains")}{title("A connected enterprise data foundation")}<div className="bolt-anim" style={rise(0.15)}><DpDomainHub big /></div></div>) },
+    { id: "reuse", render: () => (<div>{eyebrow("03 · Reuse")}{title("Build once, use everywhere")}<div className="bolt-anim" style={rise(0.15)}><DpReuse /></div></div>) },
+    { id: "trust", render: () => (<div>{eyebrow("04 · Trust")}{title("Governance, compliance and legal by design")}<div className="bolt-anim" style={rise(0.15)}><DpTrust /></div></div>) },
+    { id: "intent", render: () => (<div>{eyebrow("05 · Intent")}{title("One request, apps and data")}<div className="bolt-anim" style={rise(0.15)}><DpIntentDemo autoStart big /></div></div>) },
+    { id: "flywheel", render: () => (<div>{eyebrow("06 · Flywheel")}{title("Value that compounds")}<div className="bolt-anim" style={rise(0.15)}><DpFlywheel /></div></div>) },
+    { id: "close", render: () => (
+      <div style={{ textAlign: "center", maxWidth: 1000, margin: "0 auto" }}>
+        <div className="bolt-anim" style={{ ...rise(0), display: "inline-flex", marginBottom: 28 }}><BoltGlyphIcon kind="db" size={64} color={DP_COLOR} /></div>
+        <h2 className="bolt-anim" style={{ ...rise(0.1), fontSize: "clamp(38px, 5vw, 66px)", lineHeight: 1.1, letterSpacing: -1.2, color: "#FFFFFF", margin: 0 }}>{"A connected, governed healthcare intelligence ecosystem."}</h2>
+        <p className="bolt-anim" style={{ ...rise(0.3), fontSize: 28, lineHeight: 1.5, color: DP_COLOR, margin: "24px 0 0" }}>{"Ideas become applications, data products and AI through one experience."}</p>
+      </div>
+    ) },
+  ];
+  const scenes = deck === "data" ? dataScenes : boltScenes;
   const last = scenes.length - 1;
   useEffect(() => {
     boxRef.current?.focus();
@@ -2403,10 +2440,10 @@ function BoltPresenter({ onExit, onNavigate }: { onExit: () => void; onNavigate:
   }, [last, onExit]);
   useEffect(() => { setZoom(false); }, [scene]);
   return (
-    <div ref={boxRef} onMouseMove={onMove} role="dialog" aria-modal="true" aria-label="Bolt PaaS presentation" tabIndex={-1} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "radial-gradient(ellipse at 70% 20%, #12305A 0%, #0B1A33 55%, #071021 100%)", color: "#E2EAF2", display: "flex", flexDirection: "column", outline: "none", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+    <div ref={boxRef} onMouseMove={onMove} role="dialog" aria-modal="true" aria-label={deck === "data" ? "Data Platform presentation" : "Bolt PaaS presentation"} tabIndex={-1} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "radial-gradient(ellipse at 70% 20%, #12305A 0%, #0B1A33 55%, #071021 100%)", color: "#E2EAF2", display: "flex", flexDirection: "column", outline: "none", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
       <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.14) 1px, transparent 1.2px)", backgroundSize: "26px 26px", WebkitMaskImage: "radial-gradient(ellipse at 75% 25%, black 0%, transparent 70%)", maskImage: "radial-gradient(ellipse at 75% 25%, black 0%, transparent 70%)" }} />
       <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 32px" }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 600, color: "#B8C8DA" }}><BoltGlyphIcon kind="bolt" size={20} />Bolt PaaS</span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 600, color: "#B8C8DA" }}><BoltGlyphIcon kind={deck === "data" ? "db" : "bolt"} size={20} color={deck === "data" ? DP_COLOR : BOLT_COLOR} />{deck === "data" ? "Data Platform" : "Bolt PaaS"}</span>
         <BoltButton onClick={onExit} aria-label="Exit presentation" style={{ background: "transparent", padding: "8px 12px" }}><span style={{ fontSize: 14, fontWeight: 500, color: "#B8C8DA" }}>Esc</span><BoltIcon kind="close" /></BoltButton>
       </div>
       <div ref={stageRef} style={{ position: "relative", flex: 1, display: "flex", alignItems: "center", overflowY: zoom ? "hidden" : "auto", overflowX: "hidden" }}>
@@ -3339,29 +3376,504 @@ function ValuePage() {
 // DATA PLATFORM PAGE (placeholder until content arrives)
 // ============================================================
 
-function DataPlatformPage({ onNavigate }: { onNavigate: Navigate }) {
+// ============================================================
+// DATA PLATFORM PAGE (Provider Solutions Data Platform)
+// ============================================================
+
+const DP_COLOR = "#34D399";
+
+const dpSections = [
+  { id: "dp-why", label: "Why" },
+  { id: "dp-domains", label: "Domains" },
+  { id: "dp-reuse", label: "Reuse" },
+  { id: "dp-trust", label: "Trust" },
+  { id: "dp-intent", label: "Intent" },
+  { id: "dp-flywheel", label: "Flywheel" },
+];
+
+const dpRelay = ["Business requirement", "Application teams", "Data engineering teams", "Infrastructure teams", "Security reviews", "Governance reviews", "Compliance reviews", "Analytics development", "Deployment", "Business outcome"];
+const dpIntentOutputs = ["Applications", "Data products", "Infrastructure", "AI & analytics", "Security controls", "Governance controls", "Compliance controls", "Operational services"];
+
+// Generic drag-to-compare split (same interaction as the Bolt page)
+function SplitCompareShell({ left, right, accent, label }: { left: React.ReactNode; right: React.ReactNode; accent: string; label: string }) {
+  const [pos, setPos] = useState(50);
+  const [anim, setAnim] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const touched = useRef(false);
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.4);
+  useEffect(() => {
+    if (!inView || prefersReducedMotion()) return;
+    setAnim(true);
+    const steps: [number, number][] = [[350, 68], [1150, 34], [1950, 50], [2700, -1]];
+    const ids = steps.map(([ms, v]) => window.setTimeout(() => { if (v < 0) setAnim(false); else if (!touched.current) setPos(v); }, ms));
+    return () => ids.forEach((id) => window.clearTimeout(id));
+  }, [inView]);
+  const ease = "cubic-bezier(.4,0,.2,1)";
+  const wrap = (node: React.ReactNode) => <div className="bolt-split-inner" style={{ width: "100%", minWidth: 340, flexShrink: 0, boxSizing: "border-box", padding: "clamp(18px, 2.5vw, 28px)" }}>{node}</div>;
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Data Platform</h1>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#F59E0B", background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Building</span>
+    <div ref={ref}>
+      <div className="bolt-split" style={{ position: "relative", display: "flex", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(184,200,218,0.2)", outline: focused ? "3px solid #FFFFFF" : "none", outlineOffset: 3 }}>
+        <div className="bolt-split-pane bolt-anim" style={{ width: `${pos}%`, overflow: "hidden", display: "flex", background: "linear-gradient(160deg, rgba(184,200,218,0.10), rgba(16,34,66,0.55))", transition: anim ? `width 0.7s ${ease}` : "none" }}>{wrap(left)}</div>
+        <div className="bolt-split-pane bolt-anim" style={{ width: `${100 - pos}%`, overflow: "hidden", display: "flex", justifyContent: "flex-end", background: `linear-gradient(160deg, ${accent}0F, ${accent}29)`, transition: anim ? `width 0.7s ${ease}` : "none" }}>{wrap(right)}</div>
+        <div className="bolt-split-handle bolt-anim" aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: `${pos}%`, width: 0, pointerEvents: "none", transition: anim ? `left 0.7s ${ease}` : "none" }}>
+          <span style={{ position: "absolute", top: 0, bottom: 0, left: -1, width: 2, background: `linear-gradient(transparent, ${accent}, transparent)` }} />
+          <span style={{ position: "absolute", top: "50%", left: -23, width: 46, height: 46, marginTop: -23, boxSizing: "border-box", borderRadius: "50%", background: "#0B1A33", border: `2px solid ${accent}`, boxShadow: `0 0 20px ${accent}88`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="24" height="24" viewBox="0 0 24 24"><path d="m9 7-5 5 5 5m6-10 5 5-5 5" fill="none" stroke={accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </span>
+        </div>
+        <input
+          type="range" className="bolt-range bolt-split-input" min={18} max={82} step={1} value={pos}
+          onChange={(ev) => { touched.current = true; setAnim(false); setPos(Number(ev.target.value)); }}
+          onFocus={(ev) => setFocused(ev.currentTarget.matches(":focus-visible"))} onBlur={() => setFocused(false)}
+          aria-label={label} aria-valuetext={`${pos}% today, ${100 - pos}% new model`}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", margin: 0, opacity: 0, cursor: "ew-resize" }}
+        />
       </div>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>The data foundation of the Glide Platform</p>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 48px", maxWidth: 820, lineHeight: 1.6 }}>The Data Platform is the shared data layer that Bolt PaaS applications build on: unified, governed data so every application starts from the same trusted foundation.</p>
-
-      <DataDomainsSection />
-
-      <Card style={{ padding: "24px", marginTop: 28 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#F59E0B", marginBottom: 8 }}>Coming soon</div>
-        <p style={{ fontSize: 16, color: "#E2EAF2", margin: 0, lineHeight: 1.6 }}>Architecture, governance, and how Bolt applications consume the Data Platform will be added here.</p>
-      </Card>
-
-      <div style={{ marginTop: 28, display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <CrossLink label="Powers Bolt PaaS" target="bolt" onNavigate={onNavigate} color="#8B5CF6" />
-        <CrossLink label="Powers the Solutions" target="solutions" onNavigate={onNavigate} color="#3B82F6" />
-      </div>
-      <div style={{ height: 64 }} />
+      <p className="bolt-split-hint" style={{ margin: "10px 0 0", textAlign: "center", fontSize: 14, color: "#7F93AE" }}>{"Drag the divider to compare"}</p>
     </div>
+  );
+}
+
+function DpRelayCompare() {
+  const eyebrowStyle = (color: string): React.CSSProperties => ({ fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase", color, margin: "0 0 6px" });
+  const left = (
+    <div>
+      <p style={eyebrowStyle("#B8C8DA")}>{"Today"}</p>
+      <h3 style={{ fontSize: 19, color: "#FFFFFF", margin: "0 0 4px" }}>A relay across separate teams</h3>
+      <p style={{ fontSize: 14, color: "#B8C8DA", margin: "0 0 14px" }}>{"Each capability crosses every team, platform and review in turn."}</p>
+      <ol aria-label="Traditional delivery chain" style={{ listStyle: "none", margin: 0, padding: 0 }}>
+        {dpRelay.map((step, i) => {
+          const ends = i === 0 || i === dpRelay.length - 1;
+          return (
+            <li key={step}>
+              {i > 0 && <div aria-hidden="true" style={{ width: 2, height: 10, marginLeft: 12, background: "repeating-linear-gradient(#F59E0B 0 3px, transparent 3px 6px)" }} />}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "5px 10px", borderRadius: 7, background: ends ? "rgba(184,200,218,0.12)" : "rgba(184,200,218,0.05)", border: "1px solid rgba(184,200,218,0.16)" }}>
+                <span aria-hidden="true" style={{ fontFamily: MONO, fontSize: 12, color: "#7F93AE", minWidth: 16 }}>{i + 1}</span>
+                <span style={{ fontSize: 15, fontWeight: ends ? 700 : 500, color: ends ? "#FFFFFF" : "#D0DAE6" }}>{step}</span>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+  const right = (
+    <div>
+      <p style={eyebrowStyle(DP_COLOR)}>{"With Bolt + Data Platform"}</p>
+      <h3 style={{ fontSize: 19, color: "#FFFFFF", margin: "0 0 4px" }}>One intent layer</h3>
+      <p style={{ fontSize: 14, color: "#B8C8DA", margin: "0 0 14px" }}>{"Business intent is translated into everything the outcome needs, together."}</p>
+      <div style={{ padding: "10px 14px", borderRadius: 9, background: "#071226", border: "1px solid rgba(184,200,218,0.25)", fontSize: 15, fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: 10 }}><BoltGlyphIcon kind="target" size={18} color={DP_COLOR} />Business intent</div>
+      <div aria-hidden="true" style={{ width: 2, height: 14, marginLeft: 22, background: DP_COLOR }} />
+      <div style={{ padding: "10px 14px", borderRadius: 9, background: "rgba(45,212,191,0.14)", border: `1px solid ${BOLT_COLOR}`, fontSize: 15, fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: 10 }}><BoltGlyphIcon kind="bolt" size={18} />Bolt intent layer</div>
+      <div aria-hidden="true" style={{ width: 2, height: 14, marginLeft: 22, background: DP_COLOR }} />
+      <ul aria-label="Delivered together" style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 6 }}>
+        {dpIntentOutputs.map((o) => <li key={o} style={{ padding: "6px 10px", borderRadius: 7, background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.3)", fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{o}</li>)}
+      </ul>
+      <div aria-hidden="true" style={{ width: 2, height: 14, marginLeft: 22, background: DP_COLOR }} />
+      <div style={{ padding: "10px 14px", borderRadius: 9, background: "linear-gradient(160deg, rgba(245,158,11,0.28), rgba(245,158,11,0.12))", border: "1px solid rgba(245,158,11,0.6)", fontSize: 15, fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: 10 }}><BoltGlyphIcon kind="box" size={18} color="#FBBF24" />Business outcome</div>
+    </div>
+  );
+  return <SplitCompareShell left={left} right={right} accent={DP_COLOR} label="Divider between today's delivery relay and the intent-driven model" />;
+}
+
+// Hub and spoke: the eight governed domains around one foundation
+function DpDomainHub({ big = false }: { big?: boolean }) {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
+  const [active, setActive] = useState<number>(0);
+  const n = dataLayer.length;
+  const H = big ? 500 : 540;
+  const pos = dataLayer.map((_, i) => {
+    const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+    return { x: 50 + Math.cos(a) * 38, y: 50 + Math.sin(a) * 40 };
+  });
+  const sel = dataLayer[active];
+  return (
+    <div ref={ref}>
+      <div className="dp-hub" style={{ position: "relative", height: H }}>
+        <svg aria-hidden="true" viewBox={`0 0 1000 ${H}`} preserveAspectRatio="none" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", overflow: "visible" }}>
+          {pos.map((p, i) => (
+            <g key={i}>
+              <line x1={500} y1={H / 2} x2={p.x * 10} y2={(p.y * H) / 100} stroke={dataLayer[i].color} strokeOpacity={i === active ? 0.9 : 0.3} strokeWidth={i === active ? 2.5 : 1.5} vectorEffect="non-scaling-stroke" pathLength={1} strokeDasharray="1" className="bolt-anim" style={{ strokeDashoffset: inView ? 0 : 1, transition: `stroke-dashoffset 0.9s ease ${0.2 + i * 0.1}s, stroke-opacity 0.3s ease` }} />
+              {inView && <line x1={p.x * 10} y1={(p.y * H) / 100} x2={500} y2={H / 2} stroke={dataLayer[i].color} strokeWidth={3} vectorEffect="non-scaling-stroke" strokeDasharray="3 14" strokeLinecap="round" className="bolt-anim" style={{ animation: `dpDash 1.6s linear ${1.2 + i * 0.15}s infinite`, opacity: i === active ? 1 : 0.55 }} />}
+            </g>
+          ))}
+        </svg>
+        <div className="bolt-anim" style={{ position: "absolute", left: "50%", top: "50%", width: big ? 190 : 210, height: big ? 190 : 210, marginLeft: big ? -95 : -105, marginTop: big ? -95 : -105, borderRadius: "50%", background: "radial-gradient(circle, #124236, #071226 72%)", border: `2px solid ${DP_COLOR}`, boxShadow: `0 0 40px ${DP_COLOR}44`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: 20, boxSizing: "border-box", ...(inView ? { animation: "boltPop 0.6s ease-out both" } : { opacity: 0 }) }}>
+          <BoltGlyphIcon kind="db" size={30} color={DP_COLOR} />
+          <span style={{ fontSize: 17, fontWeight: 700, color: "#FFFFFF", marginTop: 8, lineHeight: 1.25 }}>Governed data foundation</span>
+          <span style={{ fontSize: 13, color: "#B8C8DA", marginTop: 4 }}>{"Shared by every app"}</span>
+        </div>
+        {dataLayer.map((d, i) => (
+          <div key={d.id} style={{ position: "absolute", left: `${pos[i].x}%`, top: `${pos[i].y}%`, transform: "translate(-50%, -50%)" }}>
+          <button type="button" onClick={() => setActive(i)} aria-pressed={i === active} className="bolt-anim" style={{ display: "block", width: big ? 196 : 206, padding: "10px 12px", borderRadius: 10, cursor: "pointer", fontFamily: "inherit", textAlign: "left", background: i === active ? `linear-gradient(${d.color}33, ${d.color}33), #0E2140` : "#0E2140", border: `1.5px solid ${i === active ? d.color : d.color + "66"}`, boxShadow: i === active ? `0 0 20px ${d.color}55` : "none", transition: "background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease", ...(inView ? { animation: `boltPop 0.45s ease-out ${0.3 + i * 0.1}s both` } : { opacity: 0 }) }}>
+            <span style={{ display: "block", fontSize: big ? 15 : 15, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.25 }}>{d.title}</span>
+            <span style={{ display: "block", fontSize: 12.5, color: d.color, marginTop: 3, fontWeight: 600 }}>{d.items.length + " data sets"}</span>
+          </button>
+          </div>
+        ))}
+      </div>
+      <ul className="dp-hub-grid" style={{ listStyle: "none", margin: 0, padding: 0, display: "none", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
+        {dataLayer.map((d, i) => (
+          <li key={d.id}><button type="button" onClick={() => setActive(i)} aria-pressed={i === active} style={{ width: "100%", textAlign: "left", fontFamily: "inherit", padding: "10px 12px", borderRadius: 10, cursor: "pointer", background: i === active ? `${d.color}2A` : "#0E2140", border: `1.5px solid ${i === active ? d.color : d.color + "66"}`, color: "#FFFFFF", fontSize: 14, fontWeight: 700 }}>{d.title}</button></li>
+        ))}
+      </ul>
+      <div aria-live="polite" key={sel.id} className="bolt-anim" style={{ marginTop: 14, borderRadius: 12, padding: "18px 22px", background: `${sel.color}12`, border: `1px solid ${sel.color}44`, animation: "boltIn 0.35s ease-out both" }}>
+        <p style={{ margin: "0 0 12px", fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase", color: sel.color }}>{sel.title}</p>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {sel.items.map((it, k) => <li key={it} className="bolt-anim" style={{ fontSize: 15, color: "#E2EAF2", padding: "6px 12px", borderRadius: 999, background: "rgba(16,34,66,0.7)", border: `1px solid ${sel.color}55`, animation: `boltPop 0.35s ease-out ${k * 0.05}s both` }}>{it}</li>)}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+// Build once, reuse everywhere: domains feed reusable data products that power many capabilities
+const dpCapabilities = ["Revenue Intelligence", "Practice Performance Optimization", "Provider Network Analytics", "Retention & Engagement Solutions", "Care Coordination Insights", "Referral Intelligence", "Capacity Planning", "Predictive AI Solutions", "Operational Command Centers", "Executive Performance Dashboards"];
+const dpConsumers = ["Applications", "Workflows", "Analytics", "Reporting", "AI models", "Operational decisions", "Customer experiences"];
+
+function DpReuse() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.25);
+  const ROW = 44, GAP = 8;
+  const leftN = dataLayer.length, rightN = dpCapabilities.length;
+  const Hh = Math.max(leftN, rightN) * (ROW + GAP) - GAP;
+  const offL = (Hh - (leftN * (ROW + GAP) - GAP)) / 2;
+  const offR = (Hh - (rightN * (ROW + GAP) - GAP)) / 2;
+  const yL = (i: number) => offL + i * (ROW + GAP) + ROW / 2;
+  const yR = (i: number) => offR + i * (ROW + GAP) + ROW / 2;
+  const mid = Hh / 2;
+  const gutter = (side: "l" | "r") => (
+    <svg aria-hidden="true" className="dp-reuse-gutter" width="100%" height={Hh} viewBox={`0 0 100 ${Hh}`} preserveAspectRatio="none" style={{ display: "block", overflow: "visible" }}>
+      {(side === "l" ? dataLayer.map((_, i) => yL(i)) : dpCapabilities.map((_, i) => yR(i))).map((y, i) => {
+        const d = side === "l" ? `M 0 ${y} C 50 ${y}, 50 ${mid}, 100 ${mid}` : `M 0 ${mid} C 50 ${mid}, 50 ${y}, 100 ${y}`;
+        const color = side === "l" ? dataLayer[i].color : DP_COLOR;
+        const delay = side === "l" ? 0.2 + i * 0.06 : 1.0 + i * 0.06;
+        return (
+          <g key={i}>
+            <path d={d} fill="none" stroke={color} strokeOpacity={0.4} strokeWidth={1.5} vectorEffect="non-scaling-stroke" pathLength={1} strokeDasharray="1" className="bolt-anim" style={{ strokeDashoffset: inView ? 0 : 1, transition: `stroke-dashoffset 0.8s ease ${delay}s` }} />
+            {inView && <path d={d} fill="none" stroke={color} strokeWidth={2.5} vectorEffect="non-scaling-stroke" strokeDasharray="2 18" strokeLinecap="round" className="bolt-anim" style={{ animation: `dpDashRev 1.8s linear ${delay + 0.8}s infinite` }} />}
+          </g>
+        );
+      })}
+    </svg>
+  );
+  const chip = (text: string, color: string, delay: number, key: string) => (
+    <li key={key} className="bolt-anim" style={{ height: ROW, boxSizing: "border-box", display: "flex", alignItems: "center", gap: 10, padding: "0 12px", borderRadius: 9, background: "#0E2140", border: `1px solid ${color}66`, fontSize: 14, fontWeight: 600, color: "#E2EAF2", lineHeight: 1.2, ...(inView ? { animation: `boltIn 0.4s ease-out ${delay}s both` } : { opacity: 0 }) }}>
+      <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />{text}
+    </li>
+  );
+  return (
+    <div ref={ref}>
+      <div className="dp-reuse" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(40px, 0.45fr) minmax(200px, 0.9fr) minmax(40px, 0.45fr) minmax(0, 1.15fr)", alignItems: "start" }}>
+        <div>
+          <p style={{ margin: "0 0 10px", fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"Governed domains"}</p>
+          <ul style={{ listStyle: "none", margin: 0, padding: `${offL}px 0`, display: "grid", gap: GAP }}>{dataLayer.map((d, i) => chip(d.title, d.color, 0.1 + i * 0.05, d.id))}</ul>
+        </div>
+        <div className="dp-reuse-gutter-wrap" style={{ paddingTop: 30 }}>{gutter("l")}</div>
+        <div style={{ paddingTop: 30, height: Hh + 30, boxSizing: "border-box", display: "flex", alignItems: "center" }}>
+          <div className="bolt-anim" style={{ width: "100%", borderRadius: 14, padding: "20px 18px", textAlign: "center", background: "radial-gradient(circle at 50% 30%, rgba(52,211,153,0.25), #071226 75%)", border: `2px solid ${DP_COLOR}`, boxShadow: `0 0 36px ${DP_COLOR}33`, ...(inView ? { animation: "boltPop 0.6s ease-out 0.7s both" } : { opacity: 0 }) }}>
+            <BoltGlyphIcon kind="layers" size={30} color={DP_COLOR} />
+            <p style={{ margin: "8px 0 4px", fontSize: 18, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.25 }}>Reusable data products</p>
+            <p style={{ margin: "0 0 12px", fontSize: 13.5, color: "#B8C8DA", lineHeight: 1.45 }}>{"Built once, governed once, used by many"}</p>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: 5, justifyContent: "center" }}>
+              {dpConsumers.map((c) => <li key={c} style={{ fontSize: 12, color: "#D0DAE6", padding: "3px 8px", borderRadius: 999, border: "1px solid rgba(52,211,153,0.35)" }}>{c}</li>)}
+            </ul>
+          </div>
+        </div>
+        <div className="dp-reuse-gutter-wrap" style={{ paddingTop: 30 }}>{gutter("r")}</div>
+        <div>
+          <p style={{ margin: "0 0 10px", fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"Business capabilities"}</p>
+          <ul style={{ listStyle: "none", margin: 0, padding: `${offR}px 0`, display: "grid", gap: GAP }}>{dpCapabilities.map((c, i) => chip(c, DP_COLOR, 1.2 + i * 0.06, c))}</ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Governance, compliance and legal by design
+const dpControls: { title: string; icon: BoltGlyph; color: string; items: string[] }[] = [
+  { title: "Security", icon: "shield", color: "#60A5FA", items: ["Authentication and authorization", "Role-based access controls", "Least-privilege access", "Audit logging and monitoring"] },
+  { title: "Compliance", icon: "check", color: DP_COLOR, items: ["HIPAA controls", "PHI protection", "Data retention policies", "Regulatory requirements"] },
+  { title: "Legal", icon: "briefcase", color: "#FBBF24", items: ["Data-sharing restrictions", "Consent management", "Contractual obligations", "Approved usage controls"] },
+  { title: "Governance", icon: "eye", color: "#A78BFA", items: ["Data lineage", "Data quality monitoring", "Metadata management", "Data cataloging", "Stewardship workflows", "Ownership and accountability"] },
+];
+
+function DpTrust() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.25);
+  return (
+    <div ref={ref}>
+      <div className="bolt-anim" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap", marginBottom: 14, ...(inView ? { animation: "boltIn 0.45s ease-out both" } : { opacity: 0 }) }}>
+        {["Data products", "AI solutions", "Applications"].map((t) => (
+          <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, background: "#071226", border: `1px solid ${DP_COLOR}77`, fontSize: 15, fontWeight: 700, color: "#FFFFFF" }}><BoltGlyphIcon kind={t === "Applications" ? "app" : t === "AI solutions" ? "bolt" : "db"} size={16} color={DP_COLOR} />{t}</span>
+        ))}
+        <span style={{ fontSize: 15, color: "#B8C8DA" }}>{"automatically inherit"}</span>
+      </div>
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 230px), 1fr))", gap: 12 }}>
+        {dpControls.map((g, gi) => (
+          <li key={g.title} className="bolt-anim" style={{ borderRadius: 14, padding: "18px 18px 16px", background: `linear-gradient(170deg, ${g.color}18, rgba(16,34,66,0.7) 60%)`, border: `1px solid ${g.color}55`, borderTop: `3px solid ${g.color}`, ...(inView ? { animation: `boltRise 0.6s cubic-bezier(.2,.7,.2,1) ${0.2 + gi * 0.15}s both` } : { opacity: 0 }) }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <span aria-hidden="true" style={{ display: "inline-flex", width: 36, height: 36, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: `${g.color}22` }}><BoltGlyphIcon kind={g.icon} size={19} color={g.color} /></span>
+              <h3 style={{ margin: 0, fontSize: 18, color: "#FFFFFF" }}>{g.title}</h3>
+            </div>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
+              {g.items.map((it, k) => (
+                <li key={it} className="bolt-anim" style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 14.5, color: "#D0DAE6", lineHeight: 1.35, ...(inView ? { animation: `boltIn 0.35s ease-out ${0.7 + gi * 0.15 + k * 0.12}s both` } : { opacity: 0 }) }}>
+                  <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 2 }}><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke={g.color} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>{it}
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+      <p className="bolt-anim" style={{ margin: "14px 0 0", fontSize: 16, color: DP_COLOR, fontWeight: 700, textAlign: "center", ...(inView ? { animation: "boltIn 0.5s ease-out 2.2s both" } : { opacity: 0 }) }}>{"Innovation scales without increasing enterprise risk."}</p>
+    </div>
+  );
+}
+
+// One request, apps and data: the intent layer orchestrates both
+const DP_PROMPT = "Create a provider revenue optimization solution that identifies reimbursement leakage, predicts denials, surfaces provider performance trends, and alerts practice administrators.";
+const dpAppOutputs = ["User experiences", "APIs", "Business services", "Workflows", "Operational databases"];
+const dpDataOutputs = ["Data models", "Pipelines", "Data products", "AI-ready datasets", "Governance policies", "Security controls", "Analytics assets"];
+const DP_CHAR = 16;
+const DP_TYPE_END = DP_PROMPT.length * DP_CHAR;
+const DP_STEP = 260;
+const dpOutAt = (i: number) => DP_TYPE_END + 900 + i * DP_STEP;
+const DP_DONE = dpOutAt(Math.max(dpAppOutputs.length, dpDataOutputs.length)) + 400;
+const DP_END = DP_DONE + 1500;
+
+function DpIntentDemo({ autoStart = false, big = false }: { autoStart?: boolean; big?: boolean }) {
+  const [e, setE] = useState(0);
+  const [run, setRun] = useState(0);
+  useEffect(() => {
+    if (!autoStart) return;
+    const id = window.setTimeout(() => setRun((r) => r + 1), 600);
+    return () => window.clearTimeout(id);
+  }, [autoStart]);
+  useEffect(() => {
+    if (!run) return;
+    if (prefersReducedMotion()) { setE(DP_END); return; }
+    setE(0);
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => { const v = now - start; setE(v); if (v < DP_END) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [run]);
+  const started = run > 0;
+  const typing = started && e < DP_TYPE_END;
+  const typed = DP_PROMPT.slice(0, Math.min(DP_PROMPT.length, Math.floor(e / DP_CHAR)));
+  const layerOn = started && e >= DP_TYPE_END + 300;
+  const done = started && e >= DP_DONE;
+  const fs = big ? 1.1 : 1;
+  const lane = (title: string, sub: string, items: string[], color: string, icon: BoltGlyph) => (
+    <div style={{ borderRadius: 14, padding: "16px 18px", background: "rgba(16,34,66,0.6)", border: `1px solid ${color}55` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}><BoltGlyphIcon kind={icon} size={20} color={color} /><h4 style={{ margin: 0, fontSize: 17 * fs, color: "#FFFFFF" }}>{title}</h4></div>
+      <p style={{ margin: "0 0 12px", fontSize: 13.5, color: "#B8C8DA" }}>{sub}</p>
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: 7 }}>
+        {items.map((it, i) => {
+          const on = started && e >= dpOutAt(i);
+          return (
+            <li key={it} className="bolt-anim" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 11px", borderRadius: 999, fontSize: 14 * fs, fontWeight: 600, color: on ? "#FFFFFF" : "#7F93AE", background: on ? `${color}26` : "rgba(184,200,218,0.05)", border: `1px solid ${on ? color : "rgba(184,200,218,0.18)"}`, boxShadow: on ? `0 0 12px ${color}44` : "none", transition: "all 0.35s ease" }}>
+              {on && <svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke={color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>}{it}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+  return (
+    <Card style={{ padding: big ? "24px 28px" : "clamp(16px, 2.5vw, 24px)" }}>
+      <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <h3 style={{ margin: 0, fontSize: 20 * fs, color: "#FFFFFF" }}>One request, apps and data</h3>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative · sped up"}</span>
+        </div>
+        <div style={{ minHeight: 44, display: "flex", alignItems: "center" }}>
+          {(!started || done) && <BoltButton onClick={() => setRun((r) => r + 1)} style={started ? { background: "transparent" } : { background: DP_COLOR, color: "#0B1A33", borderColor: DP_COLOR }}><span>{started ? "Replay" : "Run the request"}</span>{!started && <BoltIcon kind="arrow" />}</BoltButton>}
+        </div>
+      </div>
+      <div style={{ background: "#050D1C", border: "1px solid rgba(184,200,218,0.18)", borderRadius: 12, padding: "14px 18px", fontFamily: MONO, fontSize: 14 * fs, lineHeight: 1.65, color: "#FFFFFF", minHeight: 74 }}>
+        <span style={{ color: DP_COLOR, fontWeight: 700 }}>{"> "}</span>
+        {started ? typed : <span style={{ color: "#7F93AE" }}>{"Press Run the request to see one business request become an app and its data, together."}</span>}
+        {typing && <span className="bolt-anim" style={{ display: "inline-block", width: 8, height: "1.05em", verticalAlign: "text-bottom", background: DP_COLOR, marginLeft: 2, animation: "boltBlink 1s steps(1) infinite" }} />}
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", margin: "12px 0" }}>
+        <span className="bolt-anim" style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "10px 18px", borderRadius: 999, fontSize: 16 * fs, fontWeight: 700, color: "#FFFFFF", background: layerOn ? "rgba(45,212,191,0.18)" : "rgba(184,200,218,0.05)", border: `1.5px solid ${layerOn ? BOLT_COLOR : "rgba(184,200,218,0.25)"}`, boxShadow: layerOn ? `0 0 26px ${BOLT_COLOR}55` : "none", transition: "all 0.4s ease", animation: layerOn && !done ? "boltPulse 1.2s ease-in-out infinite" : undefined }}>
+          <BoltGlyphIcon kind="bolt" size={18} color={layerOn ? BOLT_COLOR : "#7F93AE"} />Bolt intent layer
+        </span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: 12 }}>
+        {lane("Application layer", "Bolt translates intent into", dpAppOutputs, BOLT_COLOR, "app")}
+        {lane("Data layer", "The Data Platform translates intent into", dpDataOutputs, DP_COLOR, "db")}
+      </div>
+      <p aria-live="polite" style={{ margin: "14px 0 0", fontSize: 15 * fs, fontWeight: done ? 700 : 400, color: done ? DP_COLOR : "#D0DAE6" }}>
+        {done ? "One request. The app and its governed data arrive together, with controls already applied." : started ? "Orchestrating application and data capabilities" : "Business experts describe the outcome, not the implementation."}
+      </p>
+    </Card>
+  );
+}
+
+// The flywheel: every new capability compounds the platform
+const dpFlywheel = [
+  { label: "New applications", sub: "Every new application enriches the data platform" },
+  { label: "Richer data domains", sub: "Every new data domain strengthens the application platform" },
+  { label: "Reusable capabilities", sub: "Every new capability becomes a reusable enterprise asset" },
+];
+const dpBenefits = ["Faster time-to-market", "Lower development and operating cost", "Reuse across solutions and business units", "Faster AI and advanced analytics adoption", "Consistent governance, compliance and legal", "Connected enterprise insights", "Greater business agility", "Enhanced customer value", "Sustainable differentiation"];
+
+function DpFlywheel() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
+  const [motionOk, setMotionOk] = useState(false);
+  useEffect(() => { setMotionOk(!prefersReducedMotion()); }, []);
+  const R = 120, C = 160;
+  const nodes = dpFlywheel.map((_, i) => { const a = (i / 3) * Math.PI * 2 - Math.PI / 2; return { x: C + Math.cos(a) * R, y: C + Math.sin(a) * R }; });
+  const circle = `M ${C} ${C - R} A ${R} ${R} 0 1 1 ${C - 0.01} ${C - R}`;
+  return (
+    <div ref={ref} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 28, alignItems: "center" }}>
+      <div style={{ position: "relative", maxWidth: 460, width: "100%", margin: "0 auto" }}>
+        <svg viewBox="-130 -40 580 390" style={{ width: "100%", height: "auto", display: "block", overflow: "visible" }} role="img" aria-label="Flywheel: new applications enrich data domains, which create reusable capabilities, which speed up new applications">
+          <circle cx={C} cy={C} r={R} fill="none" stroke="rgba(184,200,218,0.15)" strokeWidth={10} />
+          <circle cx={C} cy={C} r={R} fill="none" stroke={DP_COLOR} strokeWidth={4} strokeLinecap="round" pathLength={1} strokeDasharray="0.28 0.053" className="bolt-anim" style={{ transformOrigin: `${C}px ${C}px`, animation: inView ? "dpSpin 9s linear infinite" : undefined, opacity: inView ? 0.85 : 0, transition: "opacity 0.6s ease" }} />
+          {motionOk && inView && (
+            <circle r={7} fill="#FFFFFF" style={{ filter: `drop-shadow(0 0 8px ${DP_COLOR})` }}>
+              <animateMotion dur="4.5s" repeatCount="indefinite" path={circle} />
+            </circle>
+          )}
+          <text x={C} y={C - 6} textAnchor="middle" fontSize={21} fontWeight={700} fill="#FFFFFF" fontFamily="DM Sans, sans-serif">{"Compounding"}</text>
+          <text x={C} y={C + 20} textAnchor="middle" fontSize={21} fontWeight={700} fill={DP_COLOR} fontFamily="DM Sans, sans-serif">{"value"}</text>
+          {nodes.map((p, i) => (
+            <g key={i}>
+              <circle cx={p.x} cy={p.y} r={14} fill="#0B1A33" stroke={DP_COLOR} strokeWidth={3} />
+              <text x={i === 0 ? p.x : i === 1 ? p.x - 6 : p.x + 6} y={i === 0 ? p.y - 26 : p.y + 42} textAnchor={i === 0 ? "middle" : i === 1 ? "start" : "end"} fontSize={20} fontWeight={700} fill="#FFFFFF" fontFamily="DM Sans, sans-serif">{dpFlywheel[i].label}</text>
+            </g>
+          ))}
+        </svg>
+      </div>
+      <div>
+        <ul style={{ listStyle: "none", margin: "0 0 18px", padding: 0, display: "grid", gap: 10 }}>
+          {dpFlywheel.map((f, i) => (
+            <li key={f.label} className="bolt-anim" style={{ display: "flex", gap: 12, alignItems: "flex-start", fontSize: 17, color: "#FFFFFF", fontWeight: 600, lineHeight: 1.4, ...(inView ? { animation: `boltIn 0.45s ease-out ${0.3 + i * 0.25}s both` } : { opacity: 0 }) }}>
+              <span aria-hidden="true" style={{ fontFamily: MONO, color: DP_COLOR, fontSize: 15, paddingTop: 2 }}>{"0" + (i + 1)}</span>{f.sub + "."}
+            </li>
+          ))}
+        </ul>
+        <p style={{ margin: "0 0 10px", fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"Benefits"}</p>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {dpBenefits.map((b, i) => <li key={b} className="bolt-anim" style={{ fontSize: 14, color: "#E2EAF2", padding: "6px 12px", borderRadius: 999, background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.3)", ...(inView ? { animation: `boltPop 0.4s ease-out ${1.1 + i * 0.08}s both` } : { opacity: 0 }) }}>{b}</li>)}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function DpHeroTiles({ big = false }: { big?: boolean }) {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.2);
+  const tiles: { icon: BoltGlyph; head: string; label: string; sub: string }[] = [
+    { icon: "db", head: "One foundation", label: "Governed domains", sub: "Shared by every application" },
+    { icon: "repeat", head: "Built once", label: "Reusable data products", sub: "Power apps, analytics and AI" },
+    { icon: "shield", head: "Controls by default", label: "Inherited, not reviewed in", sub: "Security, compliance, legal, governance" },
+  ];
+  return (
+    <div ref={ref} style={{ display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${big ? 300 : 250}px), 1fr))`, gap: big ? 18 : 12 }}>
+      {tiles.map((t, i) => (
+        <div key={t.head} className="bolt-anim" style={{ background: "rgba(16,34,66,0.6)", border: `1px solid ${DP_COLOR}4D`, borderRadius: 12, padding: big ? "28px 30px" : "22px 24px", boxShadow: inView ? `0 0 32px ${DP_COLOR}14` : "none", transition: "box-shadow 1s ease", ...(inView ? { animation: `boltRise 0.6s cubic-bezier(.2,.7,.2,1) ${i * 0.12}s both` } : { opacity: 0 }) }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <BoltGlyphIcon kind={t.icon} size={big ? 30 : 24} color={DP_COLOR} />
+            <p style={{ fontSize: big ? 40 : 28, fontWeight: 700, letterSpacing: -0.5, color: DP_COLOR, margin: 0, lineHeight: 1.15 }}>{t.head}</p>
+          </div>
+          <p style={{ color: "#FFFFFF", fontSize: big ? 21 : 17, fontWeight: 600, margin: "10px 0 3px" }}>{t.label}</p>
+          <p style={{ fontSize: big ? 18 : 15.5, color: "#B8C8DA", margin: 0 }}>{t.sub}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DataPlatformPage({ onNavigate }: { onNavigate: Navigate }) {
+  const [presenting, setPresenting] = useState(false);
+  const exitPresenter = React.useCallback(() => setPresenting(false), []);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (presenting || e.metaKey || e.ctrlKey || e.altKey) return;
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (e.key === "p" || e.key === "P") { e.preventDefault(); setPresenting(true); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [presenting]);
+  const sectionStyle: React.CSSProperties = { marginTop: 56, paddingTop: 48, borderTop: "1px solid rgba(184,200,218,0.16)", scrollMarginTop: 84 };
+  const jump = (id: string, index: number) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "instant", block: "start" });
+    document.getElementById(`bolt-0${index + 1}-title`)?.focus({ preventScroll: true });
+  };
+  return (
+    <main id="dp-page" style={{ maxWidth: 1100, margin: "0 auto", padding: "40px clamp(16px, 2.5vw, 24px) 48px", color: "#E2EAF2", fontSize: 16, lineHeight: 1.5 }}>
+      <style>{BOLT_CSS}</style>
+      <header style={{ position: "relative" }}>
+        <div aria-hidden="true" style={{ position: "absolute", top: -40, left: 0, right: 0, height: 380, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.22) 1px, transparent 1.2px)", backgroundSize: "22px 22px", WebkitMaskImage: "radial-gradient(ellipse 70% 80% at 75% 35%, black 10%, transparent 75%)", maskImage: "radial-gradient(ellipse 70% 80% at 75% 35%, black 10%, transparent 75%)" }} />
+        <div style={{ position: "relative", display: "flex", gap: "16px 32px", alignItems: "center", flexWrap: "wrap", marginBottom: 24 }}>
+          <div style={{ flex: "1 1 480px", minWidth: 0 }}>
+            <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color: DP_COLOR }}>{"Provider Solutions Data Platform"}</p>
+            <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
+              <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Data Platform</h1>
+              <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: DP_COLOR, border: `1px solid ${DP_COLOR}77`, background: `${DP_COLOR}14`, borderRadius: 6, padding: "4px 10px" }}>Available</span>
+              <BoltButton onClick={() => setPresenting(true)} aria-keyshortcuts="P" style={{ background: `${DP_COLOR}1F`, borderColor: DP_COLOR, color: DP_COLOR, padding: "6px 14px", minHeight: 38 }}>
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"><path d="M7 4v16l13-8L7 4Z" fill="currentColor" /></svg>
+                <span>Present</span><span style={{ fontSize: 12, fontWeight: 500, color: "#B8C8DA", border: "1px solid rgba(184,200,218,0.35)", borderRadius: 4, padding: "0 5px" }}>P</span>
+              </BoltButton>
+            </div>
+            <p style={{ fontSize: 22, color: "#FFFFFF", fontWeight: 600, margin: "14px 0 0", maxWidth: 640, lineHeight: 1.4 }}>{"Transforming enterprise data into business capabilities through intent."}</p>
+            <p style={{ fontSize: 18, color: "#D0DAE6", margin: "10px 0 0", maxWidth: 640, lineHeight: 1.55 }}>{"A connected, governed foundation where applications, data products, analytics and AI are built once, reused everywhere, and inherit enterprise controls by default."}</p>
+          </div>
+          <div style={{ flex: "0 1 370px", minWidth: 260, marginLeft: "auto" }}>
+            <BoltHeroStack litLayer="data" onLayer={(layer) => layer === "apps" ? onNavigate("solutions") : layer === "bolt" ? onNavigate("bolt") : jump("dp-domains", 1)} />
+          </div>
+        </div>
+        <DpHeroTiles />
+        <nav aria-label="Data Platform page sections" style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 20 }}>
+          {dpSections.map((section, index) => <BoltButton key={section.id} onClick={() => jump(section.id, index)} style={{ background: "transparent", padding: "8px 14px" }}><span style={{ color: DP_COLOR, fontFamily: MONO }}>{"0" + (index + 1)}</span><span>{section.label}</span><BoltIcon kind="down" /></BoltButton>)}
+        </nav>
+      </header>
+
+      <section id="dp-why" aria-labelledby="bolt-01-title" style={sectionStyle}>
+        <SectionTitle icon="layers" num="01" label="Why" title="Value trapped in silos" sub="Clinical, financial, operational, commercial and provider data sits in disconnected systems. Turning it into value has meant many specialized teams, long implementations and separate reviews." color={DP_COLOR} />
+        <Reveal><DpRelayCompare /></Reveal>
+      </section>
+
+      <section id="dp-domains" aria-labelledby="bolt-02-title" style={sectionStyle}>
+        <SectionTitle icon="db" num="02" label="Domains" title="A connected enterprise data foundation" sub="Governed domains are reusable enterprise assets, not project-specific datasets. They draw on application databases and enterprise analytical environments. Select a domain to see what it holds." color={DP_COLOR} />
+        <Reveal><DpDomainHub /></Reveal>
+      </section>
+
+      <section id="dp-reuse" aria-labelledby="bolt-03-title" style={sectionStyle}>
+        <SectionTitle icon="repeat" num="03" label="Reuse" title="Build once, use everywhere" sub="Instead of a separate warehouse, pipeline, report, API and app for every initiative, teams build governed data products once and reuse them across solutions." color={DP_COLOR} />
+        <Reveal><DpReuse /></Reveal>
+      </section>
+
+      <section id="dp-trust" aria-labelledby="bolt-04-title" style={sectionStyle}>
+        <SectionTitle icon="shield" num="04" label="Trust" title="Governance, compliance and legal by design" sub="Healthcare innovation has to balance speed with trust. Controls are built into the platform, so every product inherits them instead of waiting on separate reviews." color={DP_COLOR} />
+        <Reveal><DpTrust /></Reveal>
+      </section>
+
+      <section id="dp-intent" aria-labelledby="bolt-05-title" style={sectionStyle}>
+        <SectionTitle icon="target" num="05" label="Intent" title="One intent layer for apps and data" sub="Bolt translates business intent into the application. The Data Platform applies the same idea to data. Both are created through one experience and inherit the same controls." color={DP_COLOR} />
+        <Reveal><DpIntentDemo /></Reveal>
+      </section>
+
+      <section id="dp-flywheel" aria-labelledby="bolt-06-title" style={sectionStyle}>
+        <SectionTitle icon="trend" num="06" label="Flywheel" title="Value that compounds" sub="Every application, data domain and capability makes the next one faster and more valuable." color={DP_COLOR} />
+        <Reveal><DpFlywheel /></Reveal>
+      </section>
+
+      <footer style={{ marginTop: 48, paddingTop: 28, borderTop: "1px solid rgba(184,200,218,0.25)", display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+        <p style={{ flex: "1 1 530px", fontSize: 18, color: "#D0DAE6", margin: 0, lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>{"A connected, governed healthcare intelligence ecosystem."}</strong>{" Business teams turn ideas into applications, data products and AI through one experience."}</p>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <BoltButton onClick={() => onNavigate("bolt")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR }}><span>Explore Bolt PaaS</span><BoltIcon kind="arrow" /></BoltButton>
+          <BoltButton onClick={() => onNavigate("solutions")} style={{ color: "#93C5FD", borderColor: "#60A5FA" }}><span>See the Solutions</span><BoltIcon kind="arrow" /></BoltButton>
+        </div>
+      </footer>
+      {presenting && <BoltPresenter deck="data" onExit={exitPresenter} onNavigate={(id) => { exitPresenter(); onNavigate(id); }} />}
+    </main>
   );
 }
 
@@ -3371,8 +3883,8 @@ function DataPlatformPage({ onNavigate }: { onNavigate: Navigate }) {
 
 const navGroups = [
   { label: "Glide Platform", items: [
-    { id: "bolt", label: "Bolt PaaS" },
-    { id: "dataplatform", label: "Data Platform" },
+    { id: "bolt", label: "Bolt PaaS", desc: "Build fast with AI" },
+    { id: "dataplatform", label: "Data Platform", desc: "Governed data foundation" },
   ]},
   { label: "Solutions", items: [
     { id: "solutions", label: "Overview" },
@@ -3440,6 +3952,7 @@ export default function App() {
                             onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(148,163,184,0.08)"; }}
                             onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
                             <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 400, color: isActive ? "#3B82F6" : "#E2EAF2", whiteSpace: "nowrap" }}>{item.label}</span>
+                            {"desc" in item && item.desc && <span style={{ display: "block", fontSize: 12.5, color: "#94A8C0", marginTop: 2, whiteSpace: "nowrap" }}>{item.desc}</span>}
                           </button>
                         );
                       })}
