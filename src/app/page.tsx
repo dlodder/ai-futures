@@ -2300,23 +2300,8 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
     { id: "who", render: () => (
       <div>
         {eyebrow("04 · Who")}
-        {title("Choose the ownership. Bolt runs the platform.")}
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(220px, 1.3fr) repeat(4, minmax(0, 1fr))", gap: 10, alignItems: "center" }}>
-          <span />
-          {boltEngagementRoles.map((r, ri) => (
-            <span key={r} className="bolt-anim" style={{ ...rise(0.1 + ri * 0.05), display: "flex", flexDirection: "column", alignItems: "center", gap: 8, fontSize: 18, fontWeight: 600, color: "#B8C8DA", textAlign: "center" }}>
-              <span style={{ width: 44, height: 44, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(184,200,218,0.35)" }}><BoltGlyphIcon kind={(["briefcase", "code", "app", "server"] as BoltGlyph[])[ri]} size={22} color="#D0DAE6" /></span><span style={{ lineHeight: 1.3 }}>{r.split(" ").map((word) => <span key={word} style={{ display: "block" }}>{word}</span>)}</span>
-            </span>
-          ))}
-          {boltEngagementModels.map((m, mi) => (
-            <React.Fragment key={m.id}>
-              <span className="bolt-anim" style={{ ...rise(0.2 + mi * 0.2), fontSize: 22, fontWeight: 700, color: "#FFFFFF" }}>{m.name}</span>
-              {m.cells.map((c, ci) => (
-                <span key={ci} className="bolt-anim" style={{ animation: `boltFlip 0.55s ease-out ${0.35 + mi * 0.2 + ci * 0.08}s both`, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 58, borderRadius: 10, fontSize: 19, fontWeight: 700, color: "#FFFFFF", background: c === "bolt" ? "rgba(59,130,246,0.45)" : c === "partner" ? "rgba(245,158,11,0.40)" : "linear-gradient(90deg, rgba(59,130,246,0.45) 50%, rgba(245,158,11,0.40) 50%)", border: `1.5px solid ${c === "bolt" ? "#3B82F6" : c === "partner" ? "#F59E0B" : "#B8C8DA"}` }}>{ENG_STYLES[c].label}</span>
-              ))}
-            </React.Fragment>
-          ))}
-        </div>
+        <h2 className="bolt-anim" style={{ ...rise(0.08), fontSize: "clamp(32px, 3.6vw, 48px)", lineHeight: 1.1, letterSpacing: -0.8, color: "#FFFFFF", margin: "0 0 24px" }}>Choose the ownership. Bolt runs the platform.</h2>
+        <div className="bolt-anim" style={rise(0.15)}><BoltEngagementMatrix compact /></div>
       </div>
     ) },
     { id: "builders", render: () => (
@@ -2527,7 +2512,7 @@ function BoltStackDiagram({ onNavigate }: { onNavigate: Navigate }) {
 // Where partner work hands off to Bolt, in role columns (shared counts as half)
 const engBoundary = (cells: EngCell[]) => cells.reduce((n, c) => n + (c === "partner" ? 1 : c === "shared" ? 0.5 : 0), 0);
 
-function BoltEngagementMatrix() {
+function BoltEngagementMatrix({ compact = false }: { compact?: boolean }) {
   const [activeModel, setActiveModel] = useState<string | null>(null);
   const [scrollFocused, setScrollFocused] = useState(false);
   const [hoverRole, setHoverRole] = useState<number | null>(null);
@@ -2571,7 +2556,7 @@ function BoltEngagementMatrix() {
 
   return (
     <div ref={revealRef} style={{ minWidth: 0, maxWidth: "100%", background: "rgba(16,34,66,0.5)", border: "1px solid rgba(184,200,218,0.16)", borderRadius: 16, overflow: "hidden" }}>
-      <p id="bolt-engagement-help" style={{ margin: 0, padding: "20px 24px 8px", fontSize: 16, lineHeight: 1.5, color: "#B8C8DA" }}>
+      <p id="bolt-engagement-help" style={compact ? srOnly : { margin: 0, padding: "20px 24px 8px", fontSize: 16, lineHeight: 1.5, color: "#B8C8DA" }}>
         Select a model for responsibilities. Scroll the table sideways on smaller screens.
       </p>
       <div
@@ -2604,7 +2589,7 @@ function BoltEngagementMatrix() {
           </svg>
         )}
         <table style={{ position: "relative", zIndex: 1, width: "100%", tableLayout: "fixed", borderCollapse: "collapse", fontSize: 16, lineHeight: 1.45, textAlign: "left" }}>
-          <caption style={{ textAlign: "left", color: "#E2EAF2", fontSize: 16, fontWeight: 600, padding: "12px 8px 16px" }}>Role ownership by engagement model</caption>
+          <caption style={compact ? srOnly : { textAlign: "left", color: "#E2EAF2", fontSize: 16, fontWeight: 600, padding: "12px 8px 16px" }}>Role ownership by engagement model</caption>
           <colgroup>
             <col style={{ width: "24%" }} />
             {boltEngagementRoles.map((role) => <col key={role} style={{ width: "13.5%" }} />)}
