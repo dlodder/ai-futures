@@ -1287,10 +1287,12 @@ const BOLT_CSS = `
 .bolt-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 4px; height: 48px; }
 .bolt-range::-moz-range-thumb { width: 4px; height: 48px; border: 0; }
 @media (max-width: 720px) { .bolt-split { flex-direction: column; } .bolt-split-pane { width: 100% !important; } .bolt-split-inner { min-width: 0 !important; } .bolt-split-handle, .bolt-split-input, .bolt-split-hint { display: none !important; } }
+@keyframes boltTileGlow { 0%, 22%, 100% { box-shadow: none; border-color: rgba(45,212,191,0.25); background: rgba(45,212,191,0.07); } 8% { box-shadow: 0 0 18px rgba(45,212,191,0.45); border-color: #2DD4BF; background: rgba(45,212,191,0.2); } }
+@media (max-width: 760px) { .bolt-harness, .bolt-next { grid-template-columns: 1fr !important; } .bolt-harness-arrow { transform: rotate(90deg); justify-self: center; } .bolt-harness-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
 @media (prefers-reduced-motion: reduce) { .bolt-anim { animation: none !important; transition: none !important; } }
 `;
 
-type BoltGlyph = "bolt" | "layers" | "people" | "cert" | "briefcase" | "code" | "app" | "server";
+type BoltGlyph = "bolt" | "layers" | "people" | "cert" | "briefcase" | "code" | "app" | "server" | "chart" | "trend" | "target" | "box" | "shield" | "eye" | "repeat" | "check" | "list" | "link" | "commit" | "person" | "db" | "pulse" | "sliders";
 
 const BOLT_GLYPHS: Record<BoltGlyph, string> = {
   bolt: "M13 2 4.5 13H12l-1 9 8.5-11H12l1-9Z",
@@ -1301,6 +1303,21 @@ const BOLT_GLYPHS: Record<BoltGlyph, string> = {
   code: "m8 8-4 4 4 4m8-8 4 4-4 4m-2.5-10-3 12",
   app: "M4 5h16v14H4V5Zm0 4h16M7 7h.01M9.5 7h.01",
   server: "M4 4h16v6H4V4Zm0 10h16v6H4v-6ZM7.5 7h.01M7.5 17h.01",
+  chart: "M4 20h16M7 16v-5m5 5V6m5 10v-8",
+  trend: "m3 17 6-6 4 4 8-8m-6 0h6v6",
+  target: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-4a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0-4a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z",
+  box: "m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Zm0 9 8-4.5M12 12v9m0-9L4 7.5",
+  shield: "M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6l-7-3Zm-3 9 2 2 4-4",
+  eye: "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
+  repeat: "M4 12a8 8 0 0 1 13.7-5.7L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.7L4 15.5M4 20v-4.5h4.5",
+  check: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm-4-9 3 3 5-6",
+  list: "M10 6h10M10 12h10M10 18h10M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2",
+  link: "M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1",
+  commit: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3 12h6m6 0h6",
+  person: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 9a7 7 0 0 1 14 0",
+  db: "M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3Zm0 0v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3",
+  pulse: "M3 12h4l3-8 4 16 3-8h4",
+  sliders: "M4 7h10m4 0h2M4 17h4m4 0h8M16 5v4M10 15v4",
 };
 
 function BoltGlyphIcon({ kind, size = 22, color = BOLT_COLOR }: { kind: BoltGlyph; size?: number; color?: string }) {
@@ -1364,7 +1381,7 @@ function BoltKpis({ big = false }: { big?: boolean }) {
   const kpis = [
     { shown: `${Math.round(2 * p)}–${Math.round(4 * p)} weeks`, final: "2–4 weeks", label: "Idea to production", sub: `vs. ~6 months; up to ${Math.round(12 * p)}× faster`, subFinal: "vs. ~6 months; up to 12× faster", fade: false },
     { shown: `${Math.round(p)} handoff`, final: "1 handoff", label: "Builder to code review", sub: "vs. 4+ matrix teams", subFinal: "vs. 4+ matrix teams", fade: false },
-    { shown: "AI + Human", final: "AI + Human", label: "Review on every release", sub: "Governed production on Bolt", subFinal: "Governed production on Bolt", fade: true },
+    { shown: `${Math.round(9 * p)} apps`, final: "9 apps", label: "In 163 days", sub: "Built on Bolt since April 2026", subFinal: "Built on Bolt since April 2026", fade: false },
   ];
   return (
     <div ref={ref} style={{ position: "relative", display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${big ? 300 : 250}px), 1fr))`, gap: big ? 18 : 12 }}>
@@ -1533,7 +1550,7 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370 }: { onLay
   };
   const layers: { id: HeroLayer; y: number; dy: number; title: string; sub: string; color: string; action: string }[] = [
     { id: "apps", y: 62, dy: -22, title: "Applications", sub: "Built by the business", color: "#60A5FA", action: "Open Solutions" },
-    { id: "bolt", y: 126, dy: 0, title: "Bolt Platform", sub: "Review, run, AI", color: BOLT_COLOR, action: "See how it works" },
+    { id: "bolt", y: 126, dy: 0, title: "Bolt Platform", sub: "Build fast with AI", color: BOLT_COLOR, action: "See how it works" },
     { id: "data", y: 190, dy: 20, title: "Data Platform", sub: "Governed data", color: "#34D399", action: "Open Data Platform" },
   ];
   const interactive = !!onLayer;
@@ -1971,6 +1988,229 @@ function BoltLiveBuild({ autoStart = false, big = false, onShip }: { autoStart?:
   );
 }
 
+// ---- Proof: real growth and snapshot figures from the Bolt briefing (as of Sep 22, 2026) ----
+const proofMilestones: { day: string; date: string; title: string; detail: string; burst?: boolean; now?: boolean }[] = [
+  { day: "Day 0", date: "Apr 12", title: "Platform born", detail: "Contracts · shell · core services" },
+  { day: "Day 36", date: "May 18", title: "Meridian", detail: "2nd business domain" },
+  { day: "Day 66", date: "Jun 17", title: "Infrastructure", detail: "Terraform IaC formalized" },
+  { day: "Day 94", date: "Jul 15", title: "Nova", detail: "3rd business domain" },
+  { day: "Days 119–127", date: "Aug 9–17", title: "GPO · RetentionIQ · " + PRACTICE_NAME, detail: "Three domains in nine days", burst: true },
+  { day: "Day 163", date: "Sep 22", title: "9 applications", detail: "Production hardening", now: true },
+];
+
+function BoltProofTimeline({ big = false }: { big?: boolean }) {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
+  const n = proofMilestones.length;
+  const dur = 2.8;
+  const seg = dur / (n - 1) / 2;
+  const at = (pos: number) => 0.2 + (pos / (n - 1)) * dur;
+  const segStyle = (start: number): React.CSSProperties => ({ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, background: BOLT_COLOR, transformOrigin: "left center", transform: inView ? "scaleX(1)" : "scaleX(0)", transition: `transform ${seg}s linear ${start}s` });
+  return (
+    <div ref={ref} style={{ overflowX: "auto", paddingBottom: 4 }}>
+      <ol aria-label="Bolt growth timeline, April to September 2026" style={{ listStyle: "none", margin: 0, padding: 0, minWidth: 760, display: "grid", gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+        {proofMilestones.map((m, i) => {
+          const color = m.now ? "#F59E0B" : BOLT_COLOR;
+          const lit = at(i);
+          const dot = (size: number, key: string, delay: number) => (
+            <span key={key} className="bolt-anim" style={{ width: size, height: size, boxSizing: "border-box", borderRadius: "50%", background: color, border: "3px solid #0B1A33", boxShadow: `0 0 0 2px ${color}, 0 0 14px ${color}88`, flexShrink: 0, ...(inView ? { animation: `boltPop 0.5s ease-out ${delay}s both${m.now ? `, boltFlash 1.4s ease-out ${delay + 0.5}s 3` : ""}` } : { opacity: 0 }) }} />
+          );
+          return (
+            <li key={m.day} style={{ textAlign: "center", padding: "0 6px" }}>
+              <p className="bolt-anim" style={{ margin: 0, fontFamily: MONO, fontSize: big ? 15 : 13, fontWeight: 700, letterSpacing: 0.4, color, whiteSpace: "nowrap", ...(inView ? { animation: `boltIn 0.4s ease-out ${lit}s both` } : { opacity: 0 }) }}>{m.day}</p>
+              <p className="bolt-anim" style={{ margin: "2px 0 0", fontFamily: MONO, fontSize: big ? 14 : 12.5, color: "#B8C8DA", ...(inView ? { animation: `boltIn 0.4s ease-out ${lit}s both` } : { opacity: 0 }) }}>{m.date}</p>
+              <div style={{ position: "relative", height: 28, margin: "10px 0 12px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                {i > 0 && <span aria-hidden="true" style={{ position: "absolute", left: 0, right: "50%", top: 12.5, height: 3, background: "rgba(184,200,218,0.15)", overflow: "hidden" }}><span className="bolt-anim" style={segStyle(at(i - 0.5))} /></span>}
+                {i < n - 1 && <span aria-hidden="true" style={{ position: "absolute", left: "50%", right: 0, top: 12.5, height: 3, background: "rgba(184,200,218,0.15)", overflow: "hidden" }}><span className="bolt-anim" style={segStyle(lit)} /></span>}
+                <span style={{ position: "relative", display: "inline-flex", gap: 6, alignItems: "center", background: "transparent" }}>
+                  {m.burst ? [0, 1, 2].map((k) => dot(14, String(k), lit + k * 0.18)) : dot(m.now ? 24 : 18, "d", lit)}
+                </span>
+              </div>
+              <p className="bolt-anim" style={{ margin: 0, fontSize: big ? 18 : 16, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.3, ...(inView ? { animation: `boltIn 0.45s ease-out ${lit + 0.1}s both` } : { opacity: 0 }) }}>{m.title}</p>
+              <p className="bolt-anim" style={{ margin: "4px 0 0", fontSize: big ? 15 : 14, color: "#B8C8DA", lineHeight: 1.4, ...(inView ? { animation: `boltIn 0.45s ease-out ${lit + 0.15}s both` } : { opacity: 0 }) }}>{m.detail}</p>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
+function BoltSnapshot({ big = false, tilesOnly = false }: { big?: boolean; tilesOnly?: boolean }) {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.25);
+  const p = useCountUp(inView, 1700);
+  const fmt = (v: number) => Math.round(v * p).toLocaleString("en-US");
+  const tiles: { icon: BoltGlyph; shown: string; final: string; label: string }[] = [
+    { icon: "app", shown: fmt(9), final: "9", label: "Applications" },
+    { icon: "list", shown: fmt(74), final: "74", label: "Features" },
+    { icon: "link", shown: fmt(392), final: "392", label: "API endpoints" },
+    { icon: "code", shown: "~" + fmt(613) + "K", final: "~613K", label: "Lines of code" },
+    { icon: "commit", shown: fmt(5279), final: "5,279", label: "Commits" },
+  ];
+  return (
+    <div ref={ref}>
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${big ? 180 : 160}px), 1fr))`, gap: 12 }}>
+        {tiles.map((t) => (
+          <li key={t.label} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(45,212,191,0.25)", borderRadius: 12, padding: big ? "20px 22px" : "18px 20px" }}>
+            <span aria-hidden="true" style={{ display: "inline-flex", width: 38, height: 38, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: "rgba(45,212,191,0.12)", border: "1px solid rgba(45,212,191,0.35)" }}><BoltGlyphIcon kind={t.icon} size={19} /></span>
+            <span style={srOnly}>{t.final + " " + t.label}</span>
+            <p aria-hidden="true" style={{ margin: "12px 0 2px", fontSize: big ? 38 : 32, fontWeight: 700, letterSpacing: -0.6, color: "#FFFFFF", lineHeight: 1.1, fontVariantNumeric: "tabular-nums" }}>{t.shown}</p>
+            <p aria-hidden="true" style={{ margin: 0, fontSize: big ? 17 : 15, color: "#B8C8DA" }}>{t.label}</p>
+          </li>
+        ))}
+      </ul>
+      {!tilesOnly && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 12, marginTop: 12 }}>
+          <div style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)", borderRadius: 12, padding: "22px 24px" }}>
+            <p style={{ margin: 0, fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase", color: BOLT_COLOR }}>{"Contribution concentration"}</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap", marginTop: 10 }}>
+              <span style={srOnly}>{"90% of platform and application delivery was produced by 3 engineers. 13 engineers contributed overall."}</span>
+              <span aria-hidden="true" style={{ fontSize: 56, fontWeight: 700, color: "#F59E0B", letterSpacing: -1, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{Math.round(90 * p) + "%"}</span>
+              <span aria-hidden="true" style={{ flex: "1 1 200px", fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{"of platform and application delivery was produced by 3 engineers"}</span>
+            </div>
+            <div aria-hidden="true" style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 16, paddingTop: 14, borderTop: "1px solid rgba(184,200,218,0.16)", alignItems: "center" }}>
+              {Array.from({ length: 13 }, (_, k) => (
+                <span key={k} className="bolt-anim" style={{ display: "inline-flex", width: 30, height: 30, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: k < 3 ? "rgba(245,158,11,0.18)" : "rgba(184,200,218,0.06)", border: `1px solid ${k < 3 ? "#F59E0B" : "rgba(184,200,218,0.22)"}`, boxShadow: k < 3 && inView ? "0 0 12px rgba(245,158,11,0.45)" : "none", transition: `box-shadow 0.6s ease ${1.6 + k * 0.1}s`, ...(inView ? { animation: `boltPop 0.4s ease-out ${0.2 + k * 0.06}s both` } : { opacity: 0 }) }}>
+                  <BoltGlyphIcon kind="person" size={16} color={k < 3 ? "#F59E0B" : "#7F93AE"} />
+                </span>
+              ))}
+              <span style={{ marginLeft: 6, fontSize: 14, color: "#B8C8DA" }}>{"13 engineers contributed overall"}</span>
+            </div>
+          </div>
+          <div style={{ background: "linear-gradient(160deg, rgba(45,212,191,0.10), rgba(16,34,66,0.7))", border: `1px solid ${BOLT_COLOR}55`, borderRadius: 12, padding: "22px 24px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <p style={{ margin: 0, fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase", color: BOLT_COLOR }}>{"The takeaway"}</p>
+            <p style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.3 }}>{"Bolt is no longer a prototype."}</p>
+            <p style={{ margin: "8px 0 0", fontSize: 16, color: "#D0DAE6", lineHeight: 1.6 }}>{"A multi-application platform entering production hardening. As it scales, the priority shifts from creation to reliability."}</p>
+          </div>
+        </div>
+      )}
+      <p style={{ margin: "10px 0 0", fontSize: 13, color: "#7F93AE" }}>{"As of September 22, 2026 · ~1,008 merged pull requests"}</p>
+    </div>
+  );
+}
+
+// ---- The harness is the product ----
+const harnessLayers = ["Architecture", "Frontend", "API", "Domain services", "Domain databases", "Security + RBAC", "Quality + V&V", "Logging + audit"];
+const harnessProps: { label: string; icon: BoltGlyph }[] = [
+  { label: "Consistent", icon: "check" },
+  { label: "Secure", icon: "shield" },
+  { label: "Observable", icon: "eye" },
+  { label: "Repeatable", icon: "repeat" },
+];
+
+function BoltHarness() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
+  const arrow = (
+    <span aria-hidden="true" className="bolt-harness-arrow" style={{ alignSelf: "center", display: "inline-flex", width: 30, height: 30, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: "rgba(45,212,191,0.12)", border: "1px solid rgba(45,212,191,0.4)" }}>
+      <svg className="bolt-anim" width="16" height="16" viewBox="0 0 24 24" style={{ animation: inView ? "boltPulse 1.6s ease-in-out infinite" : undefined }}><path d="M4 12h16m-6-6 6 6-6 6" fill="none" stroke={BOLT_COLOR} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    </span>
+  );
+  return (
+    <div ref={ref}>
+      <div style={{ marginBottom: 16 }}>
+        <h3 style={{ margin: 0, fontSize: 20, color: "#FFFFFF" }}>The harness is the product</h3>
+        <p style={{ margin: "6px 0 0", fontSize: 16, color: "#D0DAE6", lineHeight: 1.55, maxWidth: 820 }}>{"Every app inherits the same enterprise layers by default, so builders start from governed software, not a blank page."}</p>
+      </div>
+      <div className="bolt-harness" style={{ display: "grid", gridTemplateColumns: "minmax(120px, 0.75fr) auto minmax(0, 3.2fr) auto minmax(120px, 0.75fr)", gap: 12, alignItems: "stretch" }}>
+        <div style={{ background: "#071226", border: "1px solid rgba(184,200,218,0.25)", borderRadius: 12, padding: 16, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, textAlign: "center" }}>
+          <span aria-hidden="true" style={{ display: "inline-flex", width: 46, height: 46, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: "rgba(45,212,191,0.18)" }}><BoltGlyphIcon kind="target" size={24} /></span>
+          <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.25 }}>Human intent</span>
+          <span style={{ fontSize: 13, color: "#B8C8DA", lineHeight: 1.35 }}>A request in plain English</span>
+        </div>
+        {arrow}
+        <ul aria-label="Harness layers every app inherits" className="bolt-harness-grid" style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 8 }}>
+          {harnessLayers.map((layer, i) => (
+            <li key={layer} className="bolt-anim" style={{ display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", minHeight: 58, padding: "8px 10px", borderRadius: 10, background: "rgba(45,212,191,0.07)", border: "1px solid rgba(45,212,191,0.25)", fontSize: 15, fontWeight: 600, color: "#E2EAF2", lineHeight: 1.3, ...(inView ? { animation: `boltIn 0.4s ease-out ${i * 0.06}s both, boltTileGlow 4.8s ease-in-out ${0.8 + i * 0.3}s infinite` } : { opacity: 0 }) }}>{layer}</li>
+          ))}
+        </ul>
+        {arrow}
+        <div style={{ background: "linear-gradient(160deg, rgba(245,158,11,0.28), rgba(245,158,11,0.12))", border: "1px solid rgba(245,158,11,0.6)", borderRadius: 12, padding: 16, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, textAlign: "center" }}>
+          <span aria-hidden="true" style={{ display: "inline-flex", width: 46, height: 46, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: "#0B1A33" }}><BoltGlyphIcon kind="box" size={24} color="#FBBF24" /></span>
+          <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.25 }}>Enterprise software</span>
+          <span style={{ fontSize: 13, color: "#FDE68A", lineHeight: 1.35 }}>Governed by default</span>
+        </div>
+      </div>
+      <ul style={{ listStyle: "none", margin: "12px 0 0", padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 170px), 1fr))", gap: 10 }}>
+        {harnessProps.map((prop, i) => (
+          <li key={prop.label} className="bolt-anim" style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: 10, background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)", fontSize: 17, fontWeight: 700, color: "#FFFFFF", ...(inView ? { animation: `boltPop 0.45s ease-out ${0.7 + i * 0.12}s both` } : { opacity: 0 }) }}>
+            <span aria-hidden="true" style={{ display: "inline-flex", width: 34, height: 34, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: "rgba(45,212,191,0.14)" }}><BoltGlyphIcon kind={prop.icon} size={18} /></span>
+            {prop.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// ---- What comes next: extending intent beyond the application layer ----
+const harnessToday = ["Architecture", "Frontend", "APIs", "Domain services", "Domain data", "Security + RBAC", "Quality", "Logging + audit"];
+const harnessNext: { label: string; icon: BoltGlyph }[] = [
+  { label: "Infrastructure", icon: "server" },
+  { label: "Data platform", icon: "db" },
+  { label: "SRE + observability", icon: "pulse" },
+  { label: "Release automation", icon: "repeat" },
+  { label: "Resilience + DR", icon: "shield" },
+  { label: "Continuous controls", icon: "sliders" },
+];
+const intentStages = [
+  { label: "Application intent", when: "Today", color: BOLT_COLOR },
+  { label: "System intent", when: "Next", color: "#F59E0B" },
+  { label: "Operational intent", when: "Future", color: "#93C5FD" },
+];
+
+function BoltNext({ big = false }: { big?: boolean }) {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
+  const fs = big ? 1.12 : 1;
+  const chip = (text: string, color: string) => <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color, border: `1px solid ${color}88`, borderRadius: 5, padding: "2px 8px" }}>{text}</span>;
+  return (
+    <div ref={ref}>
+      <div className="bolt-next" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1.15fr)", gap: 16, alignItems: "stretch" }}>
+        <div style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)", borderRadius: 14, padding: "22px 24px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 14 }}>
+            <h3 style={{ margin: 0, fontSize: 18 * fs, color: "#FFFFFF" }}>Harness layers today</h3>{chip("In use", BOLT_COLOR)}
+          </div>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "10px 14px" }}>
+            {harnessToday.map((layer) => (
+              <li key={layer} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 15 * fs, color: "#D0DAE6" }}>
+                <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" style={{ flexShrink: 0 }}><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke={BOLT_COLOR} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>{layer}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <span aria-hidden="true" className="bolt-harness-arrow" style={{ alignSelf: "center", display: "inline-flex", width: 40, height: 40, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: "#071226", border: `1px solid ${BOLT_COLOR}88` }}>
+          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6" fill="none" stroke={BOLT_COLOR} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </span>
+        <div style={{ background: "linear-gradient(160deg, rgba(45,212,191,0.10), #071226)", border: `1px solid ${BOLT_COLOR}55`, borderRadius: 14, padding: "22px 24px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 14 }}>
+            <h3 style={{ margin: 0, fontSize: 18 * fs, color: "#FFFFFF" }}>Harness layers next</h3>{chip("Roadmap", "#FBBF24")}
+          </div>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 210px), 1fr))", gap: 10 }}>
+            {harnessNext.map((item, i) => (
+              <li key={item.label} className="bolt-anim" style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", borderRadius: 10, background: "rgba(45,212,191,0.06)", border: "1px solid rgba(45,212,191,0.22)", fontSize: 16 * fs, fontWeight: 600, color: "#FFFFFF", ...(inView ? { animation: `boltRise 0.55s cubic-bezier(.2,.7,.2,1) ${0.3 + i * 0.15}s both` } : { opacity: 0 }) }}>
+                <span aria-hidden="true" style={{ display: "inline-flex", width: 32, height: 32, flexShrink: 0, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: "rgba(45,212,191,0.18)" }}><BoltGlyphIcon kind={item.icon} size={17} /></span>
+                {item.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div style={{ position: "relative", marginTop: 28, padding: "0 4%" }}>
+        <div aria-hidden="true" style={{ position: "absolute", left: "19.3%", right: "19.3%", top: 11, height: 3, borderRadius: 2, background: "rgba(184,200,218,0.15)", overflow: "hidden" }}>
+          <span className="bolt-anim" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "100%", background: `linear-gradient(90deg, ${BOLT_COLOR}, #F59E0B 50%, rgba(147,197,253,0.4))`, transformOrigin: "left center", transform: inView ? "scaleX(1)" : "scaleX(0)", transition: "transform 2.2s cubic-bezier(.4,0,.2,1) 1.2s" }} />
+        </div>
+        <ol aria-label="Progression of intent" style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", position: "relative" }}>
+          {intentStages.map((s, i) => (
+            <li key={s.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, textAlign: "center" }}>
+              <span aria-hidden="true" className="bolt-anim" style={{ width: 24, height: 24, boxSizing: "border-box", borderRadius: "50%", background: i === 2 ? "#0B1A33" : s.color, border: `3px solid ${i === 2 ? s.color : "#0B1A33"}`, boxShadow: `0 0 0 2px ${s.color}${i === 2 ? "55" : ""}, 0 0 14px ${s.color}66`, ...(inView ? { animation: `boltPop 0.45s ease-out ${1.2 + i * 1.0}s both` } : { opacity: 0 }) }} />
+              <span style={{ fontSize: 16 * fs, fontWeight: 700, color: "#FFFFFF" }}>{s.label}</span>
+              <span style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: s.color }}>{s.when}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  );
+}
+
 function BoltPresenter({ onExit }: { onExit: () => void }) {
   const [scene, setScene] = useState(0);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -2016,9 +2256,17 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
         <div className="bolt-anim" style={{ ...rise(0.3), marginTop: 36 }}><BoltTimeBar big /></div>
       </div>
     ) },
+    { id: "proof", render: () => (
+      <div>
+        {eyebrow("02 · Proof")}
+        {title("Nine applications in 163 days")}
+        <div className="bolt-anim" style={rise(0.15)}><BoltProofTimeline big /></div>
+        <div className="bolt-anim" style={{ ...rise(0.3), marginTop: 28 }}><BoltSnapshot big tilesOnly /></div>
+      </div>
+    ) },
     { id: "stack", render: () => (
       <div>
-        {eyebrow("02 · How")}
+        {eyebrow("03 · How")}
         {title("Build. Review. Run on Bolt.")}
         <div style={{ display: "grid", gap: 14 }}>
           {[
@@ -2051,7 +2299,7 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
     ) },
     { id: "who", render: () => (
       <div>
-        {eyebrow("03 · Who")}
+        {eyebrow("04 · Who")}
         {title("Choose the ownership. Bolt runs the platform.")}
         <div style={{ display: "grid", gridTemplateColumns: "minmax(220px, 1.3fr) repeat(4, minmax(0, 1fr))", gap: 10, alignItems: "center" }}>
           <span />
@@ -2075,7 +2323,7 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
       <div style={{ display: "flex", gap: 56, alignItems: "center", flexWrap: "wrap" }}>
         <div className="bolt-anim" style={{ ...rise(0.1), transform: "scale(1.5)", margin: "40px 60px" }}><BoltSealAuto /></div>
         <div style={{ flex: "1 1 480px" }}>
-          {eyebrow("04 · Builders")}
+          {eyebrow("05 · Builders")}
           {title("Four steps to certified builder")}
           <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 14 }}>
             {boltCertModules.map((mod, i) => (
@@ -2085,6 +2333,13 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
             ))}
           </ol>
         </div>
+      </div>
+    ) },
+    { id: "next", render: () => (
+      <div>
+        {eyebrow("06 · What's next")}
+        {title("From code generation to a full operating model")}
+        <div className="bolt-anim" style={rise(0.15)}><BoltNext big /></div>
       </div>
     ) },
     { id: "close", render: () => (
@@ -2171,10 +2426,12 @@ const SectionTitle = ({ num, label, title, sub, color, icon }: { num: string; la
 );
 
 const boltSections = [
-  { id: "why", label: "Why Bolt" },
-  { id: "how", label: "How it works" },
-  { id: "who", label: "Team roles" },
-  { id: "builders", label: "Builder training" },
+  { id: "why", label: "Why" },
+  { id: "proof", label: "Proof" },
+  { id: "how", label: "How" },
+  { id: "who", label: "Roles" },
+  { id: "builders", label: "Builders" },
+  { id: "next", label: "Next" },
 ];
 
 // Stable controls retain focus when their disclosure state changes.
@@ -2470,7 +2727,7 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
             <p style={{ fontSize: 20, color: "#E2EAF2", margin: "14px 0 0", maxWidth: 620, lineHeight: 1.55 }}>{"Business experts, product owners and engineers build with Claude Code and ship on McKesson’s governed AWS platform."}</p>
           </div>
           <div style={{ flex: "0 1 370px", minWidth: 260, marginLeft: "auto" }}>
-            <BoltHeroStack onLayer={(layer) => layer === "apps" ? onNavigate("solutions") : layer === "data" ? onNavigate("dataplatform") : jump("how", 1)} />
+            <BoltHeroStack onLayer={(layer) => layer === "apps" ? onNavigate("solutions") : layer === "data" ? onNavigate("dataplatform") : jump("how", 2)} />
           </div>
         </div>
         <BoltKpis />
@@ -2500,8 +2757,17 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
         </div>
       </section>
 
-      <section id="how" aria-labelledby="bolt-02-title" style={sectionStyle}>
-        <SectionTitle icon="layers" num="02" label="How" title="Build. Review. Run on Bolt." sub="A business owner describes the app in plain English and Claude Code builds it. Every release passes AI, engineer and security review before production." color={BOLT_COLOR} />
+      <section id="proof" aria-labelledby="bolt-02-title" style={sectionStyle}>
+        <SectionTitle icon="chart" num="02" label="Proof" title="Nine applications in 163 days" sub="The harness and the first business domain launched together in April 2026, then Bolt expanded across business domains and infrastructure." color={BOLT_COLOR} />
+        <Reveal><Card style={{ padding: "clamp(18px, 2.5vw, 26px) clamp(12px, 2vw, 20px)" }}><BoltProofTimeline /></Card></Reveal>
+        <div style={{ height: 16 }} />
+        <Reveal delay={0.05}><BoltSnapshot /></Reveal>
+      </section>
+
+      <section id="how" aria-labelledby="bolt-03-title" style={sectionStyle}>
+        <SectionTitle icon="layers" num="03" label="How" title="Build. Review. Run on Bolt." sub="A business owner describes the app in plain English and Claude Code builds it. Every release passes AI, engineer and security review before production." color={BOLT_COLOR} />
+        <Reveal><BoltHarness /></Reveal>
+        <div style={{ height: 28 }} />
         <Reveal><BoltLiveBuild onShip={shipBuiltApp} /></Reveal>
         <div style={{ height: 20 }} />
         <div id="bolt-ship-demo" style={{ scrollMarginTop: 90 }}><Reveal><BoltShipDemo trigger={shipTrigger} /></Reveal></div>
@@ -2509,13 +2775,13 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
         <Reveal delay={0.05}><BoltStackDiagram onNavigate={onNavigate} /></Reveal>
       </section>
 
-      <section id="who" aria-labelledby="bolt-03-title" style={sectionStyle}>
-        <SectionTitle icon="people" num="03" label="Who" title="Choose the ownership. Bolt runs the platform." sub="Four engagement models, from Bolt-owned products to partner-built apps. Select a model to see responsibilities." color={BOLT_COLOR} />
+      <section id="who" aria-labelledby="bolt-04-title" style={sectionStyle}>
+        <SectionTitle icon="people" num="04" label="Who" title="Choose the ownership. Bolt runs the platform." sub="Four engagement models, from Bolt-owned products to partner-built apps. Select a model to see responsibilities." color={BOLT_COLOR} />
         <Reveal><BoltEngagementMatrix /></Reveal>
       </section>
 
-      <section id="builders" aria-labelledby="bolt-04-title" style={sectionStyle}>
-        <SectionTitle icon="cert" num="04" label="Builders" title="Four steps to Full Stack Builder certification" sub="From environment setup to operational readiness. Open each module to explore its skills." color={BOLT_COLOR} />
+      <section id="builders" aria-labelledby="bolt-05-title" style={sectionStyle}>
+        <SectionTitle icon="cert" num="05" label="Builders" title="Four steps to Full Stack Builder certification" sub="From environment setup to operational readiness. Open each module to explore its skills." color={BOLT_COLOR} />
         <Reveal>
         <div style={{ display: "flex", gap: 28, flexWrap: "wrap", alignItems: "flex-start" }}>
         <div style={{ flex: "0 0 auto", margin: "0 auto", paddingTop: 4 }}><BoltBuilderSeal visited={visitedModules} /></div>
@@ -2536,6 +2802,11 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
         </ol>
         </div>
         </Reveal>
+      </section>
+
+      <section id="next" aria-labelledby="bolt-06-title" style={sectionStyle}>
+        <SectionTitle icon="trend" num="06" label="What's next" title="From code generation to a full operating model" sub="The next advantage comes from extending intent beyond the application layer." color={BOLT_COLOR} />
+        <Reveal><BoltNext /></Reveal>
       </section>
 
       <footer style={{ marginTop: 48, paddingTop: 28, borderTop: "1px solid rgba(184,200,218,0.25)", display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
