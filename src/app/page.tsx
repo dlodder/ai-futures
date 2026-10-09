@@ -58,6 +58,7 @@ const projects = [
   { id: "nova", name: "Nova 2.0", tagline: "AI pricing engine", color: "#10B981", status: "Pilot", statusColor: "#8B5CF6", description: "Replaces the Excel-based pricing model end-to-end. Automates buy/sell economics across WAC, contract price, VCD, FFS, GPO admin fees, and OIDs. Phase 3 adds AI deal recommendations. Phase 4 deploys small-account autonomy and field enablement. Estimated $6\u201312M upside.", capabilities: ["Automated WAC / GPO / OID waterfall", "Real-time what-if scenario modeling", "AI deal recommendations (Phase 3)", "SOX-compliant approval workflows", "Drug-level and account-level P&L", "LLM pricing guidance chat"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates", "Customer & Account Data"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools"], impact: "$6\u201312M upside through improved pricing efficiency. Compresses analyst time per deal and systematically protects margin on every renewal." },
   { id: "xray", name: "X-Ray", tagline: "Drug pricing transparency", color: "#3B82F6", status: "Pilot", statusColor: "#8B5CF6", description: "Customer-facing solution delivering full drug pricing transparency and net cost recovery visibility to practices. Shows the complete cost walk from WAC through discounts and rebates to net price, then layers in reimbursement to reveal per-drug NCR. Built on the same shared data infrastructure as Nova.", capabilities: ["WAC-to-net-price cost walk per drug", "Net cost recovery (NCR) calculation", "Reimbursement vs. net price comparison", "Customer-facing and field rep views", "Real-time rebate feed integration"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools", "Agents"], impact: "Gives practices and field reps full visibility into drug economics \u2014 pricing transparency that drives competitive market response and enables data-driven drug decisions at the point of care." },
   { id: "skynet", name: PRACTICE_NAME, tagline: "Dynamic QBR portal", color: "#EF4444", status: "Pilot", statusColor: "#8B5CF6", description: "Replaces the static PowerPoint QBR process. Pulls data from disparate sources into a unified schema and delivers it through a dynamic, interactive customer portal. The rep or customer can ask any question in natural language \u2014 converted to SQL on the fly against a live database.", capabilities: ["Automated data aggregation from all sources", "Dynamic customer-facing portal", "Natural language to SQL query engine", "Real-time distribution purchase analytics", "GPO rebate, PMID, biosimilar reporting", "Technology adoption tracking"], dataInputs: ["GPO Rebates", "MID Data", "Biosimilar Utilization", "Customer & Account Data"], intelligenceUsed: ["AI Prompting Tools"], impact: "Moves from a static PowerPoint deck with manual data gathering to a live customer experience. Eliminates hours of rep prep time per QBR cycle." },
+  { id: "savingsiq", name: "SavingsIQ", tagline: "GPO rebate modeling", color: "#A3E635", status: "Prototype", statusColor: "#F59E0B", description: "Replaces the multi-tab Excel workbook GPO analysts use to estimate rebate outcomes. Models rebate value for GPO prospects and members across contract programs, checks every assumed rate against contract ceilings, compares scenarios side by side, and keeps a full audit trail.", capabilities: ["Scenario comparison across contract programs", "Three-state contract ceiling check", "Native program resolution", "Append-only assumption audit trail", "Reconciled to the legacy workbook"], dataInputs: ["GPO Rebates", "Distribution Pricing & Rebates"], intelligenceUsed: [], impact: "Turns a three-week, cross-functional spreadsheet exercise into a live, defensible economic comparison for competitive GPO pursuits." },
 ];
 
 // ============================================================
@@ -119,7 +120,7 @@ function DataDomainsSection() {
 // SOLUTIONS OVERVIEW PAGE (former Glide Stack applications grid)
 // ============================================================
 
-const solutionPageIds: Record<string, string> = { titan: "titan", nova: "novaxray", xray: "novaxray", skynet: "skynet" };
+const solutionPageIds: Record<string, string> = { titan: "titan", nova: "novaxray", xray: "novaxray", skynet: "skynet", savingsiq: "savingsiq" };
 
 function SolutionsOverviewPage({ onNavigate }: { onNavigate: Navigate }) {
   const [activeProject, setActiveProject] = useState<number | null>(null);
@@ -186,7 +187,7 @@ function SolutionsOverviewPage({ onNavigate }: { onNavigate: Navigate }) {
       )}
 
       <div style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <CrossLink label="Built on Bolt PaaS" target="bolt" onNavigate={onNavigate} color="#8B5CF6" />
+        <CrossLink label="Built on Bolt PaaS" target="bolt" onNavigate={onNavigate} color={BOLT_COLOR} />
         <CrossLink label="Powered by the Data Platform" target="dataplatform" onNavigate={onNavigate} color="#10B981" />
       </div>
       <div style={{ height: 64 }} />
@@ -1293,6 +1294,8 @@ const BOLT_CSS = `
 @keyframes dpDashRev { to { stroke-dashoffset: -20; } }
 @keyframes dpSpin { to { transform: rotate(360deg); } }
 @media (max-width: 760px) { .dp-hub { display: none !important; } .dp-hub-grid { display: grid !important; } .dp-reuse { grid-template-columns: 1fr !important; } .dp-reuse-gutter-wrap { display: none; } }
+@keyframes siqGlow { 0%, 18%, 100% { box-shadow: none; border-color: rgba(163,230,53,0.25); } 7% { box-shadow: 0 0 18px rgba(163,230,53,0.4); border-color: #A3E635; } }
+@media (max-width: 760px) { .siq-legs { grid-template-columns: 1fr !important; } }
 @media (prefers-reduced-motion: reduce) { .bolt-anim { animation: none !important; transition: none !important; } }
 `;
 
@@ -3914,6 +3917,375 @@ function DataPlatformPage({ onNavigate }: { onNavigate: Navigate }) {
 }
 
 // ============================================================
+// SAVINGSIQ PAGE (GPO rebate modeling engine)
+// ============================================================
+
+const SIQ_COLOR = "#A3E635";
+
+const siqSections = [
+  { id: "siq-why", label: "Why" },
+  { id: "siq-how", label: "How" },
+  { id: "siq-try", label: "Try it" },
+  { id: "siq-trust", label: "Trust" },
+  { id: "siq-next", label: "Next" },
+];
+
+function SiqCompare() {
+  const eb = (c: string): React.CSSProperties => ({ fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase", color: c, margin: "0 0 6px" });
+  const row = (text: string, good: boolean) => (
+    <li key={text} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 15, color: good ? "#E2EAF2" : "#D0DAE6", lineHeight: 1.4 }}>
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 2 }}>{good ? <path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke={SIQ_COLOR} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /> : <path d="M7 7l10 10M17 7 7 17" fill="none" stroke="#F87171" strokeWidth="2.4" strokeLinecap="round" />}</svg>{text}
+    </li>
+  );
+  const stat = (v: string, l: string, c: string) => <div><div style={{ fontSize: 28, fontWeight: 700, color: c, lineHeight: 1.1 }}>{v}</div><div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 2 }}>{l}</div></div>;
+  const left = (
+    <div>
+      <p style={eb("#B8C8DA")}>{"Today"}</p>
+      <h3 style={{ fontSize: 19, color: "#FFFFFF", margin: 0 }}>A multi-tab Excel workbook</h3>
+      <div style={{ display: "flex", gap: 28, margin: "14px 0 18px", flexWrap: "wrap" }}>{stat("~3 weeks", "of cross-functional effort", "#B8C8DA")}{stat("Static", "spreadsheet output", "#B8C8DA")}</div>
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 10 }}>
+        {["Tier logic lives in analysts' heads", "Contract terms read and calculated by hand", "One answer per spreadsheet; scenarios are copies", "Rate changes overwrite earlier numbers", "Hard to check against the source"].map((t) => row(t, false))}
+      </ul>
+    </div>
+  );
+  const right = (
+    <div>
+      <p style={eb(SIQ_COLOR)}>{"With SavingsIQ"}</p>
+      <h3 style={{ fontSize: 19, color: "#FFFFFF", margin: 0 }}>A validated modeling engine</h3>
+      <div style={{ display: "flex", gap: 28, margin: "14px 0 18px", flexWrap: "wrap" }}>{stat("Live", "economic comparison", SIQ_COLOR)}{stat("Side by side", "scenarios", SIQ_COLOR)}</div>
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 10 }}>
+        {["Contract rules encoded once, applied every time", "Every rate checked against its contract ceiling", "Compare programs side by side and see the delta", "Every assumption kept in a full audit trail", "Reconciled to the legacy workbook"].map((t) => row(t, true))}
+      </ul>
+    </div>
+  );
+  return <SplitCompareShell left={left} right={right} accent={SIQ_COLOR} label="Divider between the Excel workbook and SavingsIQ" />;
+}
+
+// How it works: six steps that light in sequence
+const siqSteps: { title: string; sub: string; icon: BoltGlyph }[] = [
+  { title: "Purchase data", sub: "Usage, spend, contract price and WAC by NDC", icon: "db" },
+  { title: "Program resolution", sub: "Each product mapped to its contract program", icon: "link" },
+  { title: "Rate assumption", sub: "Analyst sets a rebate rate per product and scenario", icon: "person" },
+  { title: "Ceiling check", sub: "Rate validated against contract-derived ceilings", icon: "shield" },
+  { title: "Rebate value", sub: "Quarterly and annual value, with quantity overrides", icon: "chart" },
+  { title: "Compare & export", sub: "Scenarios side by side, delta, export and audit trail", icon: "repeat" },
+];
+
+function SiqPipeline({ big = false }: { big?: boolean }) {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
+  return (
+    <div ref={ref}>
+      <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 160px), 1fr))", gap: 10 }}>
+        {siqSteps.map((st, i) => (
+          <li key={st.title} className="bolt-anim" style={{ position: "relative", borderRadius: 12, padding: big ? "18px 16px" : "16px 14px", background: "rgba(163,230,53,0.06)", border: "1px solid rgba(163,230,53,0.25)", ...(inView ? { animation: `boltIn 0.4s ease-out ${i * 0.08}s both, siqGlow 6s ease-in-out ${0.8 + i * 0.45}s infinite` } : { opacity: 0 }) }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <span aria-hidden="true" style={{ display: "inline-flex", width: 34, height: 34, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: "rgba(163,230,53,0.14)" }}><BoltGlyphIcon kind={st.icon} size={18} color={SIQ_COLOR} /></span>
+              <span style={{ fontFamily: MONO, fontSize: 13, color: SIQ_COLOR }}>{"0" + (i + 1)}</span>
+            </div>
+            <p style={{ margin: 0, fontSize: big ? 18 : 16, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.3 }}>{st.title}</p>
+            <p style={{ margin: "4px 0 0", fontSize: big ? 15 : 14, color: "#B8C8DA", lineHeight: 1.45 }}>{st.sub}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+// Interactive: drag a rate and watch the ceiling check respond (illustrative numbers)
+const SIQ_SPEND = 1200000;
+const SIQ_AGG = 12;
+const SIQ_IND = 20;
+
+function SiqCeilingDemo({ big = false }: { big?: boolean }) {
+  const [rate, setRate] = useState(9);
+  const [focused, setFocused] = useState(false);
+  const state = rate <= SIQ_AGG ? "OK" : rate <= SIQ_IND ? "REVIEW" : "ERROR";
+  const meta = {
+    OK: { color: "#4ADE80", text: "At or below the aggregate ceiling." },
+    REVIEW: { color: "#FBBF24", text: "Above the aggregate ceiling, but individual contract terms could justify it. Rationale required." },
+    ERROR: { color: "#F87171", text: "Above every ceiling, with no contract pathway to support it." },
+  }[state];
+  const MAX = 30;
+  const pct = (v: number) => `${(v / MAX) * 100}%`;
+  const value = Math.round((SIQ_SPEND * rate) / 100);
+  const fs = big ? 1.12 : 1;
+  return (
+    <Card style={{ padding: big ? "24px 28px" : "clamp(16px, 2.5vw, 24px)" }}>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", marginBottom: 18 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <h3 style={{ margin: 0, fontSize: 20 * fs, color: "#FFFFFF" }}>Set a rebate rate</h3>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative product"}</span>
+        </div>
+        <span style={{ fontSize: 14 * fs, color: "#B8C8DA" }}>{"Annual spend $1.2M · aggregate ceiling 12% · individual terms to 20%"}</span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: 24, alignItems: "center" }}>
+        <div>
+          <div style={{ position: "relative", height: 34, borderRadius: 8, overflow: "hidden", background: "rgba(184,200,218,0.08)", outline: focused ? "3px solid #FFFFFF" : "none", outlineOffset: 4 }}>
+            <div aria-hidden="true" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: pct(SIQ_AGG), background: "rgba(74,222,128,0.18)" }} />
+            <div aria-hidden="true" style={{ position: "absolute", left: pct(SIQ_AGG), top: 0, bottom: 0, width: pct(SIQ_IND - SIQ_AGG), background: "rgba(251,191,36,0.18)" }} />
+            <div aria-hidden="true" style={{ position: "absolute", left: pct(SIQ_IND), top: 0, bottom: 0, right: 0, background: "rgba(248,113,113,0.14)" }} />
+            <div aria-hidden="true" style={{ position: "absolute", left: 0, top: 8, bottom: 8, width: pct(rate), borderRadius: 4, background: meta.color, transition: "width 0.15s ease, background 0.3s ease", boxShadow: `0 0 14px ${meta.color}88` }} />
+            {[SIQ_AGG, SIQ_IND].map((c) => <div key={c} aria-hidden="true" style={{ position: "absolute", left: pct(c), top: 0, bottom: 0, width: 2, background: "#FFFFFF", opacity: 0.7 }} />)}
+            <input type="range" className="bolt-range" min={0} max={MAX} step={0.5} value={rate} onChange={(e) => setRate(Number(e.target.value))} onFocus={(ev) => setFocused(ev.currentTarget.matches(":focus-visible"))} onBlur={() => setFocused(false)} aria-label="Assumed rebate rate" aria-valuetext={`${rate}% rebate rate: ${state}`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", margin: 0, opacity: 0, cursor: "ew-resize" }} />
+          </div>
+          <div aria-hidden="true" style={{ position: "relative", height: 34, marginTop: 6, fontSize: 12.5, color: "#B8C8DA" }}>
+            <span style={{ position: "absolute", left: 0 }}>{"0%"}</span>
+            <span style={{ position: "absolute", left: pct(SIQ_AGG), transform: "translateX(-50%)", textAlign: "center", lineHeight: 1.3 }}>{"12%"}<br />{"aggregate"}</span>
+            <span style={{ position: "absolute", left: pct(SIQ_IND), transform: "translateX(-50%)", textAlign: "center", lineHeight: 1.3 }}>{"20%"}<br />{"individual"}</span>
+            <span style={{ position: "absolute", right: 0 }}>{"30%"}</span>
+          </div>
+          <p style={{ margin: "12px 0 0", fontSize: 14, color: "#7F93AE" }}>{"Drag the bar to change the analyst's assumed rate."}</p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ borderRadius: 12, padding: "16px 18px", background: "rgba(16,34,66,0.7)", border: "1px solid rgba(184,200,218,0.2)" }}>
+            <div style={{ fontSize: 13, color: "#B8C8DA" }}>{"Assumed rate"}</div>
+            <div style={{ fontSize: 34 * fs, fontWeight: 700, color: "#FFFFFF", fontVariantNumeric: "tabular-nums" }}>{rate.toFixed(1) + "%"}</div>
+            <div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 2, fontVariantNumeric: "tabular-nums" }}>{"≈ $" + value.toLocaleString("en-US") + " / yr"}</div>
+          </div>
+          <div aria-live="polite" style={{ borderRadius: 12, padding: "16px 18px", background: `${meta.color}14`, border: `1.5px solid ${meta.color}`, boxShadow: `0 0 20px ${meta.color}33`, transition: "all 0.3s ease" }}>
+            <div style={{ fontSize: 13, color: "#B8C8DA" }}>{"Ceiling check"}</div>
+            <div key={state} className="bolt-anim" style={{ fontSize: 30 * fs, fontWeight: 800, color: meta.color, letterSpacing: 0.5, animation: "boltPop 0.35s ease-out both" }}>{state}</div>
+            <div style={{ fontSize: 13.5, color: "#E2EAF2", marginTop: 2, lineHeight: 1.4 }}>{meta.text}</div>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+// Interactive: switch the scenario's program and watch which products move
+const siqBook: { name: string; native: "Standard" | "Differentiated"; std: number; diff: number }[] = [
+  { name: "Product A", native: "Standard", std: 182000, diff: 182000 },
+  { name: "Product B", native: "Standard", std: 96000, diff: 96000 },
+  { name: "Product C", native: "Differentiated", std: 0, diff: 141000 },
+  { name: "Product D", native: "Differentiated", std: 0, diff: 88000 },
+  { name: "Product E", native: "Differentiated", std: 0, diff: 57000 },
+];
+
+function SiqScenarioDemo({ big = false }: { big?: boolean }) {
+  const [diff, setDiff] = useState(false);
+  const total = (d: boolean) => siqBook.reduce((s, p) => s + (d ? p.diff : p.std), 0);
+  const max = Math.max(...siqBook.map((p) => p.diff));
+  const fmt = (v: number) => "$" + Math.round(v / 1000).toLocaleString("en-US") + "K";
+  const fs = big ? 1.1 : 1;
+  const tab = (on: boolean, label: string, val: boolean) => (
+    <button type="button" aria-pressed={on} onClick={() => setDiff(val)} style={{ fontFamily: "inherit", fontSize: 15 * fs, fontWeight: 700, padding: "8px 16px", borderRadius: 8, cursor: "pointer", border: `1.5px solid ${on ? SIQ_COLOR : "rgba(184,200,218,0.3)"}`, background: on ? "rgba(163,230,53,0.16)" : "transparent", color: on ? "#FFFFFF" : "#B8C8DA", transition: "all 0.2s ease" }}>{label}</button>
+  );
+  return (
+    <Card style={{ padding: big ? "24px 28px" : "clamp(16px, 2.5vw, 24px)" }}>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <h3 style={{ margin: 0, fontSize: 20 * fs, color: "#FFFFFF" }}>Compare scenarios</h3>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative book"}</span>
+        </div>
+        <div role="group" aria-label="Scenario program" style={{ display: "flex", gap: 8 }}>{tab(!diff, "Standard baseline", false)}{tab(diff, "Differentiated program", true)}</div>
+      </div>
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
+        {siqBook.map((p) => {
+          const v = diff ? p.diff : p.std;
+          const moves = p.native === "Differentiated";
+          return (
+            <li key={p.name} style={{ display: "grid", gridTemplateColumns: "minmax(150px, 0.9fr) minmax(0, 2fr) 70px", gap: 12, alignItems: "center" }}>
+              <span style={{ fontSize: 15 * fs, color: "#FFFFFF", fontWeight: 600 }}>{p.name}<span style={{ display: "block", fontSize: 12.5, fontWeight: 500, color: moves ? SIQ_COLOR : "#7F93AE" }}>{moves ? "Differentiated-native · moves" : "Standard-native · stays put"}</span></span>
+              <span style={{ height: 14, borderRadius: 4, background: "rgba(184,200,218,0.08)", overflow: "hidden" }}>
+                <span style={{ display: "block", height: "100%", width: `${(v / max) * 100}%`, borderRadius: 4, background: moves ? SIQ_COLOR : "#93A9C2", transition: "width 0.6s cubic-bezier(.2,.7,.2,1)" }} />
+              </span>
+              <span style={{ fontSize: 15 * fs, fontWeight: 700, color: v ? "#FFFFFF" : "#7F93AE", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{v ? fmt(v) : "$0"}</span>
+            </li>
+          );
+        })}
+      </ul>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "baseline", marginTop: 16, paddingTop: 14, borderTop: "1px solid rgba(184,200,218,0.16)" }}>
+        <span aria-live="polite" style={{ fontSize: 17 * fs, color: "#FFFFFF", fontWeight: 700 }}>{"Annual rebate value: " + fmt(total(diff))}</span>
+        <span style={{ fontSize: 16 * fs, fontWeight: 700, color: diff ? SIQ_COLOR : "#7F93AE", transition: "color 0.3s ease" }}>{diff ? "+" + fmt(total(true) - total(false)) + " vs Standard" : "Switch the program to see the delta"}</span>
+      </div>
+      <p style={{ margin: "10px 0 0", fontSize: 13.5, color: "#B8C8DA", lineHeight: 1.5 }}>{"Standard-native products keep their Standard terms in every scenario. Only products native to a differentiated program change, which is what makes the comparison honest."}</p>
+    </Card>
+  );
+}
+
+// Trust: append-only history, tenant isolation, reconciliation, test net
+function SiqTrust() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
+  const cards: { title: string; icon: BoltGlyph; text: string }[] = [
+    { title: "Nothing is overwritten", icon: "list", text: "Every rate change closes the old assumption and opens a new one. History is append-only, so every number can be traced." },
+    { title: "Isolation in the database", icon: "shield", text: "Each customer's data is fenced off by the database itself, not just the app, which is what cleared multi-tenant approval." },
+    { title: "Reconciled to the workbook", icon: "check", text: "A reconciliation harness compares outputs with the legacy Excel workbook, with zero unexplained differences." },
+    { title: "A real test net", icon: "code", text: "132 automated unit and integration tests plus 24 end-to-end tests guard the calculation engine." },
+  ];
+  return (
+    <div ref={ref} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 16, alignItems: "start" }}>
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: 12 }}>
+        {cards.map((c, i) => (
+          <li key={c.title} className="bolt-anim" style={{ borderRadius: 12, padding: "16px 16px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(163,230,53,0.25)", ...(inView ? { animation: `boltRise 0.55s cubic-bezier(.2,.7,.2,1) ${i * 0.12}s both` } : { opacity: 0 }) }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}><BoltGlyphIcon kind={c.icon} size={20} color={SIQ_COLOR} /><h3 style={{ margin: 0, fontSize: 16.5, color: "#FFFFFF" }}>{c.title}</h3></div>
+            <p style={{ margin: 0, fontSize: 14.5, color: "#D0DAE6", lineHeight: 1.5 }}>{c.text}</p>
+          </li>
+        ))}
+      </ul>
+      <div style={{ borderRadius: 14, padding: "18px 20px", background: "#071226", border: "1px solid rgba(184,200,218,0.2)" }}>
+        <p style={{ margin: "0 0 12px", fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"Assumption history · Product C"}</p>
+        {[
+          { v: "14.0%", when: "Initial assumption", closed: true, d: 0.4 },
+          { v: "16.5%", when: "Revised after contract review", closed: true, d: 1.0 },
+          { v: "18.0%", when: "Current · rationale recorded", closed: false, d: 1.6 },
+        ].map((r) => (
+          <div key={r.v} className="bolt-anim" style={{ display: "grid", gridTemplateColumns: "70px 1fr auto", gap: 12, alignItems: "center", padding: "10px 12px", marginBottom: 8, borderRadius: 9, background: r.closed ? "rgba(184,200,218,0.05)" : "rgba(163,230,53,0.12)", border: `1px solid ${r.closed ? "rgba(184,200,218,0.18)" : SIQ_COLOR}`, ...(inView ? { animation: `boltIn 0.45s ease-out ${r.d}s both` } : { opacity: 0 }) }}>
+            <span style={{ fontFamily: MONO, fontSize: 16, fontWeight: 700, color: r.closed ? "#B8C8DA" : "#FFFFFF", textDecoration: r.closed ? "line-through" : "none" }}>{r.v}</span>
+            <span style={{ fontSize: 14, color: r.closed ? "#B8C8DA" : "#E2EAF2" }}>{r.when}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: r.closed ? "#7F93AE" : SIQ_COLOR }}>{r.closed ? "Closed" : "Open"}</span>
+          </div>
+        ))}
+        <p style={{ margin: "6px 0 0", fontSize: 13, color: "#7F93AE" }}>{"Illustrative history. Older rows are closed, never deleted."}</p>
+      </div>
+    </div>
+  );
+}
+
+// What's built and what's next, plus the three-leg target architecture
+const siqBuilt = ["Scenario modeling across programs", "Quantity assumptions with proportional scaling", "Native program resolution", "Three-state ceiling check", "Append-only assumption history", "Tenant isolation", "Reconciliation harness", "Analyst workspace and CSV export"];
+const siqNext = ["Contract tier ingestion from the contract tracker", "Product-share analysis", "Growth-assumption assist", "Clinical guardrails", "Pricing integration with Nova", "Member mode for retention and QBRs", "Auto-tiering", "Customer-facing experience"];
+const siqLegs: { title: string; sub: string; icon: BoltGlyph; color: string }[] = [
+  { title: "Pricing, NDC and volume", sub: "From Nova", icon: "db", color: "#10B981" },
+  { title: "Manufacturer contract terms", sub: "From the contract tracker", icon: "briefcase", color: "#FBBF24" },
+  { title: "Modeling layer", sub: "SavingsIQ: scenarios, assumptions, ceilings", icon: "chart", color: SIQ_COLOR },
+];
+
+function SiqNext() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.25);
+  const list = (title: string, chip: string, chipColor: string, items: string[], done: boolean) => (
+    <div style={{ borderRadius: 14, padding: "20px 22px", background: done ? "rgba(16,34,66,0.6)" : "linear-gradient(160deg, rgba(163,230,53,0.08), #071226)", border: `1px solid ${done ? "rgba(184,200,218,0.2)" : "rgba(163,230,53,0.35)"}` }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12 }}>
+        <h3 style={{ margin: 0, fontSize: 18, color: "#FFFFFF" }}>{title}</h3>
+        <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: chipColor, border: `1px solid ${chipColor}88`, borderRadius: 5, padding: "2px 8px" }}>{chip}</span>
+      </div>
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
+        {items.map((it, i) => (
+          <li key={it} className="bolt-anim" style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 15, color: "#E2EAF2", ...(inView ? { animation: `boltIn 0.35s ease-out ${(done ? 0.1 : 0.6) + i * 0.08}s both` } : { opacity: 0 }) }}>
+            {done
+              ? <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" style={{ flexShrink: 0 }}><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke={SIQ_COLOR} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              : <span aria-hidden="true" style={{ width: 9, height: 9, margin: "0 3.5px", borderRadius: "50%", border: `2px solid ${SIQ_COLOR}`, flexShrink: 0 }} />}
+            {it}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+  return (
+    <div ref={ref}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 14 }}>
+        {list("Built and validated", "Prototype", SIQ_COLOR, siqBuilt, true)}
+        {list("Next on Bolt", "Roadmap", "#FBBF24", siqNext, false)}
+      </div>
+      <div style={{ marginTop: 22 }}>
+        <p style={{ margin: "0 0 12px", fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA" }}>{"Target state: three legs, one comparison"}</p>
+        <div className="siq-legs" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr)) auto minmax(180px, 0.9fr)", gap: 12, alignItems: "stretch" }}>
+          {siqLegs.map((l, i) => (
+            <div key={l.title} className="bolt-anim" style={{ borderRadius: 12, padding: "14px 16px", background: "rgba(16,34,66,0.6)", border: `1px solid ${l.color}66`, borderTop: `3px solid ${l.color}`, ...(inView ? { animation: `boltRise 0.5s cubic-bezier(.2,.7,.2,1) ${1.0 + i * 0.15}s both` } : { opacity: 0 }) }}>
+              <BoltGlyphIcon kind={l.icon} size={20} color={l.color} />
+              <p style={{ margin: "8px 0 2px", fontSize: 15.5, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.3 }}>{l.title}</p>
+              <p style={{ margin: 0, fontSize: 13.5, color: "#B8C8DA" }}>{l.sub}</p>
+            </div>
+          ))}
+          <span aria-hidden="true" className="bolt-harness-arrow" style={{ alignSelf: "center", display: "inline-flex", width: 34, height: 34, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: "rgba(163,230,53,0.14)", border: `1px solid ${SIQ_COLOR}88` }}>
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6" fill="none" stroke={SIQ_COLOR} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </span>
+          <div className="bolt-anim" style={{ borderRadius: 12, padding: "14px 16px", background: "linear-gradient(160deg, rgba(163,230,53,0.22), rgba(163,230,53,0.08))", border: `1.5px solid ${SIQ_COLOR}`, display: "flex", flexDirection: "column", justifyContent: "center", ...(inView ? { animation: "boltPop 0.5s ease-out 1.6s both" } : { opacity: 0 }) }}>
+            <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#FFFFFF" }}>{"The economic comparison"}</p>
+            <p style={{ margin: "4px 0 0", fontSize: 13.5, color: "#E2EAF2" }}>{"What a practice earns with McKesson versus its incumbent"}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SiqHeroTiles() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.2);
+  const tiles = [
+    { head: "~3 weeks", label: "Today, per comparison", sub: "Cross-functional effort, static spreadsheet" },
+    { head: "50 → 270", label: "Opportunities per analyst", sub: "Rebate opportunities under management" },
+    { head: "Reconciled", label: "To the legacy workbook", sub: "Zero unexplained differences" },
+  ];
+  return (
+    <div ref={ref} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 250px), 1fr))", gap: 12 }}>
+      {tiles.map((t, i) => (
+        <div key={t.head} className="bolt-anim" style={{ background: "rgba(16,34,66,0.6)", border: `1px solid ${SIQ_COLOR}4D`, borderRadius: 12, padding: "22px 24px", ...(inView ? { animation: `boltRise 0.6s cubic-bezier(.2,.7,.2,1) ${i * 0.12}s both` } : { opacity: 0 }) }}>
+          <p style={{ fontSize: 30, fontWeight: 700, letterSpacing: -0.5, color: SIQ_COLOR, margin: 0, lineHeight: 1.15 }}>{t.head}</p>
+          <p style={{ color: "#FFFFFF", fontSize: 17, fontWeight: 600, margin: "10px 0 3px" }}>{t.label}</p>
+          <p style={{ fontSize: 15.5, color: "#B8C8DA", margin: 0 }}>{t.sub}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SavingsIQPage({ onNavigate }: { onNavigate: Navigate }) {
+  const sectionStyle: React.CSSProperties = { marginTop: 56, paddingTop: 48, borderTop: "1px solid rgba(184,200,218,0.16)", scrollMarginTop: 84 };
+  const jump = (id: string, index: number) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "instant", block: "start" });
+    document.getElementById(`bolt-0${index + 1}-title`)?.focus({ preventScroll: true });
+  };
+  return (
+    <main id="siq-page" style={{ maxWidth: 1100, margin: "0 auto", padding: "40px clamp(16px, 2.5vw, 24px) 48px", color: "#E2EAF2", fontSize: 16, lineHeight: 1.5 }}>
+      <style>{BOLT_CSS}</style>
+      <header style={{ position: "relative", marginBottom: 8 }}>
+        <div aria-hidden="true" style={{ position: "absolute", top: -40, left: 0, right: 0, height: 320, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.2) 1px, transparent 1.2px)", backgroundSize: "22px 22px", WebkitMaskImage: "radial-gradient(ellipse 60% 80% at 80% 30%, black 10%, transparent 75%)", maskImage: "radial-gradient(ellipse 60% 80% at 80% 30%, black 10%, transparent 75%)" }} />
+        <div style={{ position: "relative", maxWidth: 760 }}>
+          <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color: SIQ_COLOR }}>{"Solutions · GPO rebate modeling"}</p>
+          <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
+            <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>SavingsIQ</h1>
+            <span style={{ fontFamily: MONO, fontSize: 12, fontWeight: 600, color: "#F59E0B", background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.3)", borderRadius: 4, padding: "3px 8px" }}>{"Prototype"}</span>
+          </div>
+          <p style={{ fontSize: 22, color: "#FFFFFF", fontWeight: 600, margin: "14px 0 0", lineHeight: 1.4 }}>{"Turning weeks of rebate analysis into a live economic comparison."}</p>
+          <p style={{ fontSize: 18, color: "#D0DAE6", margin: "10px 0 0", lineHeight: 1.55 }}>{"Models pharmaceutical rebate value for GPO prospects and members across oncology and multispecialty contract programs, so McKesson can show a practice what it earns with us versus its incumbent."}</p>
+        </div>
+        <div style={{ marginTop: 24 }}><SiqHeroTiles /></div>
+        <nav aria-label="SavingsIQ page sections" style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 20 }}>
+          {siqSections.map((section, index) => <BoltButton key={section.id} onClick={() => jump(section.id, index)} style={{ background: "transparent", padding: "8px 14px" }}><span style={{ color: SIQ_COLOR, fontFamily: MONO }}>{"0" + (index + 1)}</span><span>{section.label}</span><BoltIcon kind="down" /></BoltButton>)}
+        </nav>
+      </header>
+
+      <section id="siq-why" aria-labelledby="bolt-01-title" style={sectionStyle}>
+        <SectionTitle icon="briefcase" num="01" label="Why" title="The deciding artifact takes three weeks" sub="When McKesson competes for an oncology practice, the deciding artifact is an economic comparison. Today it takes weeks of cross-functional work and lands as a static spreadsheet." color={SIQ_COLOR} />
+        <Reveal><SiqCompare /></Reveal>
+      </section>
+
+      <section id="siq-how" aria-labelledby="bolt-02-title" style={sectionStyle}>
+        <SectionTitle icon="layers" num="02" label="How" title="From purchase data to a defensible number" sub="Contract rules that lived in analysts' heads are encoded once and applied every time." color={SIQ_COLOR} />
+        <Reveal><SiqPipeline /></Reveal>
+      </section>
+
+      <section id="siq-try" aria-labelledby="bolt-03-title" style={sectionStyle}>
+        <SectionTitle icon="target" num="03" label="Try it" title="Every rate is checked. Every scenario is honest." sub="Two rules that took subject-matter experts to get right: a three-state ceiling check, and a program rule that only moves the products a program actually covers." color={SIQ_COLOR} />
+        <Reveal><SiqCeilingDemo /></Reveal>
+        <div style={{ height: 16 }} />
+        <Reveal><SiqScenarioDemo /></Reveal>
+      </section>
+
+      <section id="siq-trust" aria-labelledby="bolt-04-title" style={sectionStyle}>
+        <SectionTitle icon="shield" num="04" label="Trust" title="Built to be audited" sub="Pricing guarantees can depend on these numbers, so the engine is designed to be traceable, isolated and tested." color={SIQ_COLOR} />
+        <Reveal><SiqTrust /></Reveal>
+      </section>
+
+      <section id="siq-next" aria-labelledby="bolt-05-title" style={sectionStyle}>
+        <SectionTitle icon="trend" num="05" label="Next" title="From prototype to platform" sub="A working, validated prototype built with Claude Code, now handed to the Bolt team to build out. Customer-facing use follows compliance approval." color={SIQ_COLOR} />
+        <Reveal><SiqNext /></Reveal>
+      </section>
+
+      <footer style={{ marginTop: 48, paddingTop: 28, borderTop: "1px solid rgba(184,200,218,0.25)", display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+        <p style={{ flex: "1 1 480px", fontSize: 18, color: "#D0DAE6", margin: 0, lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>{"A competitive differentiator for GPO."}</strong>{" Prototyped with Claude Code, carried forward on Bolt."}</p>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <BoltButton onClick={() => onNavigate("bolt")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR }}><span>Bolt PaaS</span><BoltIcon kind="arrow" /></BoltButton>
+          <BoltButton onClick={() => onNavigate("dataplatform")} style={{ color: DP_COLOR, borderColor: DP_COLOR }}><span>Data Platform</span><BoltIcon kind="arrow" /></BoltButton>
+          <BoltButton onClick={() => onNavigate("solutions")} style={{ color: "#93C5FD", borderColor: "#60A5FA" }}><span>All Solutions</span><BoltIcon kind="arrow" /></BoltButton>
+        </div>
+      </footer>
+    </main>
+  );
+}
+
+// ============================================================
 // MAIN APP — TAB NAVIGATION
 // ============================================================
 
@@ -3928,6 +4300,7 @@ const navGroups = [
     { id: "novaxray", label: "Nova + X-Ray" },
     { id: "meridian", label: "Meridian" },
     { id: "skynet", label: PRACTICE_NAME },
+    { id: "savingsiq", label: "SavingsIQ" },
   ]},
   { label: "Roadmap", items: [
     { id: "roadmap", label: "MPTS Roadmap" },
@@ -4004,6 +4377,7 @@ export default function App() {
       <div key={activePage} style={{ animation: "fadeIn 0.3s ease" }}>
         {activePage === "solutions" && <SolutionsOverviewPage onNavigate={navigate} />}
         {activePage === "titan" && <TitanPage onNavigate={navigate} />}
+        {activePage === "savingsiq" && <SavingsIQPage onNavigate={navigate} />}
         {activePage === "novaxray" && <NovaXrayPage />}
         {activePage === "meridian" && <MeridianPage />}
         {activePage === "skynet" && <SkynetPage />}
