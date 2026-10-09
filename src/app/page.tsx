@@ -2097,7 +2097,7 @@ const harnessProps: { label: string; icon: BoltGlyph }[] = [
   { label: "Repeatable", icon: "repeat" },
 ];
 
-function BoltHarness() {
+function BoltHarness({ hideIntro = false }: { hideIntro?: boolean }) {
   const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
   const arrow = (
     <span aria-hidden="true" className="bolt-harness-arrow" style={{ alignSelf: "center", display: "inline-flex", width: 30, height: 30, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: "rgba(45,212,191,0.12)", border: "1px solid rgba(45,212,191,0.4)" }}>
@@ -2106,7 +2106,7 @@ function BoltHarness() {
   );
   return (
     <div ref={ref}>
-      <div style={{ marginBottom: 16 }}>
+      <div style={hideIntro ? srOnly : { marginBottom: 16 }}>
         <h3 style={{ margin: 0, fontSize: 20, color: "#FFFFFF" }}>The harness is the product</h3>
         <p style={{ margin: "6px 0 0", fontSize: 16, color: "#D0DAE6", lineHeight: 1.55, maxWidth: 820 }}>{"Every app inherits the same enterprise layers by default, so builders start from governed software, not a blank page."}</p>
       </div>
@@ -2281,6 +2281,14 @@ function BoltPresenter({ onExit }: { onExit: () => void }) {
             </div>
           ))}
         </div>
+      </div>
+    ) },
+    { id: "harness", render: () => (
+      <div>
+        {eyebrow("03 · How")}
+        {title("The harness is the product")}
+        <p className="bolt-anim" style={{ ...rise(0.12), fontSize: 22, lineHeight: 1.5, color: "#D0DAE6", margin: "-12px 0 28px", maxWidth: 900 }}>{"Every app inherits the same enterprise layers by default, so builders start from governed software, not a blank page."}</p>
+        <div className="bolt-anim" style={rise(0.2)}><BoltHarness hideIntro /></div>
       </div>
     ) },
     { id: "build", render: () => (
