@@ -16,7 +16,7 @@ const SectionHeader = ({ label }: { label: string }) => (
 );
 
 const Card = ({ children, style = {} }: { children: React.ReactNode; style?: React.CSSProperties }) => (
-  <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.1)", borderRadius: 12, padding: 24, ...style }}>
+  <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.1)", borderRadius: 12, padding: 24, ...style }}>
     {children}
   </div>
 );
@@ -55,31 +55,86 @@ const intelligenceLayer = [
 
 const projects = [
   { id: "titan", name: "Titan", tagline: "Payer policy intelligence", color: "#F59E0B", status: "Live", statusColor: "#10B981", description: "Eliminates the quarterly manual grind for payer policy tracking. Continuously monitors formularies, step therapy requirements, and preferred drug lists across oncology drugs and biosimilars \u2014 delivering verified, real-time coverage intelligence to prevent claim denials.", capabilities: ["24/7 automated payer surveillance", "Formulary & step therapy extraction", "Preferred drug list monitoring", "Audit-ready governance trail", "Real-time API + clean UI delivery"], dataInputs: ["Payer Policy Surveillance", "Biosimilar Utilization"], intelligenceUsed: ["Agents", "AI Prompting Tools"], impact: "Removes administrative barriers for cancer patients \u2014 ensures the right drug is verified before treatment, not after a denial." },
-  { id: "nova", name: "Nova 2.0", tagline: "AI pricing engine", color: "#10B981", status: "In dev", statusColor: "#3B82F6", description: "Replaces the Excel-based pricing model end-to-end. Automates buy/sell economics across WAC, contract price, VCD, FFS, GPO admin fees, and OIDs. Phase 3 adds AI deal recommendations. Phase 4 deploys small-account autonomy and field enablement. Estimated $6\u201312M upside.", capabilities: ["Automated WAC / GPO / OID waterfall", "Real-time what-if scenario modeling", "AI deal recommendations (Phase 3)", "SOX-compliant approval workflows", "Drug-level and account-level P&L", "LLM pricing guidance chat"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates", "Customer & Account Data"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools"], impact: "$6\u201312M upside through improved pricing efficiency. Compresses analyst time per deal and systematically protects margin on every renewal." },
-  { id: "xray", name: "X-Ray", tagline: "Drug pricing transparency", color: "#3B82F6", status: "Building", statusColor: "#F59E0B", description: "Customer-facing solution delivering full drug pricing transparency and net cost recovery visibility to practices. Shows the complete cost walk from WAC through discounts and rebates to net price, then layers in reimbursement to reveal per-drug NCR. Built on the same shared data infrastructure as Nova.", capabilities: ["WAC-to-net-price cost walk per drug", "Net cost recovery (NCR) calculation", "Reimbursement vs. net price comparison", "Customer-facing and field rep views", "Real-time rebate feed integration"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools", "Agents"], impact: "Gives practices and field reps full visibility into drug economics \u2014 pricing transparency that drives competitive market response and enables data-driven drug decisions at the point of care." },
-  { id: "skynet", name: PRACTICE_NAME, tagline: "Dynamic QBR portal", color: "#EF4444", status: "Planning", statusColor: "#A8B8CC", description: "Replaces the static PowerPoint QBR process. Pulls data from disparate sources into a unified schema and delivers it through a dynamic, interactive customer portal. The rep or customer can ask any question in natural language \u2014 converted to SQL on the fly against a live database.", capabilities: ["Automated data aggregation from all sources", "Dynamic customer-facing portal", "Natural language to SQL query engine", "Real-time distribution purchase analytics", "GPO rebate, PMID, biosimilar reporting", "Technology adoption tracking"], dataInputs: ["GPO Rebates", "MID Data", "Biosimilar Utilization", "Customer & Account Data"], intelligenceUsed: ["AI Prompting Tools"], impact: "Moves from a static PowerPoint deck with manual data gathering to a live customer experience. Eliminates hours of rep prep time per QBR cycle." },
+  { id: "nova", name: "Nova 2.0", tagline: "AI pricing engine", color: "#10B981", status: "Pilot", statusColor: "#8B5CF6", description: "Replaces the Excel-based pricing model end-to-end. Automates buy/sell economics across WAC, contract price, VCD, FFS, GPO admin fees, and OIDs. Phase 3 adds AI deal recommendations. Phase 4 deploys small-account autonomy and field enablement. Estimated $6\u201312M upside.", capabilities: ["Automated WAC / GPO / OID waterfall", "Real-time what-if scenario modeling", "AI deal recommendations (Phase 3)", "SOX-compliant approval workflows", "Drug-level and account-level P&L", "LLM pricing guidance chat"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates", "Customer & Account Data"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools"], impact: "$6\u201312M upside through improved pricing efficiency. Compresses analyst time per deal and systematically protects margin on every renewal." },
+  { id: "xray", name: "X-Ray", tagline: "Drug pricing transparency", color: "#3B82F6", status: "Pilot", statusColor: "#8B5CF6", description: "Customer-facing solution delivering full drug pricing transparency and net cost recovery visibility to practices. Shows the complete cost walk from WAC through discounts and rebates to net price, then layers in reimbursement to reveal per-drug NCR. Built on the same shared data infrastructure as Nova.", capabilities: ["WAC-to-net-price cost walk per drug", "Net cost recovery (NCR) calculation", "Reimbursement vs. net price comparison", "Customer-facing and field rep views", "Real-time rebate feed integration"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools", "Agents"], impact: "Gives practices and field reps full visibility into drug economics \u2014 pricing transparency that drives competitive market response and enables data-driven drug decisions at the point of care." },
+  { id: "skynet", name: PRACTICE_NAME, tagline: "Dynamic QBR portal", color: "#EF4444", status: "Pilot", statusColor: "#8B5CF6", description: "Replaces the static PowerPoint QBR process. Pulls data from disparate sources into a unified schema and delivers it through a dynamic, interactive customer portal. The rep or customer can ask any question in natural language \u2014 converted to SQL on the fly against a live database.", capabilities: ["Automated data aggregation from all sources", "Dynamic customer-facing portal", "Natural language to SQL query engine", "Real-time distribution purchase analytics", "GPO rebate, PMID, biosimilar reporting", "Technology adoption tracking"], dataInputs: ["GPO Rebates", "MID Data", "Biosimilar Utilization", "Customer & Account Data"], intelligenceUsed: ["AI Prompting Tools"], impact: "Moves from a static PowerPoint deck with manual data gathering to a live customer experience. Eliminates hours of rep prep time per QBR cycle." },
 ];
 
 // ============================================================
-// GLIDE STACK PAGE
+// SHARED NAV TYPE
 // ============================================================
 
-function GlideStackPage() {
-  const [activeProject, setActiveProject] = useState<number | null>(null);
+type Navigate = (id: string) => void;
+
+const CrossLink = ({ label, target, onNavigate, color = "#3B82F6" }: { label: string; target: string; onNavigate: Navigate; color?: string }) => (
+  <button onClick={() => onNavigate(target)} style={{ background: `${color}10`, border: `1px solid ${color}35`, borderRadius: 8, padding: "10px 16px", cursor: "pointer", outline: "none", display: "inline-flex", alignItems: "center", gap: 10, transition: "all 0.2s ease" }}>
+    <span style={{ fontSize: 15, fontWeight: 600, color }}>{label}</span>
+    <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7 H11 M7.5 3.5 L11 7 L7.5 10.5" fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+  </button>
+);
+
+// ============================================================
+// DATA DOMAINS (shown on Data Platform)
+// ============================================================
+
+function DataDomainsSection() {
   const [activeDataBucket, setActiveDataBucket] = useState<number | null>(null);
-  const selectedProject = activeProject !== null ? projects[activeProject] : null;
   const selectedBucket = activeDataBucket !== null ? dataLayer[activeDataBucket] : null;
+  return (
+    <div>
+      <SectionHeader label="Data Domains" />
+      <p style={{ fontSize: 15, color: "#D0DAE6", margin: "-6px 0 16px", lineHeight: 1.6, maxWidth: 820 }}>The eight data domains the Glide Platform unifies. Click any domain to see its full inventory.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+        {dataLayer.map((bucket, i) => (
+          <div key={bucket.id} onClick={() => setActiveDataBucket(activeDataBucket === i ? null : i)} style={{ background: activeDataBucket === i ? `${bucket.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeDataBucket === i ? bucket.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: bucket.color, opacity: activeDataBucket === i ? 1 : 0.35 }} />
+            <div style={{ fontSize: 15, fontWeight: 600, color: bucket.color, marginBottom: 10, lineHeight: 1.3, minHeight: 34 }}>{bucket.title}</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+              {bucket.items.slice(0, 3).map((item, j) => (
+                <span key={j} style={{ fontSize: 13, color: "#E2EAF2", background: "rgba(148,163,184,0.10)", border: "1px solid rgba(148,163,184,0.2)", borderRadius: 4, padding: "2px 7px" }}>{item}</span>
+              ))}
+              {bucket.items.length > 3 && <span style={{ fontSize: 13, color: "#D0DAE6", padding: "2px 4px" }}>+{bucket.items.length - 3} more</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+      {selectedBucket && (
+        <div style={{ margin: "12px 0 0", background: `${selectedBucket.color}08`, border: `1px solid ${selectedBucket.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedBucket.color, marginBottom: 16 }}>{selectedBucket.title + " — full data inventory"}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>
+            {selectedBucket.items.map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8 }}>
+                <div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedBucket.color, flexShrink: 0 }} />
+                <span style={{ fontSize: 16, color: "#E2EAF2" }}>{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// SOLUTIONS OVERVIEW PAGE (former Glide Stack applications grid)
+// ============================================================
+
+const solutionPageIds: Record<string, string> = { titan: "titan", nova: "novaxray", xray: "novaxray", skynet: "skynet" };
+
+function SolutionsOverviewPage({ onNavigate }: { onNavigate: Navigate }) {
+  const [activeProject, setActiveProject] = useState<number | null>(null);
+  const selectedProject = activeProject !== null ? projects[activeProject] : null;
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: "0 0 8px", lineHeight: 1.15 }}>The Glide Stack</h1>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 720, lineHeight: 1.6 }}>Oncology and Multi-Specialty AI Platform Architecture</p>
-      <p style={{ fontSize: 15, color: "#D0DAE6", margin: "0 0 48px", lineHeight: 1.5 }}>Click any project or data bucket to explore.</p>
+      <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: "0 0 8px", lineHeight: 1.15 }}>Solutions</h1>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 720, lineHeight: 1.6 }}>Oncology and multi-specialty applications built on the Glide Platform</p>
+      <p style={{ fontSize: 15, color: "#D0DAE6", margin: "0 0 48px", lineHeight: 1.5 }}>Click any application for a summary, or open its full page.</p>
 
       <SectionHeader label="Applications" />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
         {projects.map((p, i) => (
-          <div key={p.id} onClick={() => setActiveProject(activeProject === i ? null : i)} style={{ background: activeProject === i ? `${p.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeProject === i ? p.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+          <div key={p.id} onClick={() => setActiveProject(activeProject === i ? null : i)} style={{ background: activeProject === i ? `${p.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeProject === i ? p.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: p.color, opacity: activeProject === i ? 1 : 0.4 }} />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
               <span style={{ fontSize: 17, fontWeight: 700, color: p.color }}>{p.name}</span>
@@ -97,111 +152,198 @@ function GlideStackPage() {
             <p style={{ fontSize: 17, color: "#E2EAF2", margin: 0, lineHeight: 1.65 }}>{selectedProject.description}</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-            <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
+            <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
               <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Capabilities</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
                 {selectedProject.capabilities.map((c, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedProject.color, marginTop: 7, flexShrink: 0, boxShadow: `0 0 6px ${selectedProject.color}40` }} />
+                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedProject.color, marginTop: 7, flexShrink: 0 }} />
                     <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span>
                   </div>
                 ))}
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20, flex: 1 }}>
+              <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20, flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Data inputs</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  {selectedProject.dataInputs.map((d, i) => (
-                    <span key={i} style={{ fontSize: 14, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.15)", borderRadius: 6, padding: "4px 10px" }}>{d}</span>
-                  ))}
+                  {selectedProject.dataInputs.map((d, i) => (<span key={i} style={{ fontSize: 14, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.15)", borderRadius: 6, padding: "4px 10px" }}>{d}</span>))}
                 </div>
               </div>
-              <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20, flex: 1 }}>
+              <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20, flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Intelligence used</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  {selectedProject.intelligenceUsed.map((d, i) => (
-                    <span key={i} style={{ fontSize: 14, color: selectedProject.color, background: `${selectedProject.color}12`, border: `1px solid ${selectedProject.color}25`, borderRadius: 6, padding: "4px 10px" }}>{d}</span>
+                  {selectedProject.intelligenceUsed.map((d, i) => (<span key={i} style={{ fontSize: 14, color: selectedProject.color, background: `${selectedProject.color}12`, border: `1px solid ${selectedProject.color}25`, borderRadius: 6, padding: "4px 10px" }}>{d}</span>))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.6, flex: 1, minWidth: 280 }}>{selectedProject.impact}</span>
+            {solutionPageIds[selectedProject.id] && <CrossLink label={"Open " + selectedProject.name} target={solutionPageIds[selectedProject.id]} onNavigate={onNavigate} color={selectedProject.color} />}
+          </div>
+        </div>
+      )}
+
+      <div style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <CrossLink label="Built on Bolt PaaS" target="bolt" onNavigate={onNavigate} color="#8B5CF6" />
+        <CrossLink label="Powered by the Data Platform" target="dataplatform" onNavigate={onNavigate} color="#10B981" />
+      </div>
+      <div style={{ height: 64 }} />
+    </div>
+  );
+}
+
+// ============================================================
+// TITAN DATA
+// ============================================================
+
+const titanStages = [
+  { id: "surveillance", stage: "Surveillance", nickname: "The 24/7 Guardian", color: "#3B82F6", desc: "Continuous, automated monitoring of payer policies for specific oncology drugs and biosimilars, around the clock." },
+  { id: "acquisition", stage: "Acquisition", nickname: "Instant Answers", color: "#8B5CF6", desc: "AI reads messy policy documents and extracts the updates that matter, without the manual digging." },
+  { id: "synthesis", stage: "Synthesis", nickname: "Noise into Knowledge", color: "#EC4899", desc: "Structures complex rules, identifying preferred drugs and step therapy requirements automatically." },
+  { id: "governance", stage: "Governance", nickname: "Audit-Ready", color: "#F59E0B", desc: "Every policy is verified and traceable, so practices act on accurate, current coverage information." },
+  { id: "execution", stage: "Execution", nickname: "At Your Fingertips", color: "#10B981", desc: "Delivered through a clean user interface and a real-time API, ending the quarterly grind." },
+];
+
+const titanBeforeAfter = [
+  { dimension: "Monitoring", before: "Policies checked once a quarter; mid-quarter changes missed", after: "Continuous 24/7 surveillance of drugs and biosimilars" },
+  { dimension: "Finding updates", before: "Hours spent digging through messy documents", after: "AI reads and extracts policy updates instantly" },
+  { dimension: "Data freshness", before: "Often out of date by the time it was compiled", after: "Rules structured automatically: preferred drugs, step therapy" },
+  { dimension: "Confidence", before: "Treatment decisions made hoping policies hadn’t shifted", after: "Verified, audit-ready policy information" },
+  { dimension: "Sharing", before: "Slow, fragmented hand-offs between teams", after: "Clean UI plus a real-time API" },
+];
+
+// ============================================================
+// TITAN PAGE
+// ============================================================
+
+function TitanPage({ onNavigate }: { onNavigate: Navigate }) {
+  const [detected, setDetected] = useState(false);
+  const TITAN = "#F59E0B";
+
+  return (
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
+      {/* HERO */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Titan</h1>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Live</span>
+      </div>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>Payer Policy Intelligence</p>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>Ends the quarterly manual grind of tracking payer policy changes. Titan continuously monitors formularies, step therapy requirements, and preferred drug lists across oncology drugs and biosimilars, so the right drug is verified before treatment, not after a denial.</p>
+      <div style={{ display: "flex", gap: 16, marginBottom: 48, flexWrap: "wrap" }}>
+        {[{ label: "Surveillance", value: "24/7" }, { label: "Extracted", value: "Formulary + Step Therapy" }, { label: "Delivery", value: "UI + API" }, { label: "Coverage", value: "Oncology + Biosimilars" }].map((stat, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span>
+            <span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* HOW IT WORKS */}
+      <SectionHeader label="How Titan Works" />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10, marginBottom: 4 }}>
+        {titanStages.map((st, i) => (
+          <div key={st.id} style={{ background: `${st.color}0C`, border: `1px solid ${st.color}30`, borderRadius: 12, padding: "18px 16px", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: st.color, opacity: 0.7 }} />
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: st.color, marginBottom: 6 }}>{"0" + (i + 1)}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 2 }}>{st.stage}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: st.color, marginBottom: 10 }}>{st.nickname}</div>
+            <div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.5 }}>{st.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* POLICY CHANGE DETECTED (ILLUSTRATIVE) */}
+      <div style={{ marginTop: 28 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#E2EAF2" }}>Policy Change Detected</div>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#6BA3D4", background: "rgba(107,163,212,0.12)", border: "1px solid rgba(107,163,212,0.3)", borderRadius: 4, padding: "2px 8px" }}>ILLUSTRATIVE</span>
+        </div>
+        <Card style={{ padding: "24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 56px 1fr", gap: 12, alignItems: "stretch" }}>
+            <div style={{ background: "rgba(148,163,184,0.06)", border: "1px solid rgba(148,163,184,0.15)", borderRadius: 10, padding: "18px 20px" }}>
+              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 10 }}>Payer policy document (excerpt)</div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA", lineHeight: 1.7 }}>
+                {"Sample Commercial Plan — Medical Drug Policy, Section 4.2 (revised). Coverage of reference long-acting G-CSF products requires documented trial and failure of a preferred biosimilar unless a clinical exception applies. Preferred products are listed in Appendix B. Changes take effect on the first day of the following month."}
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="36" height="24" viewBox="0 0 36 24"><path d="M2 12 H30 M23 5 L31 12 L23 19" fill="none" stroke={detected ? TITAN : "rgba(148,163,184,0.4)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </div>
+            <div style={{ background: detected ? `${TITAN}0C` : "rgba(16,34,66,0.4)", border: `1px solid ${detected ? TITAN + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 10, padding: "18px 20px", transition: "all 0.3s ease" }}>
+              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: detected ? TITAN : "#B8C8DA", marginBottom: 12 }}>Structured rule</div>
+              {detected ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, animation: "fadeIn 0.3s ease" }}>
+                  {[{ k: "Payer", v: "Sample Commercial Plan" }, { k: "Drug class", v: "Long-acting G-CSF" }, { k: "Preferred", v: "Biosimilar products (Appendix B)" }, { k: "Step therapy", v: "Required before reference product" }, { k: "Exception", v: "Clinical exception allowed" }, { k: "Effective", v: "First of next month" }].map((row) => (
+                    <div key={row.k} style={{ display: "grid", gridTemplateColumns: "110px 1fr", gap: 10 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: "#B8C8DA" }}>{row.k}</span>
+                      <span style={{ fontSize: 15, color: "#FFFFFF" }}>{row.v}</span>
+                    </div>
                   ))}
                 </div>
-              </div>
+              ) : (
+                <span style={{ fontSize: 15, color: "#A8B8CC" }}>Run detection to see Titan turn the document into a structured coverage rule.</span>
+              )}
             </div>
           </div>
-          <div style={{ padding: "14px 18px", background: `${selectedProject.color}0A`, border: `1px solid ${selectedProject.color}18`, borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}>
-            <span style={{ color: selectedProject.color, fontSize: 16, marginTop: 1 }}>{"\u25C6"}</span>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: selectedProject.color, marginBottom: 4 }}>Business impact</div>
-              <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>{selectedProject.impact}</span>
-            </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
+            <button onClick={() => setDetected(!detected)} style={{ background: detected ? "transparent" : `${TITAN}20`, border: `1px solid ${TITAN}60`, borderRadius: 8, padding: "10px 18px", cursor: "pointer", outline: "none", fontSize: 15, fontWeight: 600, color: TITAN }}>{detected ? "Reset" : "Run detection"}</button>
+            <span style={{ fontSize: 13, color: "#A8B8CC" }}>Illustrative payer and policy text. Not a real policy.</span>
           </div>
+        </Card>
+      </div>
+
+      {/* BEFORE & AFTER */}
+      <div style={{ marginTop: 28 }}>
+        <SectionHeader label="Before & After" />
+        <Card style={{ padding: 0, overflow: "hidden" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "180px 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(16,34,66,0.3)" }}>
+            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span>
+            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>The Old Way</span>
+            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>With Titan</span>
+          </div>
+          {titanBeforeAfter.map((row, i) => (
+            <div key={i} style={{ display: "grid", gridTemplateColumns: "180px 1fr 1fr", padding: "14px 20px", borderBottom: i < titanBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{row.dimension}</span>
+              <span style={{ fontSize: 14, color: "#B8C8DA" }}>{row.before}</span>
+              <span style={{ fontSize: 14, color: "#10B981" }}>{row.after}</span>
+            </div>
+          ))}
+        </Card>
+      </div>
+
+      {/* PLATFORM CONNECTIONS */}
+      <div style={{ marginTop: 28 }}>
+        <SectionHeader label="On the Glide Platform" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+          <Card style={{ padding: 20 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Intelligence services</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+              {["Agents", "AI Prompting Tools"].map((d) => (<span key={d} style={{ fontSize: 14, color: TITAN, background: `${TITAN}12`, border: `1px solid ${TITAN}25`, borderRadius: 6, padding: "4px 10px" }}>{d}</span>))}
+            </div>
+            <CrossLink label="Bolt PaaS" target="bolt" onNavigate={onNavigate} color="#8B5CF6" />
+          </Card>
+          <Card style={{ padding: 20 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Data domains</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+              {["Payer Policy Surveillance", "Biosimilar Utilization"].map((d) => (<span key={d} style={{ fontSize: 14, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.15)", borderRadius: 6, padding: "4px 10px" }}>{d}</span>))}
+            </div>
+            <CrossLink label="Data Platform" target="dataplatform" onNavigate={onNavigate} color="#10B981" />
+          </Card>
+          <Card style={{ padding: 20 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Feeds</div>
+            <p style={{ fontSize: 15, color: "#E2EAF2", margin: "0 0 14px", lineHeight: 1.5 }}>{"Titan’s payer policy intelligence is a live data source for " + PRACTICE_NAME + "’s partnership reviews."}</p>
+            <CrossLink label={PRACTICE_NAME} target="skynet" onNavigate={onNavigate} color="#EF4444" />
+          </Card>
         </div>
-      )}
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "20px 40px" }}>
-        <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#D0DAE6", whiteSpace: "nowrap" }}>builds on</span>
-        <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
       </div>
 
-      <SectionHeader label="Intelligence layer" />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
-        {intelligenceLayer.map((layer) => (
-          <div key={layer.id} style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} />
-            <div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA", marginBottom: 16 }}>{layer.subtitle}</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 7, marginBottom: 16 }}>
-              {layer.capabilities.map((c, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                  <div style={{ width: 4, height: 4, borderRadius: "50%", background: layer.color, marginTop: 6, flexShrink: 0, opacity: 1 }} />
-                  <span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-              {layer.usedBy.map((proj, i) => { const p = projects.find((x) => x.name === proj); return (
-                <span key={i} style={{ fontSize: 13, color: p ? p.color : "#D0DAE6", background: p ? `${p.color}12` : "rgba(148,163,184,0.08)", border: `1px solid ${p ? p.color + "25" : "rgba(148,163,184,0.15)"}`, borderRadius: 5, padding: "2px 8px", fontFamily: "'JetBrains Mono', monospace" }}>{proj}</span>
-              ); })}
-            </div>
-          </div>
-        ))}
+      {/* IMPACT CALLOUT */}
+      <div style={{ marginTop: 28, padding: "16px 20px", background: `${TITAN}0A`, border: `1px solid ${TITAN}25`, borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <span style={{ color: TITAN, fontSize: 16, marginTop: 1 }}>{"◆"}</span>
+        <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>Removes administrative barriers for cancer patients. The right drug is verified before treatment, not after a denial.</span>
       </div>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "20px 40px" }}>
-        <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#D0DAE6", whiteSpace: "nowrap" }}>powered by</span>
-        <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
-      </div>
-
-      <SectionHeader label="Data layer" />
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-        {dataLayer.map((bucket, i) => (
-          <div key={bucket.id} onClick={() => setActiveDataBucket(activeDataBucket === i ? null : i)} style={{ background: activeDataBucket === i ? `${bucket.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeDataBucket === i ? bucket.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: bucket.color, opacity: activeDataBucket === i ? 1 : 0.35 }} />
-            <div style={{ fontSize: 15, fontWeight: 600, color: bucket.color, marginBottom: 10, lineHeight: 1.3, minHeight: 34 }}>{bucket.title}</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-              {bucket.items.slice(0, 3).map((item, j) => (
-                <span key={j} style={{ fontSize: 13, color: "#E2EAF2", background: "rgba(148,163,184,0.10)", border: "1px solid rgba(148,163,184,0.2)", borderRadius: 4, padding: "2px 7px" }}>{item}</span>
-              ))}
-              {bucket.items.length > 3 && <span style={{ fontSize: 13, color: "#D0DAE6", padding: "2px 4px" }}>+{bucket.items.length - 3} more</span>}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {selectedBucket && (
-        <div style={{ margin: "12px 0 0", background: `${selectedBucket.color}08`, border: `1px solid ${selectedBucket.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedBucket.color, marginBottom: 16 }}>{selectedBucket.title} &mdash; full data inventory</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>
-            {selectedBucket.items.map((item, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8 }}>
-                <div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedBucket.color, flexShrink: 0, boxShadow: `0 0 6px ${selectedBucket.color}50` }} />
-                <span style={{ fontSize: 16, color: "#E2EAF2" }}>{item}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
       <div style={{ height: 64 }} />
     </div>
   );
@@ -259,7 +401,7 @@ function TimelinePage() {
         <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 48px", maxWidth: 660, lineHeight: 1.6 }}>From ChatGPT&apos;s launch to the orchestration era &mdash; how AI transformed from a curiosity to a production platform in four years.</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
           {eras.map((era, i) => (
-            <div key={era.id} onClick={() => setActiveEra(activeEra === i ? null : i)} style={{ background: activeEra === i ? `${era.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeEra === i ? era.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+            <div key={era.id} onClick={() => setActiveEra(activeEra === i ? null : i)} style={{ background: activeEra === i ? `${era.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeEra === i ? era.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: era.color, opacity: activeEra === i ? 1 : 0.4 }} />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: era.color }}>{era.years}</span>
@@ -452,7 +594,7 @@ function FrameworkPage() {
         <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 48px", maxWidth: 660, lineHeight: 1.6 }}>A five-level framework for assessing AI literacy &mdash; from effective prompting to LLM customization.</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12, marginBottom: 4 }}>
           {levels.map((l, i) => (
-            <div key={l.level} onClick={() => setActiveLevel(activeLevel === i ? null : i)} style={{ background: activeLevel === i ? `${l.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeLevel === i ? l.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+            <div key={l.level} onClick={() => setActiveLevel(activeLevel === i ? null : i)} style={{ background: activeLevel === i ? `${l.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeLevel === i ? l.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: l.color, opacity: activeLevel === i ? 1 : 0.4 }} />
               <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: l.color, fontWeight: 600, marginBottom: 6 }}>Level {l.level}</div>
               <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 4, lineHeight: 1.3 }}>{l.title}</div>
@@ -512,8 +654,8 @@ function FrameworkPage() {
 // ============================================================
 
 const novaXrayProjects = [
-  { id: "xray", name: "X-Ray", tagline: "Customer-facing drug pricing transparency", color: "#3B82F6", status: "Building", statusColor: "#F59E0B", description: "Customer-facing solution that delivers full drug pricing transparency and net cost recovery visibility to practices. Shows the complete cost walk from WAC through discounts and rebates to net price, then layers in reimbursement to reveal per-drug NCR. Built on the same shared data infrastructure as Nova.", capabilities: ["WAC-to-net-price cost walk per drug", "Net cost recovery (NCR) calculation", "Reimbursement vs. net price comparison", "Real-time rebate feed integration", "Customer-facing and field rep views", "Designed for practice-level conversations"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools", "Agents"], impact: "Gives practices and field reps full visibility into drug economics \u2014 pricing transparency that drives competitive market response and enables data-driven drug decisions at the point of care." },
-  { id: "nova", name: "Nova 2.0", tagline: "Internal pricing intelligence engine \u2014 $6\u201312M identified upside", color: "#10B981", status: "In dev", statusColor: "#3B82F6", description: "Replaces the Excel-based pricing model end-to-end. Automates buy/sell economics across WAC, contract price, VCD, FFS, GPO admin fees, and OIDs. Phase 1 (competitive bid comparison) is live. Phase 3 adds AI deal recommendations. Phase 4 deploys small-account autonomy and field enablement.", capabilities: ["System of record for pricing \u2014 replaces Excel", "Automated buy/sell economics (WAC, VCD, FFS, OIDs)", "Real-time what-if scenario modeling", "SOX-compliant approval workflows", "Drug-level and account-level P&L", "AI deal recommendations (Phase 3)", "LLM pricing guidance chat (Phase 3)"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates", "Customer & Account Data"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools"], impact: "$6\u201312M upside through improved pricing efficiency. Compresses analyst time per deal and systematically protects margin on every renewal." },
+  { id: "xray", name: "X-Ray", tagline: "Customer-facing drug pricing transparency", color: "#3B82F6", status: "Pilot", statusColor: "#8B5CF6", description: "Customer-facing solution that delivers full drug pricing transparency and net cost recovery visibility to practices. Shows the complete cost walk from WAC through discounts and rebates to net price, then layers in reimbursement to reveal per-drug NCR. Built on the same shared data infrastructure as Nova.", capabilities: ["WAC-to-net-price cost walk per drug", "Net cost recovery (NCR) calculation", "Reimbursement vs. net price comparison", "Real-time rebate feed integration", "Customer-facing and field rep views", "Designed for practice-level conversations"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools", "Agents"], impact: "Gives practices and field reps full visibility into drug economics \u2014 pricing transparency that drives competitive market response and enables data-driven drug decisions at the point of care." },
+  { id: "nova", name: "Nova 2.0", tagline: "Internal pricing intelligence engine \u2014 $6\u201312M identified upside", color: "#10B981", status: "Pilot", statusColor: "#8B5CF6", description: "Replaces the Excel-based pricing model end-to-end. Automates buy/sell economics across WAC, contract price, VCD, FFS, GPO admin fees, and OIDs. Phase 1 (competitive bid comparison) is live. Phase 3 adds AI deal recommendations. Phase 4 deploys small-account autonomy and field enablement.", capabilities: ["System of record for pricing \u2014 replaces Excel", "Automated buy/sell economics (WAC, VCD, FFS, OIDs)", "Real-time what-if scenario modeling", "SOX-compliant approval workflows", "Drug-level and account-level P&L", "AI deal recommendations (Phase 3)", "LLM pricing guidance chat (Phase 3)"], dataInputs: ["Distribution Pricing & Rebates", "GPO Rebates", "Customer & Account Data"], intelligenceUsed: ["Machine Learning", "AI Prompting Tools"], impact: "$6\u201312M upside through improved pricing efficiency. Compresses analyst time per deal and systematically protects margin on every renewal." },
 ];
 
 const phases = [
@@ -557,7 +699,7 @@ function NovaXrayPage() {
       <SectionHeader label="The Platform" />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12, marginBottom: 4 }}>
         {novaXrayProjects.map((p, i) => (
-          <div key={p.id} onClick={() => setActiveProject(activeProject === i ? null : i)} style={{ background: activeProject === i ? `${p.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeProject === i ? p.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "22px 20px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+          <div key={p.id} onClick={() => setActiveProject(activeProject === i ? null : i)} style={{ background: activeProject === i ? `${p.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeProject === i ? p.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "22px 20px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: p.color, opacity: activeProject === i ? 1 : 0.4 }} />
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
               <span style={{ fontSize: 20, fontWeight: 700, color: p.color }}>{p.name}</span>
@@ -575,18 +717,18 @@ function NovaXrayPage() {
             <p style={{ fontSize: 17, color: "#E2EAF2", margin: 0, lineHeight: 1.65 }}>{selectedProject.description}</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-            <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
+            <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
               <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Capabilities</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
                 {selectedProject.capabilities.map((c, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedProject.color, marginTop: 7, flexShrink: 0, boxShadow: `0 0 6px ${selectedProject.color}40` }} /><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span></div>))}
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20, flex: 1 }}>
+              <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20, flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Data inputs</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{selectedProject.dataInputs.map((d, i) => (<span key={i} style={{ fontSize: 14, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.15)", borderRadius: 6, padding: "4px 10px" }}>{d}</span>))}</div>
               </div>
-              <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20, flex: 1 }}>
+              <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20, flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 12 }}>Intelligence used</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{selectedProject.intelligenceUsed.map((d, i) => (<span key={i} style={{ fontSize: 14, color: selectedProject.color, background: `${selectedProject.color}12`, border: `1px solid ${selectedProject.color}25`, borderRadius: 6, padding: "4px 10px" }}>{d}</span>))}</div>
               </div>
@@ -602,12 +744,12 @@ function NovaXrayPage() {
       {/* X-RAY DASHBOARD PREVIEW */}
       <div style={{ margin: "48px 0 0" }}>
         <SectionHeader label="X-Ray Dashboard &mdash; Drug Economics View" />
-        <div style={{ background: "rgba(15,23,42,0.8)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "12px 12px 0 0", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #10B981" }}>
+        <div style={{ background: "rgba(16,34,66,0.8)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "12px 12px 0 0", padding: "16px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #10B981" }}>
           <div><div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", letterSpacing: 0.3 }}>KEYTRUDA 25MG/ML 4ML SDV 2/PAC</div><div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 2 }}>Central Arkansas Radiation Therapy Institute</div></div>
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 6, padding: "4px 12px" }}>Onmark</span>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "260px 1fr 1fr", gap: 0, background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.12)", borderTop: "none", borderRadius: "0 0 12px 12px", overflow: "hidden" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "260px 1fr 1fr", gap: 0, background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.12)", borderTop: "none", borderRadius: "0 0 12px 12px", overflow: "hidden" }}>
           {/* Col 1: Drug Info */}
           <div style={{ padding: "24px", borderRight: "1px solid rgba(148,163,184,0.08)" }}>
             <div style={{ display: "flex", gap: 12, marginBottom: 16 }}><div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#3B82F6" }}>&bull; Drug Information</div><div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#F59E0B" }}>&bull; Contract Details</div></div>
@@ -642,14 +784,14 @@ function NovaXrayPage() {
           <div style={{ padding: "24px" }}>
             <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 16 }}>&bull; Price Waterfall &mdash; Cost Walk to Net Price</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: "8px 8px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>WAC Price</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Wholesale Acquisition Cost &mdash; starting point</div></div><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$12,272</span></div>
-              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", borderTop: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Contract Price</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>GPO / McKesson negotiated price</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$11,902.61</span><div style={{ fontSize: 13, color: "#F59E0B", fontFamily: "'JetBrains Mono', monospace" }}>3.01%</div></div></div>
+              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: "8px 8px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>WAC Price</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Wholesale Acquisition Cost &mdash; starting point</div></div><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$12,272</span></div>
+              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.06)", borderTop: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Contract Price</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>GPO / McKesson negotiated price</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$11,902.61</span><div style={{ fontSize: 13, color: "#F59E0B", fontFamily: "'JetBrains Mono', monospace" }}>3.01%</div></div></div>
               <div style={{ padding: "6px 16px", background: "rgba(236,72,153,0.06)", borderLeft: "2px solid #EC4899", marginTop: 8 }}><span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: "#EC4899" }}>Distributor Pricing</span></div>
-              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Distributor Discount</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Invoice markdown applied at distribution</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$59.51</span><div style={{ fontSize: 13, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>0.50%</div></div></div>
-              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Invoice Price</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>As billed on invoice</div></div><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$11,843.1</span></div>
+              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Distributor Discount</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Invoice markdown applied at distribution</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$59.51</span><div style={{ fontSize: 13, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>0.50%</div></div></div>
+              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Invoice Price</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>As billed on invoice</div></div><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>$11,843.1</span></div>
               <div style={{ padding: "6px 16px", background: "rgba(245,158,11,0.06)", borderLeft: "2px solid #F59E0B", marginTop: 8 }}><span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: "#F59E0B" }}>Rebates &amp; Incentives</span></div>
-              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Distributor Rebate</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Annual rebate value</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$171.72</span><div style={{ fontSize: 13, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>1.45%</div></div></div>
-              <div style={{ padding: "12px 16px", background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.06)", borderTop: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>GPO Rebate / Value</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Quarterly rebate distribution</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$350.39</span><div style={{ fontSize: 13, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>2.94%</div></div></div>
+              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>Distributor Rebate</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Annual rebate value</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$171.72</span><div style={{ fontSize: 13, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>1.45%</div></div></div>
+              <div style={{ padding: "12px 16px", background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.06)", borderTop: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}><div><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>GPO Rebate / Value</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Quarterly rebate distribution</div></div><div style={{ textAlign: "right" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#EF4444", fontFamily: "'JetBrains Mono', monospace" }}>-$350.39</span><div style={{ fontSize: 13, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>2.94%</div></div></div>
               <div style={{ padding: "14px 16px", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: "0 0 8px 8px", marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontSize: 16, fontWeight: 700, color: "#10B981", letterSpacing: 0.5 }}>NET PRICE / UNIT</span><span style={{ fontSize: 22, fontWeight: 700, color: "#10B981", fontFamily: "'JetBrains Mono', monospace" }}>$11,320.98</span></div>
             </div>
           </div>
@@ -657,7 +799,7 @@ function NovaXrayPage() {
 
         {/* KPI Row */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginTop: 12 }}>
-          {[{ label: "NET PRICE / UNIT", value: "$11,320.98", sub: "After all discounts & rebates", color: "#FFFFFF", bg: "rgba(15,23,42,0.6)" }, { label: "REIMBURSEMENT / UNIT", value: "$11,945.2", sub: "ASP benchmark", color: "#FFFFFF", bg: "rgba(15,23,42,0.6)" }, { label: "NET COST RECOVERY", value: "$624.22", sub: "Reimbursement minus net price", color: "#10B981", bg: "rgba(16,185,129,0.08)" }, { label: "EFFECTIVE DISCOUNT VS WAC", value: "7.75%", sub: "Combined discount rate", color: "#FFFFFF", bg: "rgba(15,23,42,0.6)" }].map((kpi, i) => (
+          {[{ label: "NET PRICE / UNIT", value: "$11,320.98", sub: "After all discounts & rebates", color: "#FFFFFF", bg: "rgba(16,34,66,0.6)" }, { label: "REIMBURSEMENT / UNIT", value: "$11,945.2", sub: "ASP benchmark", color: "#FFFFFF", bg: "rgba(16,34,66,0.6)" }, { label: "NET COST RECOVERY", value: "$624.22", sub: "Reimbursement minus net price", color: "#10B981", bg: "rgba(16,185,129,0.08)" }, { label: "EFFECTIVE DISCOUNT VS WAC", value: "7.75%", sub: "Combined discount rate", color: "#FFFFFF", bg: "rgba(16,34,66,0.6)" }].map((kpi, i) => (
             <div key={i} style={{ background: kpi.bg, border: `1px solid ${kpi.color === "#10B981" ? "rgba(16,185,129,0.2)" : "rgba(148,163,184,0.12)"}`, borderRadius: 10, padding: "18px 20px" }}>
               <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: kpi.color === "#10B981" ? "#10B981" : "#B8C8DA", marginBottom: 8 }}>{kpi.label}</div>
               <div style={{ fontSize: 28, fontWeight: 700, color: kpi.color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{kpi.value}</div>
@@ -676,7 +818,7 @@ function NovaXrayPage() {
         <SectionHeader label="Platform Roadmap" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
           {phases.map((phase, i) => (
-            <div key={phase.id} onClick={() => setActivePhase(activePhase === i ? null : i)} style={{ background: activePhase === i ? `${phase.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activePhase === i ? phase.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+            <div key={phase.id} onClick={() => setActivePhase(activePhase === i ? null : i)} style={{ background: activePhase === i ? `${phase.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activePhase === i ? phase.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: phase.color, opacity: activePhase === i ? 1 : 0.4 }} />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: phase.color, letterSpacing: 0.5 }}>{phase.label}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: phase.statusColor, background: `${phase.statusColor}15`, border: `1px solid ${phase.statusColor}30`, borderRadius: 4, padding: "2px 7px", letterSpacing: 0.5, whiteSpace: "nowrap" }}>{phase.status}</span></div>
               <div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", lineHeight: 1.35 }}>{phase.title}</div>
@@ -687,7 +829,7 @@ function NovaXrayPage() {
           <div style={{ margin: "12px 0 0", background: `${selectedPhase.color}08`, border: `1px solid ${selectedPhase.color}20`, borderRadius: 12, padding: "28px 28px 24px", animation: "fadeIn 0.2s ease" }}>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedPhase.color, marginBottom: 6 }}>{selectedPhase.label} &middot; {selectedPhase.title}</div>
             <p style={{ fontSize: 17, color: "#E2EAF2", margin: "0 0 20px", lineHeight: 1.65, maxWidth: 800 }}>{selectedPhase.summary}</p>
-            <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
+            <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
               <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Key highlights</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>{selectedPhase.highlights.map((h, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedPhase.color, marginTop: 7, flexShrink: 0, boxShadow: `0 0 6px ${selectedPhase.color}40` }} /><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{h}</span></div>))}</div>
             </div>
@@ -701,7 +843,7 @@ function NovaXrayPage() {
       <SectionHeader label="Intelligence layer" />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
         {novaXrayIntelligence.map((layer) => (
-          <div key={layer.id} style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}>
+          <div key={layer.id} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} />
             <div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA", marginBottom: 16 }}>{layer.subtitle}</div>
@@ -716,7 +858,7 @@ function NovaXrayPage() {
       <SectionHeader label="Data layer" />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
         {novaXrayData.map((bucket, i) => (
-          <div key={bucket.id} onClick={() => setActiveDataBucket(activeDataBucket === i ? null : i)} style={{ background: activeDataBucket === i ? `${bucket.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeDataBucket === i ? bucket.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+          <div key={bucket.id} onClick={() => setActiveDataBucket(activeDataBucket === i ? null : i)} style={{ background: activeDataBucket === i ? `${bucket.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeDataBucket === i ? bucket.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: bucket.color, opacity: activeDataBucket === i ? 1 : 0.35 }} />
             <div style={{ fontSize: 15, fontWeight: 600, color: bucket.color, marginBottom: 10, lineHeight: 1.3, minHeight: 34 }}>{bucket.title}</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>{bucket.items.slice(0, 3).map((item, j) => (<span key={j} style={{ fontSize: 13, color: "#E2EAF2", background: "rgba(148,163,184,0.10)", border: "1px solid rgba(148,163,184,0.2)", borderRadius: 4, padding: "2px 7px" }}>{item}</span>))}{bucket.items.length > 3 && <span style={{ fontSize: 13, color: "#D0DAE6", padding: "2px 4px" }}>+{bucket.items.length - 3} more</span>}</div>
@@ -726,7 +868,7 @@ function NovaXrayPage() {
       {selectedBucket && (
         <div style={{ margin: "12px 0 0", background: `${selectedBucket.color}08`, border: `1px solid ${selectedBucket.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
           <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedBucket.color, marginBottom: 16 }}>{selectedBucket.title} &mdash; full data inventory</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>{selectedBucket.items.map((item, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedBucket.color, flexShrink: 0, boxShadow: `0 0 6px ${selectedBucket.color}50` }} /><span style={{ fontSize: 16, color: "#E2EAF2" }}>{item}</span></div>))}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>{selectedBucket.items.map((item, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedBucket.color, flexShrink: 0, boxShadow: `0 0 6px ${selectedBucket.color}50` }} /><span style={{ fontSize: 16, color: "#E2EAF2" }}>{item}</span></div>))}</div>
         </div>
       )}
       <div style={{ height: 64 }} />
@@ -796,17 +938,17 @@ function MeridianPage() {
 
       <SectionHeader label="Application" />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
-        {meridianPages.slice(0, 4).map((page, i) => (<div key={page.id} onClick={() => setActivePage(activePage === i ? null : i)} style={{ background: activePage === i ? `${page.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activePage === i ? page.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: page.color, opacity: activePage === i ? 1 : 0.4 }} /><div style={{ fontSize: 16, fontWeight: 600, color: page.color, marginBottom: 4 }}>{page.name}</div><div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{page.description.split(".")[0]}.</div></div>))}
+        {meridianPages.slice(0, 4).map((page, i) => (<div key={page.id} onClick={() => setActivePage(activePage === i ? null : i)} style={{ background: activePage === i ? `${page.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activePage === i ? page.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: page.color, opacity: activePage === i ? 1 : 0.4 }} /><div style={{ fontSize: 16, fontWeight: 600, color: page.color, marginBottom: 4 }}>{page.name}</div><div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{page.description.split(".")[0]}.</div></div>))}
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginTop: 12, marginBottom: 4 }}>
-        {meridianPages.slice(4).map((page, i) => { const idx = i + 4; return (<div key={page.id} onClick={() => setActivePage(activePage === idx ? null : idx)} style={{ background: activePage === idx ? `${page.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activePage === idx ? page.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: page.color, opacity: activePage === idx ? 1 : 0.4 }} /><div style={{ fontSize: 16, fontWeight: 600, color: page.color, marginBottom: 4 }}>{page.name}</div><div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{page.description.split(".")[0]}.</div></div>); })}
+        {meridianPages.slice(4).map((page, i) => { const idx = i + 4; return (<div key={page.id} onClick={() => setActivePage(activePage === idx ? null : idx)} style={{ background: activePage === idx ? `${page.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activePage === idx ? page.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: page.color, opacity: activePage === idx ? 1 : 0.4 }} /><div style={{ fontSize: 16, fontWeight: 600, color: page.color, marginBottom: 4 }}>{page.name}</div><div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{page.description.split(".")[0]}.</div></div>); })}
       </div>
 
       {selectedPage && (
         <div style={{ margin: "12px 0 0", background: `${selectedPage.color}08`, border: `1px solid ${selectedPage.color}20`, borderRadius: 12, padding: "28px 28px 24px", animation: "fadeIn 0.2s ease" }}>
           <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedPage.color, marginBottom: 6 }}>{selectedPage.name}</div>
           <p style={{ fontSize: 17, color: "#E2EAF2", margin: "0 0 20px", lineHeight: 1.65, maxWidth: 800 }}>{selectedPage.description}</p>
-          <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
+          <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
             <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Key capabilities</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>{selectedPage.highlights.map((h, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedPage.color, marginTop: 7, flexShrink: 0, boxShadow: `0 0 6px ${selectedPage.color}40` }} /><span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{h}</span></div>))}</div>
           </div>
@@ -818,7 +960,7 @@ function MeridianPage() {
         <Card style={{ padding: "24px" }}>
           <div style={{ fontSize: 15, color: "#B8C8DA", marginBottom: 20, lineHeight: 1.6 }}>Every ZIP code is scored across 4 domains. Weights are user-configurable. Tier 1 = P90, Tier 2 = P70, remainder = Tier 3. Quarterly recalibration.</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {meridianScoring.map((s, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 0, background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8, overflow: "hidden" }}><div style={{ width: 4, background: s.color, alignSelf: "stretch", flexShrink: 0 }} /><div style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 16, flex: 1 }}><div style={{ minWidth: 52, textAlign: "center" }}><span style={{ fontSize: 18, fontWeight: 700, color: s.color, fontFamily: "'JetBrains Mono', monospace" }}>{s.weight}</span></div><div style={{ flex: 1 }}><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 2 }}>{s.domain}</div><div style={{ fontSize: 14, color: "#B8C8DA" }}>{s.direction}</div></div><div style={{ fontSize: 14, color: "#D0DAE6", maxWidth: 320, lineHeight: 1.4 }}>{s.inputs}</div></div></div>))}
+            {meridianScoring.map((s, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 0, background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8, overflow: "hidden" }}><div style={{ width: 4, background: s.color, alignSelf: "stretch", flexShrink: 0 }} /><div style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 16, flex: 1 }}><div style={{ minWidth: 52, textAlign: "center" }}><span style={{ fontSize: 18, fontWeight: 700, color: s.color, fontFamily: "'JetBrains Mono', monospace" }}>{s.weight}</span></div><div style={{ flex: 1 }}><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 2 }}>{s.domain}</div><div style={{ fontSize: 14, color: "#B8C8DA" }}>{s.direction}</div></div><div style={{ fontSize: 14, color: "#D0DAE6", maxWidth: 320, lineHeight: 1.4 }}>{s.inputs}</div></div></div>))}
           </div>
         </Card>
       </div>
@@ -827,23 +969,23 @@ function MeridianPage() {
 
       <SectionHeader label="Intelligence layer" />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
-        {meridianIntelligence.map((layer) => (<div key={layer.id} style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} /><div style={{ fontSize: 17, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA", marginBottom: 14 }}>{layer.subtitle}</div><div style={{ display: "flex", flexDirection: "column", gap: 7 }}>{layer.capabilities.map((c, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}><div style={{ width: 4, height: 4, borderRadius: "50%", background: layer.color, marginTop: 6, flexShrink: 0 }} /><span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span></div>))}</div></div>))}
+        {meridianIntelligence.map((layer) => (<div key={layer.id} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} /><div style={{ fontSize: 17, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA", marginBottom: 14 }}>{layer.subtitle}</div><div style={{ display: "flex", flexDirection: "column", gap: 7 }}>{layer.capabilities.map((c, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}><div style={{ width: 4, height: 4, borderRadius: "50%", background: layer.color, marginTop: 6, flexShrink: 0 }} /><span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span></div>))}</div></div>))}
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "20px 40px" }}><div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} /><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#D0DAE6", whiteSpace: "nowrap" }}>powered by</span><div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} /></div>
 
       <SectionHeader label="Data sources" />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-        {meridianData.slice(0, 4).map((source, i) => (<div key={source.id} onClick={() => setActiveDataSource(activeDataSource === i ? null : i)} style={{ background: activeDataSource === i ? `${source.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeDataSource === i ? source.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: source.color, opacity: activeDataSource === i ? 1 : 0.35 }} /><div style={{ fontSize: 15, fontWeight: 600, color: source.color, marginBottom: 6, lineHeight: 1.3 }}>{source.title}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 6px" }}>{source.refresh}</span></div>))}
+        {meridianData.slice(0, 4).map((source, i) => (<div key={source.id} onClick={() => setActiveDataSource(activeDataSource === i ? null : i)} style={{ background: activeDataSource === i ? `${source.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeDataSource === i ? source.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: source.color, opacity: activeDataSource === i ? 1 : 0.35 }} /><div style={{ fontSize: 15, fontWeight: 600, color: source.color, marginBottom: 6, lineHeight: 1.3 }}>{source.title}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 6px" }}>{source.refresh}</span></div>))}
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginTop: 12 }}>
-        {meridianData.slice(4).map((source, i) => { const idx = i + 4; return (<div key={source.id} onClick={() => setActiveDataSource(activeDataSource === idx ? null : idx)} style={{ background: activeDataSource === idx ? `${source.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeDataSource === idx ? source.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: source.color, opacity: activeDataSource === idx ? 1 : 0.35 }} /><div style={{ fontSize: 15, fontWeight: 600, color: source.color, marginBottom: 6, lineHeight: 1.3 }}>{source.title}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 6px" }}>{source.refresh}</span></div>); })}
+        {meridianData.slice(4).map((source, i) => { const idx = i + 4; return (<div key={source.id} onClick={() => setActiveDataSource(activeDataSource === idx ? null : idx)} style={{ background: activeDataSource === idx ? `${source.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeDataSource === idx ? source.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: source.color, opacity: activeDataSource === idx ? 1 : 0.35 }} /><div style={{ fontSize: 15, fontWeight: 600, color: source.color, marginBottom: 6, lineHeight: 1.3 }}>{source.title}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 6px" }}>{source.refresh}</span></div>); })}
       </div>
 
       {selectedSource && (
         <div style={{ margin: "12px 0 0", background: `${selectedSource.color}08`, border: `1px solid ${selectedSource.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedSource.color }}>{selectedSource.title}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", background: "rgba(148,163,184,0.1)", borderRadius: 4, padding: "2px 8px" }}>Refresh: {selectedSource.refresh}</span></div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>{selectedSource.items.map((item, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedSource.color, flexShrink: 0, boxShadow: `0 0 6px ${selectedSource.color}50` }} /><span style={{ fontSize: 16, color: "#E2EAF2" }}>{item}</span></div>))}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 8 }}>{selectedSource.items.map((item, i) => (<div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 8 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedSource.color, flexShrink: 0, boxShadow: `0 0 6px ${selectedSource.color}50` }} /><span style={{ fontSize: 16, color: "#E2EAF2" }}>{item}</span></div>))}</div>
         </div>
       )}
 
@@ -949,7 +1091,7 @@ function SkynetPage() {
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
         <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>{PRACTICE_NAME}</h1>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#A8B8CC", background: "rgba(168,184,204,0.12)", border: "1px solid rgba(168,184,204,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Planning</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#8B5CF6", background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Pilot</span>
       </div>
       <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>Dynamic QBR Portal</p>
       <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>Replaces the static PowerPoint QBR with a live, interactive customer portal. Pulls data from 6+ disparate sources into a unified schema. Sales reps and customers ask any question in natural language &mdash; converted to SQL on the fly against a live database.</p>
@@ -958,14 +1100,14 @@ function SkynetPage() {
       </div>
 
       <SectionHeader label="Dashboard Preview" />
-      <div style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "12px 12px 0 0", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "12px 12px 0 0", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div><div style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF" }}>Springfield Medical Center</div><div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>Q1 2026 &middot; Powered by your McKesson partnership</div></div>
         <span style={{ fontSize: 12, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace" }}>Data Last Refreshed: Feb 28, 2026</span>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }}>
-        {skynetKPIs.map((kpi, i) => (<div key={i} style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", padding: "20px", borderLeft: i === 0 ? "1px solid rgba(148,163,184,0.12)" : "none", borderRight: "1px solid rgba(148,163,184,0.12)" }}><div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 8 }}>{kpi.label}</div><div style={{ fontSize: 28, fontWeight: 700, color: kpi.color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{kpi.value}</div><div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 6 }}>{kpi.sub}</div></div>))}
+        {skynetKPIs.map((kpi, i) => (<div key={i} style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", padding: "20px", borderLeft: i === 0 ? "1px solid rgba(148,163,184,0.12)" : "none", borderRight: "1px solid rgba(148,163,184,0.12)" }}><div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#B8C8DA", marginBottom: 8 }}>{kpi.label}</div><div style={{ fontSize: 28, fontWeight: 700, color: kpi.color, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{kpi.value}</div><div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 6 }}>{kpi.sub}</div></div>))}
       </div>
-      <div style={{ display: "flex", gap: 0, background: "rgba(15,23,42,0.4)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "0 0 12px 12px", overflow: "hidden", marginBottom: 4 }}>
+      <div style={{ display: "flex", gap: 0, background: "rgba(16,34,66,0.4)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: "0 0 12px 12px", overflow: "hidden", marginBottom: 4 }}>
         {skynetSections.map((sec, i) => (<button key={sec.id} onClick={() => setActiveSection(activeSection === i ? null : i)} style={{ flex: 1, padding: "12px 4px", background: activeSection === i ? `${sec.color}12` : "transparent", border: "none", borderBottom: activeSection === i ? `2px solid ${sec.color}` : "2px solid transparent", cursor: "pointer", outline: "none", transition: "all 0.2s ease" }}><span style={{ fontSize: 12, fontWeight: activeSection === i ? 600 : 500, color: activeSection === i ? sec.color : "#B8C8DA", letterSpacing: 0.3 }}>{sec.label}</span></button>))}
       </div>
       {selectedSection && (<div style={{ margin: "12px 0 0", background: `${selectedSection.color}08`, border: `1px solid ${selectedSection.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}><div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 20, background: `${selectedSection.color}15`, border: `1px solid ${selectedSection.color}30`, marginBottom: 16 }}><span style={{ fontSize: 13, color: selectedSection.color }}>{"\u25C8"}</span><span style={{ fontSize: 13, color: selectedSection.color, fontWeight: 500 }}>{selectedSection.label}</span></div><p style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.65, margin: 0 }}>{selectedSection.description}</p></div>)}
@@ -983,7 +1125,7 @@ function SkynetPage() {
             {["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"].map((m, i) => (<text key={m} x={70 + i * 62} y={135} fill="#B8C8DA" fontSize={10} textAnchor="middle" fontFamily="JetBrains Mono">{m}</text>))}
             <polyline points="70,42 132,40 194,37 256,34 318,32 380,30" fill="none" stroke="#B8C8DA" strokeWidth={1.5} strokeDasharray="4,4" opacity={0.5} />
             <polyline points="70,44 132,40 194,42 256,34 318,30 380,26" fill="none" stroke="#3B82F6" strokeWidth={2} />
-            {[[70, 44], [132, 40], [194, 42], [256, 34], [318, 30], [380, 26]].map(([cx, cy], i) => (<circle key={i} cx={cx} cy={cy} r={4} fill="#3B82F6" stroke="#141B2D" strokeWidth={2} />))}
+            {[[70, 44], [132, 40], [194, 42], [256, 34], [318, 30], [380, 26]].map(([cx, cy], i) => (<circle key={i} cx={cx} cy={cy} r={4} fill="#3B82F6" stroke="#0B1A33" strokeWidth={2} />))}
           </svg>
           <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}><div style={{ width: 16, height: 2, background: "#3B82F6", borderRadius: 1 }} /><span style={{ fontSize: 12, color: "#B8C8DA" }}>Actual</span></div>
@@ -1009,7 +1151,7 @@ function SkynetPage() {
       <div style={{ marginTop: 28 }}>
         <SectionHeader label="Top 10 Drugs by Spend" />
         <Card style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 60px 20px 1fr 100px 70px 80px", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.3)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "40px 1fr 60px 20px 1fr 100px 70px 80px", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(16,34,66,0.3)" }}>
             {["#", "Drug Name", "Type", "", "Category", "Q3 Spend", "Units", "vs Prior"].map((h, i) => (<span key={i} style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>{h}</span>))}
           </div>
           {skynetTopDrugs.map((drug, i) => (<div key={i} style={{ display: "grid", gridTemplateColumns: "40px 1fr 60px 20px 1fr 100px 70px 80px", padding: "12px 20px", borderBottom: i < 9 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA" }}>{drug.rank}</span><span style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{drug.name}</span><span style={{ fontSize: 12, color: drug.type === "IV" ? "#3B82F6" : "#10B981", background: drug.type === "IV" ? "rgba(59,130,246,0.12)" : "rgba(16,185,129,0.12)", border: `1px solid ${drug.type === "IV" ? "rgba(59,130,246,0.25)" : "rgba(16,185,129,0.25)"}`, borderRadius: 4, padding: "2px 8px", textAlign: "center", fontWeight: 600 }}>{drug.type}</span><span /><span style={{ fontSize: 13, color: "#D0DAE6" }}>{drug.category}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: "#FFFFFF" }}>{drug.spend}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#B8C8DA" }}>{drug.units}</span><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: drug.change.startsWith("+") ? "#10B981" : "#EF4444" }}>{drug.change}</span></div>))}
@@ -1029,7 +1171,7 @@ function SkynetPage() {
 
       <div style={{ marginTop: 28 }}>
         <SectionHeader label="Natural Language Query Engine" />
-        <div style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 12, padding: "28px 28px 24px" }}>
+        <div style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 12, padding: "28px 28px 24px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 18px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.18)", borderRadius: 10, marginBottom: 20 }}><span style={{ fontSize: 16, color: "#EF4444" }}>{"\u2756"}</span><span style={{ fontSize: 15, color: "#B8C8DA", fontStyle: "italic" }}>Ask anything &mdash; &quot;Show me Keytruda spend trend over the last 4 quarters&quot;</span></div>
           <div style={{ fontSize: 15, color: "#D0DAE6", lineHeight: 1.65, marginBottom: 16 }}>The customer or sales rep types a plain-English question. An LLM trained on the database schema converts it to SQL, executes against live data, and returns a formatted answer with optional visualizations.</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -1041,7 +1183,7 @@ function SkynetPage() {
       <div style={{ marginTop: 28 }}>
         <SectionHeader label="Before &amp; After" />
         <Card style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.3)" }}><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Static PowerPoint QBR</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>{PRACTICE_NAME} Dynamic Portal</span></div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(16,34,66,0.3)" }}><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Static PowerPoint QBR</span><span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>{PRACTICE_NAME} Dynamic Portal</span></div>
           {skynetBeforeAfter.map((row, i) => (<div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: i < skynetBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}><span style={{ fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{row.dimension}</span><span style={{ fontSize: 14, color: "#B8C8DA" }}>{row.before}</span><span style={{ fontSize: 14, color: "#10B981" }}>{row.after}</span></div>))}
         </Card>
       </div>
@@ -1049,14 +1191,14 @@ function SkynetPage() {
       <div style={{ marginTop: 28 }}>
         <SectionHeader label="Intelligence Layer" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-          {[{ title: "AI Prompting Tools", subtitle: "LLM interfaces", color: "#3B82F6", capabilities: ["Natural language to SQL", "Conversational Q&A on live data", "Portfolio insight generation", "Cross-section trend detection", "Payer policy summaries (via Titan)"] }, { title: "Machine Learning", subtitle: "Pattern recognition", color: "#8B5CF6", capabilities: ["Recommended actions scoring", "Biosimilar adoption forecasting", "Anomaly detection on spend shifts", "Provider performance clustering", "GPO tier optimization signals"] }, { title: "Agents", subtitle: "Automated workflows", color: "#F59E0B", capabilities: ["Scheduled data aggregation", "Multi-source pipeline orchestration", "QBR auto-assembly", "Payer surveillance feed (Titan)", "Alert generation on threshold breaches"] }].map((layer) => (<div key={layer.title} style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} /><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", marginBottom: 16 }}>{layer.subtitle}</div><div style={{ display: "flex", flexDirection: "column", gap: 7 }}>{layer.capabilities.map((c, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}><div style={{ width: 4, height: 4, borderRadius: "50%", background: layer.color, marginTop: 7, flexShrink: 0, opacity: 1 }} /><span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span></div>))}</div></div>))}
+          {[{ title: "AI Prompting Tools", subtitle: "LLM interfaces", color: "#3B82F6", capabilities: ["Natural language to SQL", "Conversational Q&A on live data", "Portfolio insight generation", "Cross-section trend detection", "Payer policy summaries (via Titan)"] }, { title: "Machine Learning", subtitle: "Pattern recognition", color: "#8B5CF6", capabilities: ["Recommended actions scoring", "Biosimilar adoption forecasting", "Anomaly detection on spend shifts", "Provider performance clustering", "GPO tier optimization signals"] }, { title: "Agents", subtitle: "Automated workflows", color: "#F59E0B", capabilities: ["Scheduled data aggregation", "Multi-source pipeline orchestration", "QBR auto-assembly", "Payer surveillance feed (Titan)", "Alert generation on threshold breaches"] }].map((layer) => (<div key={layer.title} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: layer.color, opacity: 0.5 }} /><div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginBottom: 3 }}>{layer.title}</div><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", marginBottom: 16 }}>{layer.subtitle}</div><div style={{ display: "flex", flexDirection: "column", gap: 7 }}>{layer.capabilities.map((c, i) => (<div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}><div style={{ width: 4, height: 4, borderRadius: "50%", background: layer.color, marginTop: 7, flexShrink: 0, opacity: 1 }} /><span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.5 }}>{c}</span></div>))}</div></div>))}
         </div>
       </div>
 
       <div style={{ marginTop: 28 }}>
         <SectionHeader label="Data Sources" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
-          {skynetDataSources.map((src, i) => (<div key={i} onClick={() => setActiveSource(activeSource === i ? null : i)} style={{ background: activeSource === i ? `${src.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeSource === i ? src.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: src.color, opacity: activeSource === i ? 1 : 0.35 }} /><div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}><div style={{ fontSize: 14, fontWeight: 600, color: src.color }}>{src.name}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 4, padding: "2px 7px" }}>{src.refresh}</span></div><div style={{ fontSize: 13, color: "#D0DAE6", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{src.desc.split("\u2014")[0]}.</div></div>))}
+          {skynetDataSources.map((src, i) => (<div key={i} onClick={() => setActiveSource(activeSource === i ? null : i)} style={{ background: activeSource === i ? `${src.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeSource === i ? src.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}><div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: src.color, opacity: activeSource === i ? 1 : 0.35 }} /><div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}><div style={{ fontSize: 14, fontWeight: 600, color: src.color }}>{src.name}</div><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 4, padding: "2px 7px" }}>{src.refresh}</span></div><div style={{ fontSize: 13, color: "#D0DAE6", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{src.desc.split("\u2014")[0]}.</div></div>))}
         </div>
         {selectedSource && (<div style={{ margin: "12px 0 0", background: `${selectedSource.color}08`, border: `1px solid ${selectedSource.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedSource.color, marginBottom: 8 }}>{selectedSource.name}</div><p style={{ fontSize: 15, color: "#E2EAF2", margin: 0, lineHeight: 1.65 }}>{selectedSource.desc}</p></div>)}
       </div>
@@ -1071,7 +1213,7 @@ function SkynetPage() {
 // BOLT PAAS DATA
 // ============================================================
 
-const BOLT_COLOR = "#8B5CF6";
+const BOLT_COLOR = "#2DD4BF";
 
 const boltBeforeAfter = [
   { dimension: "Who builds", before: "Engineering team", after: "Certified business owners & product people" },
@@ -1105,43 +1247,91 @@ const boltPlatformTools = [
   { name: "AI Review Agent", color: "#EF4444", desc: "Automated code review powered by Claude Code. Scans for Bolt compliance, security issues, and best practice violations before human review.", role: "Quality gate" },
 ];
 
-type EngagementCell = "bolt" | "partner" | "shared";
+
+type EngCell = "bolt" | "partner" | "shared";
+
+const ENG_STYLES: Record<EngCell, { bg: string; text: string; label: string }> = {
+  bolt: { bg: "rgba(59,130,246,0.85)", text: "#FFFFFF", label: "Bolt" },
+  partner: { bg: "rgba(245,158,11,0.85)", text: "#0B1A33", label: "Partner" },
+  shared: { bg: "repeating-linear-gradient(45deg, #F59E0B 0 10px, #3B82F6 10px 20px)", text: "#FFFFFF", label: "Shared" },
+};
+
+const ENG_COLS = "minmax(220px, 1.4fr) repeat(4, 1fr) minmax(180px, 1.2fr)";
 
 const boltEngagementRoles = ["Business Owner", "Product Builder", "App Engineer", "Platform Engineer"];
 
-const boltEngagementModels: { id: string; name: string; abbr: string; desc: string; cells: EngagementCell[]; examples: string[] }[] = [
-  { id: "ownership", name: "Product Ownership", abbr: "", desc: "Bolt owns the product end to end, from vision to platform.",
-    cells: ["bolt", "bolt", "bolt", "bolt"], examples: ["Lynx", "Glide RI", "RetentionIQ"] },
-  { id: "paas", name: "Product as a Service", abbr: "PaaS", desc: "The business owns the product vision; Bolt builds, engineers, and runs it.",
-    cells: ["partner", "bolt", "bolt", "bolt"], examples: ["SavingsIQ", "NOVA", "PracticeIQ"] },
-  { id: "daas", name: "Development as a Service", abbr: "DaaS", desc: "Partner and Bolt build together; Bolt engineers and runs it.",
-    cells: ["partner", "shared", "bolt", "bolt"], examples: ["Strategy", "GPO", "Other partner apps"] },
-  { id: "iaas", name: "Infrastructure as a Service", abbr: "IaaS", desc: "The partner team builds and engineers its own app; Bolt provides the platform.",
-    cells: ["partner", "partner", "partner", "bolt"], examples: ["Generics Team"] },
+const boltEngagementModels: { id: string; name: string; abbr: string; desc: string; cells: EngCell[]; examples: string[] }[] = [
+  { id: "ownership", name: "Product Ownership", abbr: "", desc: "Bolt owns the product end to end, from vision to platform.", cells: ["bolt", "bolt", "bolt", "bolt"], examples: ["Lynx", "Glide RI", "RetentionIQ"] },
+  { id: "paas", name: "Product as a Service", abbr: "PaaS", desc: "The business owns the product vision; Bolt builds, engineers, and runs it.", cells: ["partner", "bolt", "bolt", "bolt"], examples: ["SavingsIQ", "NOVA", "PracticeIQ"] },
+  { id: "daas", name: "Development as a Service", abbr: "DaaS", desc: "Partner and Bolt build together; Bolt engineers and runs it.", cells: ["partner", "shared", "bolt", "bolt"], examples: ["Strategy", "GPO", "Other partner apps"] },
+  { id: "iaas", name: "Infrastructure as a Service", abbr: "IaaS", desc: "The partner team builds and engineers its own app; Bolt provides the platform.", cells: ["partner", "partner", "partner", "bolt"], examples: ["Generics Team"] },
 ];
-
-const ENGAGEMENT_BOLT = "#3B82F6";
-const ENGAGEMENT_PARTNER = "#F59E0B";
-const engagementCellStyle: Record<EngagementCell, { background: string; label: string }> = {
-  bolt: { background: "rgba(59,130,246,0.85)", label: "Bolt" },
-  partner: { background: "rgba(245,158,11,0.85)", label: "Partner" },
-  shared: { background: `repeating-linear-gradient(45deg, ${ENGAGEMENT_PARTNER} 0 10px, ${ENGAGEMENT_BOLT} 10px 20px)`, label: "Shared" },
-};
-const ENGAGEMENT_GRID = "minmax(220px, 1.4fr) repeat(4, 1fr) minmax(180px, 1.2fr)";
-const engagementRolesFor = (cells: EngagementCell[], team: "bolt" | "partner") =>
-  boltEngagementRoles.flatMap((role, i) => cells[i] === team ? [role] : cells[i] === "shared" ? [`${role} (shared)`] : []);
 
 // ============================================================
 // BOLT PAAS PAGE
 // ============================================================
 
-function BoltPaaSPage() {
+const boltStack = [
+  { id: "build", step: "Build", note: "Where certified builders work", color: "#3B82F6", items: [
+    { name: "Claude Code", desc: "Terminal-native AI coding agent and the primary build tool for certified builders. Reads, writes, tests and commits code from plain-language instructions." },
+    { name: "GitHub", desc: "Version control and collaboration. All builder code lives here, and every pull request triggers the review workflow." },
+    { name: "Supabase", desc: "PostgreSQL with row-level security, auth and real-time subscriptions, provisioned per project with managed migrations." },
+  ] },
+  { id: "gate", step: "Review Gate", note: "Nothing reaches production unreviewed", color: "#F59E0B", items: [
+    { name: "AI Review Agent", desc: "Automated review that scans for Bolt compliance, security issues and best-practice violations before a human looks at the code." },
+    { name: "Engineer Review", desc: "A Bolt engineer reviews and approves every application before it moves to production." },
+    { name: "Security Scan", desc: "Checks for secrets in code, row-level security policies and Bolt standards." },
+  ] },
+  { id: "run", step: "Run on Bolt", note: "McKesson's governed AWS platform", color: BOLT_COLOR, items: [
+    { name: "Shared Auth", desc: "One sign-in and permission model shared by every Bolt application." },
+    { name: "Monitoring", desc: "Shared logging, alerting and performance monitoring for every app on the platform." },
+    { name: "Production Hosting", desc: "Approved applications run at scale on AWS with compliance guardrails built in." },
+  ] },
+];
+
+const SectionTitle = ({ num, label, title, sub, color }: { num: string; label: string; title: string; sub?: string; color: string }) => (
+  <div style={{ marginBottom: 20 }}>
+    <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color, marginBottom: 8 }}>{num + " · " + label}</div>
+    <div style={{ fontSize: 28, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2 }}>{title}</div>
+    {sub && <p style={{ fontSize: 16, color: "#D0DAE6", margin: "8px 0 0", lineHeight: 1.6, maxWidth: 760 }}>{sub}</p>}
+  </div>
+);
+
+const boltSections = [
+  { id: "why", label: "Why" },
+  { id: "how", label: "How" },
+  { id: "who", label: "Who" },
+  { id: "builders", label: "Builders" },
+];
+
+function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
+  const [showCompare, setShowCompare] = useState(false);
+  const [activeTile, setActiveTile] = useState<string | null>(null);
   const [activeModule, setActiveModule] = useState<number | null>(null);
-  const [activeTool, setActiveTool] = useState<number | null>(null);
+  const [activeModel, setActiveModel] = useState<string | null>(null);
+  const selectedModel = boltEngagementModels.find((m) => m.id === activeModel) || null;
   const selectedModule = activeModule !== null ? boltCertModules[activeModule] : null;
-  const selectedTool = activeTool !== null ? boltPlatformTools[activeTool] : null;
-  const [activeEngagement, setActiveEngagement] = useState<string | null>(null);
-  const selectedEngagement = boltEngagementModels.find((m) => m.id === activeEngagement) ?? null;
+
+  const tileDetail = (() => {
+    if (!activeTile) return null;
+    const [layerId, name] = activeTile.split("|");
+    if (layerId === "intel") {
+      const l = intelligenceLayer.find((x) => x.title === name);
+      return l ? { name: l.title, color: l.color, desc: l.capabilities.join(" · "), usedBy: l.usedBy } : null;
+    }
+    const layer = boltStack.find((x) => x.id === layerId);
+    const item = layer?.items.find((x) => x.name === name);
+    return layer && item ? { name: item.name, color: layer.color, desc: item.desc, usedBy: [] as string[] } : null;
+  })();
+
+  const jump = (id: string) => { const el = typeof document !== "undefined" ? document.getElementById(id) : null; if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
+
+  const Tile = ({ id, name, color }: { id: string; name: string; color: string }) => {
+    const on = activeTile === id;
+    return (
+      <button onClick={() => setActiveTile(on ? null : id)} style={{ background: on ? `${color}26` : `${color}10`, border: `1px solid ${on ? color : color + "40"}`, borderRadius: 8, padding: "10px 14px", cursor: "pointer", outline: "none", fontSize: 15, fontWeight: 600, color: on ? "#FFFFFF" : "#E2EAF2", transition: "all 0.15s ease", whiteSpace: "nowrap" }}>{name}</button>
+    );
+  };
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
@@ -1150,12 +1340,31 @@ function BoltPaaSPage() {
         <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Bolt PaaS</h1>
         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#F59E0B", background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Building</span>
       </div>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>Business-Led Application Platform</p>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>Empowers business owners and product people to build production software using Claude Code and Claude AI. Certified builders create prototypes independently, then migrate approved applications to Bolt &mdash; McKesson&apos;s governed AWS platform with shared services.</p>
-      <div style={{ display: "flex", gap: 16, marginBottom: 48 }}>
-        {[{ label: "Faster", value: "12\u00D7" }, { label: "Build model", value: "Business-led" }, { label: "Platform", value: "AWS" }, { label: "Quality gate", value: "AI + Human" }].map((stat, i) => (<div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}><span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span><span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span></div>))}
+      <p style={{ fontSize: 19, color: "#E2EAF2", margin: "0 0 28px", maxWidth: 820, lineHeight: 1.55 }}>Business owners and product people build production software with Claude Code, then ship it on Bolt, McKesson{"’"}s governed AWS platform.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24 }}>
+        {[
+          { value: "2–4 wks", label: "Idea to production", sub: "vs. ~6 months traditional" },
+          { value: "1", label: "Handoff", sub: "vs. 4+ across business, product, eng, QA" },
+          { value: "AI + Human", label: "Review gate", sub: "on every release" },
+        ].map((k) => (
+          <div key={k.label} style={{ background: `${BOLT_COLOR}0D`, border: `1px solid ${BOLT_COLOR}30`, borderRadius: 12, padding: "20px 22px" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 34, fontWeight: 700, color: BOLT_COLOR, lineHeight: 1 }}>{k.value}</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginTop: 10 }}>{k.label}</div>
+            <div style={{ fontSize: 14, color: "#B8C8DA", marginTop: 2 }}>{k.sub}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {boltSections.map((sec, i) => (
+          <button key={sec.id} onClick={() => jump(sec.id)} style={{ background: "transparent", border: "1px solid rgba(148,163,184,0.25)", borderRadius: 20, padding: "6px 14px", cursor: "pointer", outline: "none", fontSize: 14, color: "#D0DAE6" }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", color: BOLT_COLOR, marginRight: 6 }}>{"0" + (i + 1)}</span>{sec.label}
+          </button>
+        ))}
       </div>
 
+      {/* 01 WHY */}
+      <section id="why" style={{ marginTop: 64, scrollMarginTop: 80 }}>
+        <SectionTitle num="01" label="Why" title="From six months to a few weeks" sub="Builders who know the business build the software themselves, so there is no backlog to wait in and nothing lost in translation." color={BOLT_COLOR} />
       {/* VELOCITY SHIFT VISUAL — COMBINED */}
       <Card style={{ padding: "32px 28px", marginBottom: 4 }}>
         {/* Traditional SDLC */}
@@ -1251,223 +1460,187 @@ function BoltPaaSPage() {
           </div>
         </div>
       </Card>
-
-      {/* ENGAGEMENT MODELS */}
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Engagement Models" />
-        <h2 style={{ fontSize: 26, fontWeight: 700, color: "#FFFFFF", margin: "0 0 6px", lineHeight: 1.25 }}>How Teams Work With Bolt</h2>
-        <p style={{ fontSize: 16, color: "#D0DAE6", margin: "0 0 16px", maxWidth: 820, lineHeight: 1.6 }}>{"Four ways to build on Bolt. The more the business owns, the less Bolt provides. The platform is always Bolt's."}</p>
-        <Card style={{ padding: "24px 24px 20px" }}>
-          <div style={{ overflowX: "auto" }}>
-            <div style={{ minWidth: 820, display: "flex", flexDirection: "column", gap: 6 }}>
-              {/* Header row */}
-              <div style={{ display: "grid", gridTemplateColumns: ENGAGEMENT_GRID, gap: 6, padding: "0 8px" }}>
-                <div />
-                {boltEngagementRoles.map((role) => (
-                  <div key={role} style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", textAlign: "center", alignSelf: "end", paddingBottom: 4 }}>{role}</div>
-                ))}
-                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", alignSelf: "end", paddingBottom: 4, paddingLeft: 8 }}>Examples</div>
-              </div>
-              {/* Model rows */}
-              {boltEngagementModels.map((model) => { const isActive = activeEngagement === model.id; return (
-                <div key={model.id} onClick={() => setActiveEngagement(isActive ? null : model.id)} style={{ display: "grid", gridTemplateColumns: ENGAGEMENT_GRID, gap: 6, padding: 8, borderRadius: 10, cursor: "pointer", background: isActive ? `${BOLT_COLOR}14` : "transparent", border: `1px solid ${isActive ? BOLT_COLOR + "60" : "rgba(148,163,184,0.06)"}`, transition: "all 0.2s ease" }}>
-                  <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", paddingRight: 8 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>{model.name}</span>
-                      {model.abbr && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#D0DAE6", background: "rgba(148,163,184,0.1)", border: "1px solid rgba(148,163,184,0.18)", borderRadius: 4, padding: "1px 6px" }}>{model.abbr}</span>}
-                    </div>
-                    <div style={{ fontSize: 13, color: "#A8B8CC", lineHeight: 1.45, marginTop: 4 }}>{model.desc}</div>
-                  </div>
-                  {model.cells.map((cell, ci) => (
-                    <div key={ci} style={{ minHeight: 56, borderRadius: 8, background: engagementCellStyle[cell].background, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: cell === "partner" ? "#0B0F1A" : "#FFFFFF", textShadow: cell === "shared" ? "0 1px 3px rgba(0,0,0,0.85), 0 0 2px rgba(0,0,0,0.6)" : "none", letterSpacing: 0.3 }}>{engagementCellStyle[cell].label}</span>
-                    </div>
-                  ))}
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignContent: "center", paddingLeft: 8 }}>
-                    {model.examples.map((ex) => (
-                      <span key={ex} style={{ fontSize: 12, color: "#D0DAE6", border: "1px solid rgba(148,163,184,0.2)", background: "rgba(148,163,184,0.06)", borderRadius: 999, padding: "3px 10px", whiteSpace: "nowrap" }}>{ex}</span>
-                    ))}
-                  </div>
-                </div>
-              ); })}
+        <button onClick={() => setShowCompare(!showCompare)} style={{ marginTop: 12, background: "transparent", border: "none", padding: 0, cursor: "pointer", outline: "none", display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 600, color: BOLT_COLOR }}>
+          {showCompare ? "Hide full comparison" : "Full comparison"}
+          <svg width="10" height="10" viewBox="0 0 10 10" style={{ transform: showCompare ? "rotate(180deg)" : "none", transition: "transform 0.2s ease" }}><path d="M1.5 3.5 L5 7 L8.5 3.5" fill="none" stroke={BOLT_COLOR} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+        {showCompare && (
+          <Card style={{ padding: 0, overflow: "hidden", marginTop: 12, animation: "fadeIn 0.2s ease" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)" }}>
+              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span>
+              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Traditional SDLC</span>
+              <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>Bolt PaaS</span>
             </div>
-          </div>
-          {/* Legend */}
-          <div style={{ display: "flex", gap: 20, flexWrap: "wrap", marginTop: 16, paddingLeft: 8 }}>
-            {(["bolt", "partner", "shared"] as EngagementCell[]).map((cell) => (
-              <div key={cell} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ width: 18, height: 18, borderRadius: 4, background: cell === "shared" ? `repeating-linear-gradient(45deg, ${ENGAGEMENT_PARTNER} 0 5px, ${ENGAGEMENT_BOLT} 5px 10px)` : engagementCellStyle[cell].background, display: "inline-block" }} />
-                <span style={{ fontSize: 13, color: "#D0DAE6" }}>{cell === "bolt" ? "Bolt team provides" : cell === "partner" ? "Partner team provides" : "Shared"}</span>
+            {boltBeforeAfter.map((row, i) => (
+              <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "12px 20px", borderBottom: i < boltBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{row.dimension}</span>
+                <span style={{ fontSize: 14, color: "#B8C8DA" }}>{row.before}</span>
+                <span style={{ fontSize: 14, color: "#10B981" }}>{row.after}</span>
               </div>
             ))}
-          </div>
-        </Card>
-        {selectedEngagement && (
-          <div style={{ margin: "12px 0 0", background: `${BOLT_COLOR}08`, border: `1px solid ${BOLT_COLOR}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: BOLT_COLOR, marginBottom: 16 }}>{selectedEngagement.name}{selectedEngagement.abbr ? ` (${selectedEngagement.abbr})` : ""}</div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-              {[
-                { title: "Partner team provides", color: ENGAGEMENT_PARTNER, roles: engagementRolesFor(selectedEngagement.cells, "partner") },
-                { title: "Bolt team provides", color: ENGAGEMENT_BOLT, roles: engagementRolesFor(selectedEngagement.cells, "bolt") },
-              ].map((list) => (
-                <div key={list.title}>
-                  <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: list.color, marginBottom: 10 }}>{list.title}</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-                    {list.roles.length === 0 && <span style={{ fontSize: 15, color: "#A8B8CC" }}>{"None. Bolt provides every role."}</span>}
-                    {list.roles.map((role) => (
-                      <div key={role} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                        <div style={{ width: 5, height: 5, borderRadius: "50%", background: list.color, marginTop: 8, flexShrink: 0, boxShadow: `0 0 6px ${list.color}40` }} />
-                        <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{role}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          </Card>
         )}
-      </div>
+      </section>
 
-      {/* BEFORE & AFTER TABLE */}
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Before &amp; After" />
-        <Card style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.3)" }}>
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Dimension</span>
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#EF4444" }}>Traditional SDLC</span>
-            <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981" }}>Bolt PaaS</span>
-          </div>
-          {boltBeforeAfter.map((row, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", padding: "14px 20px", borderBottom: i < boltBeforeAfter.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center" }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#E2EAF2" }}>{row.dimension}</span>
-              <span style={{ fontSize: 14, color: "#B8C8DA" }}>{row.before}</span>
-              <span style={{ fontSize: 14, color: "#10B981" }}>{row.after}</span>
+      {/* 02 HOW */}
+      <section id="how" style={{ marginTop: 64, scrollMarginTop: 80 }}>
+        <SectionTitle num="02" label="How" title="One stack, from idea to production" sub="Builders work in the top layer. Every app passes the review gate, then runs on Bolt with shared services and AI built in. Click any tile." color={BOLT_COLOR} />
+        <Card style={{ padding: "8px 24px" }}>
+          {boltStack.map((layer, li) => (
+            <div key={layer.id}>
+              <div style={{ display: "grid", gridTemplateColumns: "190px 1fr", gap: 20, alignItems: "center", padding: "18px 0" }}>
+                <div style={{ borderLeft: `3px solid ${layer.color}`, paddingLeft: 14 }}>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: "#FFFFFF" }}>{layer.step}</div>
+                  <div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>{layer.note}</div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {layer.items.map((it) => (<Tile key={it.name} id={layer.id + "|" + it.name} name={it.name} color={layer.color} />))}
+                  </div>
+                  {layer.id === "run" && (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#99F6E4", marginRight: 4 }}>Intelligence Services</span>
+                      {intelligenceLayer.map((l) => (<Tile key={l.id} id={"intel|" + l.title} name={l.title} color={l.color} />))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              {li < boltStack.length - 1 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 10, paddingLeft: 17 }}>
+                  <svg width="12" height="16" viewBox="0 0 12 16"><path d="M6 1 V13 M2 9 L6 14 L10 9" fill="none" stroke="rgba(148,163,184,0.45)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  <div style={{ flex: 1, height: 1, background: "rgba(148,163,184,0.1)" }} />
+                </div>
+              )}
             </div>
           ))}
+          <button onClick={() => onNavigate("dataplatform")} style={{ width: "100%", margin: "4px 0 16px", background: "rgba(16,185,129,0.08)", border: "1px dashed rgba(16,185,129,0.45)", borderRadius: 10, padding: "14px 18px", cursor: "pointer", outline: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#10B981" }}>Foundation</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF" }}>Data Platform</span>
+              <span style={{ fontSize: 14, color: "#B8C8DA" }}>Eight governed data domains every app builds on</span>
+            </span>
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7 H11 M7.5 3.5 L11 7 L7.5 10.5" fill="none" stroke="#10B981" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
         </Card>
-      </div>
+        {tileDetail && (
+          <div style={{ margin: "12px 0 0", background: `${tileDetail.color}0D`, border: `1px solid ${tileDetail.color}35`, borderRadius: 12, padding: "18px 22px", animation: "fadeIn 0.2s ease" }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 6 }}>{tileDetail.name}</div>
+            <p style={{ fontSize: 15, color: "#E2EAF2", margin: 0, lineHeight: 1.6 }}>{tileDetail.desc}</p>
+            {tileDetail.usedBy.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12, alignItems: "center" }}>
+                <span style={{ fontSize: 13, color: "#B8C8DA", marginRight: 4 }}>Used by</span>
+                {tileDetail.usedBy.map((proj) => { const p = projects.find((x) => x.name === proj); return (<span key={proj} style={{ fontSize: 13, color: p ? p.color : "#D0DAE6", background: p ? `${p.color}12` : "rgba(148,163,184,0.08)", border: `1px solid ${p ? p.color + "30" : "rgba(148,163,184,0.15)"}`, borderRadius: 5, padding: "2px 8px", fontFamily: "'JetBrains Mono', monospace" }}>{proj}</span>); })}
+              </div>
+            )}
+          </div>
+        )}
+      </section>
 
-      {/* PLATFORM ARCHITECTURE */}
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Platform Architecture" />
-        <Card style={{ padding: "28px 24px" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-            {boltArchLayers.map((layer, i) => (
-              <div key={layer.id}>
-                <div style={{ background: `${layer.color}0A`, border: `1px solid ${layer.color}25`, borderRadius: i === 0 ? "12px 12px 0 0" : i === 2 ? "0 0 12px 12px" : 0, padding: "20px 24px", position: "relative" }}>
-                  <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: 3, background: layer.color, borderRadius: i === 0 ? "12px 0 0 0" : i === 2 ? "0 0 0 12px" : 0 }} />
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: layer.color, marginBottom: 4 }}>{layer.title}</div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                        {layer.items.map((item, j) => (
-                          <span key={j} style={{ fontSize: 14, color: "#E2EAF2", background: `${layer.color}12`, border: `1px solid ${layer.color}25`, borderRadius: 6, padding: "4px 12px" }}>{item}</span>
-                        ))}
+      {/* 03 WHO */}
+      <section id="who" style={{ marginTop: 64, scrollMarginTop: 80 }}>
+        <SectionTitle num="03" label="Who" title="How teams work with Bolt" sub={"Four engagement models. The more the business owns, the less Bolt provides. The platform is always Bolt’s."} color={BOLT_COLOR} />
+      <div>
+        <Card style={{ padding: "20px 20px 18px" }}>
+          <div style={{ overflowX: "auto" }}>
+            <div style={{ minWidth: 820 }}>
+              <div style={{ display: "grid", gridTemplateColumns: ENG_COLS, gap: 6, padding: "0 7px 8px" }}>
+                <div />
+                {boltEngagementRoles.map((r) => (<div key={r} style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", textAlign: "center", alignSelf: "end" }}>{r}</div>))}
+                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#A8B8CC", paddingLeft: 4, alignSelf: "end" }}>Examples</div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {boltEngagementModels.map((m) => { const isActive = activeModel === m.id; return (
+                  <div key={m.id} onClick={() => setActiveModel(isActive ? null : m.id)} style={{ display: "grid", gridTemplateColumns: ENG_COLS, gap: 6, padding: 6, borderRadius: 10, cursor: "pointer", border: `1px solid ${isActive ? BOLT_COLOR + "70" : "transparent"}`, background: isActive ? `${BOLT_COLOR}10` : "transparent", transition: "all 0.2s ease" }}>
+                    <div style={{ padding: "4px 8px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>{m.name}</span>
+                        {m.abbr && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: "#99F6E4", background: `${BOLT_COLOR}20`, border: `1px solid ${BOLT_COLOR}50`, borderRadius: 4, padding: "1px 6px" }}>{m.abbr}</span>}
                       </div>
+                      <div style={{ fontSize: 13, color: "#A8B8CC", lineHeight: 1.45, marginTop: 4 }}>{m.desc}</div>
                     </div>
-                    {i === 1 && (
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-                        <span style={{ fontSize: 20, color: `${layer.color}80` }}>{"\u2191"}</span>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: layer.color, letterSpacing: 0.5 }}>review gate</span>
-                        <span style={{ fontSize: 20, color: `${layer.color}80` }}>{"\u2193"}</span>
+                    {m.cells.map((c, ci) => (
+                      <div key={ci} style={{ minHeight: 56, borderRadius: 8, background: ENG_STYLES[c].bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 0.5, color: ENG_STYLES[c].text, background: c === "shared" ? "rgba(16,34,66,0.6)" : "transparent", padding: c === "shared" ? "2px 8px" : 0, borderRadius: 4 }}>{ENG_STYLES[c].label}</span>
+                      </div>
+                    ))}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignContent: "center", padding: "4px" }}>
+                      {m.examples.map((ex) => (<span key={ex} style={{ fontSize: 13, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", border: "1px solid rgba(148,163,184,0.18)", borderRadius: 6, padding: "3px 9px" }}>{ex}</span>))}
+                    </div>
+                  </div>
+                ); })}
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 20, marginTop: 16, flexWrap: "wrap" }}>
+            {(["bolt", "partner", "shared"] as EngCell[]).map((c) => (
+              <div key={c} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 18, height: 12, borderRadius: 3, background: ENG_STYLES[c].bg }} />
+                <span style={{ fontSize: 13, color: "#B8C8DA" }}>{c === "bolt" ? "Bolt team provides" : c === "partner" ? "Partner team provides" : "Shared"}</span>
+              </div>
+            ))}
+            <span style={{ fontSize: 13, color: "#A8B8CC", marginLeft: "auto" }}>Click a row for detail</span>
+          </div>
+        </Card>
+        {selectedModel && (
+          <div style={{ margin: "12px 0 0", background: `${BOLT_COLOR}08`, border: `1px solid ${BOLT_COLOR}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#99F6E4", marginBottom: 6 }}>{selectedModel.name}{selectedModel.abbr ? ` (${selectedModel.abbr})` : ""}</div>
+            <p style={{ fontSize: 16, color: "#E2EAF2", margin: "0 0 16px", lineHeight: 1.6 }}>{selectedModel.desc}</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              {(["partner", "bolt"] as EngCell[]).map((side) => {
+                const roles = boltEngagementRoles.filter((_, ri) => selectedModel.cells[ri] === side || selectedModel.cells[ri] === "shared").map((r) => (selectedModel.cells[boltEngagementRoles.indexOf(r)] === "shared" ? `${r} (shared)` : r));
+                const color = side === "bolt" ? "#3B82F6" : "#F59E0B";
+                return (
+                  <div key={side} style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color, marginBottom: 12 }}>{side === "bolt" ? "Bolt team provides" : "Partner team provides"}</div>
+                    {roles.length === 0 ? (<span style={{ fontSize: 15, color: "#A8B8CC" }}>Nothing. Bolt covers every role.</span>) : (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {roles.map((r) => (<div key={r} style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} /><span style={{ fontSize: 15, color: "#E2EAF2" }}>{r}</span></div>))}
                       </div>
                     )}
                   </div>
-                </div>
-                {i < 2 && (
-                  <div style={{ display: "flex", justifyContent: "center", padding: "8px 0" }}>
-                    <span style={{ fontSize: 18, color: "rgba(148,163,184,0.3)" }}>{"\u25BC"}</span>
-                  </div>
-                )}
-              </div>
-            ))}
+                );
+              })}
+            </div>
           </div>
-        </Card>
+        )}
       </div>
+      </section>
 
-      {/* FULL STACK BUILDER CERTIFICATION */}
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Full Stack Builder Certification" />
-        <div style={{ padding: "20px 24px", background: `${BOLT_COLOR}08`, border: `1px solid ${BOLT_COLOR}20`, borderRadius: 12, marginBottom: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 10, background: `${BOLT_COLOR}25`, border: `1px solid ${BOLT_COLOR}40`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${BOLT_COLOR}30` }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M13 2L4.5 13H12L11 22L19.5 11H12L13 2Z" fill={BOLT_COLOR} stroke="#FFFFFF" strokeWidth="1" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF" }}>Certified Full Stack Builder</div>
-              <div style={{ fontSize: 14, color: "#B8C8DA" }}>Production-ready applications meeting Bolt migration standards</div>
-            </div>
-          </div>
-          <p style={{ fontSize: 15, color: "#D0DAE6", lineHeight: 1.6, margin: 0 }}>
-            Business owners and product people complete a structured certification program that covers environment setup, core build skills, Bolt compliance requirements, and operational readiness. Certified builders can independently create, iterate, and prepare applications for Bolt migration.
-          </p>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
-          {boltCertModules.map((mod, i) => (
-            <div key={mod.id} onClick={() => setActiveModule(activeModule === i ? null : i)} style={{ background: activeModule === i ? `${mod.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeModule === i ? mod.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: mod.color, opacity: activeModule === i ? 1 : 0.4 }} />
-              <div style={{ fontSize: 18, marginBottom: 8 }}>{mod.icon}</div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: mod.color, marginBottom: 4 }}>{mod.title}</div>
-              <div style={{ fontSize: 13, color: "#B8C8DA" }}>{mod.skills.length} skills</div>
-            </div>
-          ))}
+      {/* 04 BUILDERS */}
+      <section id="builders" style={{ marginTop: 64, scrollMarginTop: 80 }}>
+        <SectionTitle num="04" label="Builders" title="Become a certified Full Stack Builder" sub="Four modules take business owners and product people from setup to production-ready. Click a step to see its skills." color={BOLT_COLOR} />
+        <div style={{ position: "relative", display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+          <div style={{ position: "absolute", top: 22, left: "12%", right: "12%", height: 2, background: `linear-gradient(90deg, ${boltCertModules.map((m) => m.color).join(", ")})`, opacity: 0.35 }} />
+          {boltCertModules.map((mod, i) => { const on = activeModule === i; return (
+            <button key={mod.id} onClick={() => setActiveModule(on ? null : i)} style={{ position: "relative", background: "transparent", border: "none", cursor: "pointer", outline: "none", padding: 0, textAlign: "center" }}>
+              <div style={{ width: 44, height: 44, borderRadius: "50%", margin: "0 auto", background: on ? mod.color : "#0B1A33", border: `2px solid ${mod.color}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, color: on ? "#0B1A33" : mod.color, transition: "all 0.2s ease" }}>{i + 1}</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: on ? mod.color : "#FFFFFF", marginTop: 12 }}>{mod.title}</div>
+              <div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 2 }}>{mod.skills.length + " skills"}</div>
+            </button>
+          ); })}
         </div>
         {selectedModule && (
-          <div style={{ margin: "12px 0 0", background: `${selectedModule.color}08`, border: `1px solid ${selectedModule.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedModule.color, marginBottom: 16 }}>{selectedModule.title}</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+          <div style={{ margin: "20px 0 0", background: `${selectedModule.color}0A`, border: `1px solid ${selectedModule.color}30`, borderRadius: 12, padding: "20px 24px", animation: "fadeIn 0.2s ease" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedModule.color, marginBottom: 12 }}>{selectedModule.title}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 24px" }}>
               {selectedModule.skills.map((skill, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedModule.color, marginTop: 7, flexShrink: 0, boxShadow: `0 0 6px ${selectedModule.color}40` }} />
-                  <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{skill}</span>
+                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: selectedModule.color, marginTop: 8, flexShrink: 0 }} />
+                  <span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.5 }}>{skill}</span>
                 </div>
               ))}
             </div>
           </div>
         )}
-      </div>
+      </section>
 
-      {/* PLATFORM COMPONENTS */}
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Platform Components" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
-          {boltPlatformTools.map((tool, i) => (
-            <div key={i} onClick={() => setActiveTool(activeTool === i ? null : i)} style={{ background: activeTool === i ? `${tool.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeTool === i ? tool.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: tool.color, opacity: activeTool === i ? 1 : 0.35 }} />
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: tool.color }}>{tool.name}</div>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#B8C8DA", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 7px" }}>{tool.role}</span>
-              </div>
-              <div style={{ fontSize: 13, color: "#D0DAE6", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const, overflow: "hidden" }}>{tool.desc.split(".")[0]}.</div>
-            </div>
-          ))}
+      {/* CLOSE */}
+      <div style={{ marginTop: 64, padding: "24px 28px", background: `${BOLT_COLOR}0A`, border: `1px solid ${BOLT_COLOR}25`, borderRadius: 12, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+        <div style={{ flex: 1, minWidth: 320 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF", marginBottom: 6 }}>Bolt doesn{"’"}t replace engineering. It redirects it.</div>
+          <div style={{ fontSize: 15, color: "#D0DAE6", lineHeight: 1.6 }}>Domain experts build the tools; engineers own the platform, the guardrails and the review gate.</div>
         </div>
-        {selectedTool && (
-          <div style={{ margin: "12px 0 0", background: `${selectedTool.color}08`, border: `1px solid ${selectedTool.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedTool.color, marginBottom: 8 }}>{selectedTool.name}</div>
-            <p style={{ fontSize: 15, color: "#E2EAF2", margin: 0, lineHeight: 1.65 }}>{selectedTool.desc}</p>
-          </div>
-        )}
-      </div>
-
-      {/* BOTTOM CALLOUT */}
-      <div style={{ marginTop: 28, padding: "20px 24px", background: `${BOLT_COLOR}08`, border: `1px solid ${BOLT_COLOR}20`, borderRadius: 8 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {[
-            "Applications are built by business owners in weeks, avoiding long engineering backlogs",
-            "Bolt doesn\u2019t replace engineering. It redirects engineering from routine tools to platform, guardrails, and governance",
-            "Domain experts build faster because they ARE the requirements. No handoff, no translation loss",
-            "The code review gate ensures production quality. AI review agent + engineer review = governed, not ungoverned",
-            "The result: 12\u00D7 faster time to production, zero increase in engineering headcount",
-          ].map((item, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-              <span style={{ color: BOLT_COLOR, fontSize: 14, marginTop: 2, flexShrink: 0 }}>{"\u25C6"}</span>
-              <span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.55 }}>{item}</span>
-            </div>
-          ))}
-        </div>
+        <CrossLink label="Built on the Data Platform" target="dataplatform" onNavigate={onNavigate} color="#10B981" />
       </div>
       <div style={{ height: 64 }} />
     </div>
@@ -1506,9 +1679,9 @@ const portfolioTiers = [
     color: ROADMAP_COLORS.intermediate,
     apps: [
       { name: "Titan", desc: "Payer policy intelligence", status: "Live", migration: "0\u201390 days", target: "bolt", complexity: "LOW", icon: "\uD83D\uDEE1" },
-      { name: "Nova 2.0", desc: "Internal pricing intelligence engine", status: "In dev", migration: "90\u2013180 days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDCB0" },
-      { name: "X-Ray", desc: "Drug pricing transparency", status: "Building", migration: "90\u2013180 days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDD0D" },
-      { name: PRACTICE_NAME, desc: "Dynamic QBR portal", status: "Planning", migration: "0\u201390 days", target: "bolt", complexity: "LOW", icon: "\uD83D\uDCCB" },
+      { name: "Nova 2.0", desc: "Internal pricing intelligence engine", status: "Pilot", migration: "90\u2013180 days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDCB0" },
+      { name: "X-Ray", desc: "Drug pricing transparency", status: "Pilot", migration: "90\u2013180 days", target: "bolt", complexity: "MEDIUM", icon: "\uD83D\uDD0D" },
+      { name: PRACTICE_NAME, desc: "Dynamic QBR portal", status: "Pilot", migration: "0\u201390 days", target: "bolt", complexity: "LOW", icon: "\uD83D\uDCCB" },
     ],
   },
   {
@@ -1531,8 +1704,8 @@ const migrationPaths = [
     subtitle: "Near-term migrations",
     color: ROADMAP_COLORS.intermediate,
     timeline: "0\u2013180 days",
-    apps: `Titan, ${PRACTICE_NAME} (first wave) \u2192 Nova, X-Ray (second wave)`,
-    description: `Smaller, modern codebases with minimal legacy dependencies. Git-based pull into Bolt with engineer + AI review gate. Titan and ${PRACTICE_NAME} move first (lowest complexity), followed by Nova and X-Ray once the shared data layer is stable.`,
+    apps: "Titan, " + PRACTICE_NAME + " (first wave) \u2192 Nova, X-Ray (second wave)",
+    description: "Smaller, modern codebases with minimal legacy dependencies. Git-based pull into Bolt with engineer + AI review gate. Titan and " + PRACTICE_NAME + " move first (lowest complexity), followed by Nova and X-Ray once the shared data layer is stable.",
     tools: ["Claude Code", "Bolt PaaS", "AI Review Agent"],
     steps: ["Provision Bolt environment", "Code review gate (AI + engineer)", "Migrate auth to Bolt shared auth", "DNS cutover, keep Vercel as rollback"],
   },
@@ -1575,7 +1748,7 @@ const timelineBands = [
     color: ROADMAP_COLORS.bolt,
     actions: [
       "Secure AI Council approval for Claude Code / Codex",
-      `Begin Bolt migration for Titan and ${PRACTICE_NAME} (lowest complexity)`,
+      "Begin Bolt migration for Titan and " + PRACTICE_NAME + " (lowest complexity)",
       "Pilot Sourcegraph on Lynx codebase with 10\u201320 developers",
       "Complete Full Stack Builder certification program v1",
       "First new project built natively on Bolt",
@@ -1587,7 +1760,7 @@ const timelineBands = [
     title: "Acceleration",
     color: ROADMAP_COLORS.intermediate,
     actions: [
-      `Titan and ${PRACTICE_NAME} running on Bolt`,
+      "Titan and " + PRACTICE_NAME + " running on Bolt",
       "Begin Nova and X-Ray Bolt migration assessment",
       "Glide Health modernization feasibility study (Sourcegraph)",
       "Expand Claude Code access to full engineering team",
@@ -1653,18 +1826,12 @@ function MptsRoadmapPage() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
               {tier.apps.map((app, ai) => (
-                <div key={ai} style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderTop: ai === 0 ? "none" : "1px solid rgba(148,163,184,0.06)", borderRadius: ai === tier.apps.length - 1 ? "0 0 12px 12px" : 0, padding: "14px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+                <div key={ai} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderTop: ai === 0 ? "none" : "1px solid rgba(148,163,184,0.06)", borderRadius: ai === tier.apps.length - 1 ? "0 0 12px 12px" : 0, padding: "14px 20px", display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ fontSize: 18, flexShrink: 0 }}>{app.icon}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{app.name}</div>
                     <div style={{ fontSize: 12, color: "#B8C8DA", lineHeight: 1.3, marginTop: 2 }}>{app.desc}</div>
                   </div>
-                  {app.target !== "native" && (
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0 }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: app.complexity === "HIGH" ? "#EF4444" : app.complexity === "MEDIUM" ? "#F59E0B" : "#10B981", background: app.complexity === "HIGH" ? "rgba(239,68,68,0.1)" : app.complexity === "MEDIUM" ? "rgba(245,158,11,0.1)" : "rgba(16,185,129,0.1)", border: `1px solid ${app.complexity === "HIGH" ? "rgba(239,68,68,0.25)" : app.complexity === "MEDIUM" ? "rgba(245,158,11,0.25)" : "rgba(16,185,129,0.25)"}`, borderRadius: 4, padding: "1px 6px", fontWeight: 600 }}>{app.complexity}</span>
-                      <span style={{ fontSize: 11, color: "#B8C8DA", marginTop: 4 }}>{app.migration}</span>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
@@ -1677,14 +1844,14 @@ function MptsRoadmapPage() {
           <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedTier.color, marginBottom: 16 }}>{selectedTier.title} Tier &mdash; {selectedTier.apps.length} applications</div>
           <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(selectedTier.apps.length, 3)}, 1fr)`, gap: 12 }}>
             {selectedTier.apps.map((app, i) => (
-              <div key={i} style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: "16px" }}>
+              <div key={i} style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: "16px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                   <span style={{ fontSize: 20 }}>{app.icon}</span>
                   <div style={{ fontSize: 15, fontWeight: 600, color: "#FFFFFF" }}>{app.name}</div>
                 </div>
                 <div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.5, marginBottom: 8 }}>{app.desc}</div>
-                {app.users && <div style={{ fontSize: 12, color: "#B8C8DA" }}>{app.users}</div>}
-                {app.status && <div style={{ fontSize: 12, color: selectedTier.color, marginTop: 4 }}>Status: {app.status}</div>}
+                {"users" in app && app.users && <div style={{ fontSize: 12, color: "#B8C8DA" }}>{app.users}</div>}
+                {"status" in app && app.status && <div style={{ fontSize: 12, color: selectedTier.color, marginTop: 4 }}>Status: {app.status}</div>}
                 {app.target !== "native" && (
                   <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 6 }}>
                     <span style={{ fontSize: 12, color: "#B8C8DA" }}>Bolt migration:</span>
@@ -1715,7 +1882,7 @@ function MptsRoadmapPage() {
             <rect x={330} y={10} width={260} height={3} rx={1.5} fill={ROADMAP_COLORS.intermediate} opacity={0.6} />
             <text x={460} y={42} textAnchor="middle" fontSize="16" fontWeight="700" fill={ROADMAP_COLORS.intermediate} fontFamily="DM Sans, sans-serif">Intermediate</text>
             <text x={460} y={62} textAnchor="middle" fontSize="12" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">4 applications</text>
-            <text x={460} y={80} textAnchor="middle" fontSize="11" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">{`Titan, Nova, X-Ray, ${PRACTICE_NAME}`}</text>
+            <text x={460} y={80} textAnchor="middle" fontSize="11" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Titan, Nova, X-Ray, {PRACTICE_NAME}</text>
             <line x1={602} y1={50} x2={648} y2={50} stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} />
             <path d="M644 46 L650 50 L644 54" fill="none" stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
             <text x={626} y={38} textAnchor="middle" fontSize="10" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Claude Code</text>
@@ -1734,7 +1901,7 @@ function MptsRoadmapPage() {
         <SectionHeader label="Migration Paths" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
           {migrationPaths.map((path, i) => (
-            <div key={path.id} onClick={() => setActivePath(activePath === i ? null : i)} style={{ background: activePath === i ? `${path.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activePath === i ? path.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+            <div key={path.id} onClick={() => setActivePath(activePath === i ? null : i)} style={{ background: activePath === i ? `${path.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activePath === i ? path.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: path.color, opacity: activePath === i ? 1 : 0.4 }} />
               <div style={{ fontSize: 16, fontWeight: 600, color: path.color, marginBottom: 4 }}>{path.title}</div>
               <div style={{ fontSize: 13, color: "#D0DAE6", marginBottom: 8, lineHeight: 1.4 }}>{path.subtitle}</div>
@@ -1754,7 +1921,7 @@ function MptsRoadmapPage() {
             <div style={{ fontSize: 14, color: selectedPath.color, marginBottom: 16 }}>Applications: {selectedPath.apps}</div>
             <p style={{ fontSize: 16, color: "#E2EAF2", margin: "0 0 20px", lineHeight: 1.65, maxWidth: 800 }}>{selectedPath.description}</p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
+              <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Migration Steps</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
                   {selectedPath.steps.map((step, i) => (
@@ -1767,7 +1934,7 @@ function MptsRoadmapPage() {
                   ))}
                 </div>
               </div>
-              <div style={{ background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
+              <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Tools Required</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                   {selectedPath.tools.map((tool, i) => (<span key={i} style={{ fontSize: 14, color: selectedPath.color, background: `${selectedPath.color}12`, border: `1px solid ${selectedPath.color}25`, borderRadius: 6, padding: "6px 14px" }}>{tool}</span>))}
@@ -1787,7 +1954,7 @@ function MptsRoadmapPage() {
         <SectionHeader label="AI Tooling Landscape" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
           {aiToolsRoadmap.map((tool, i) => (
-            <div key={i} onClick={() => setActiveTool(activeTool === i ? null : i)} style={{ background: activeTool === i ? `${tool.color}14` : "rgba(15,23,42,0.6)", border: `1px solid ${activeTool === i ? tool.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
+            <div key={i} onClick={() => setActiveTool(activeTool === i ? null : i)} style={{ background: activeTool === i ? `${tool.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeTool === i ? tool.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: tool.color, opacity: activeTool === i ? 1 : 0.4 }} />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
                 <div style={{ fontSize: 15, fontWeight: 600, color: tool.color }}>{tool.name}</div>
@@ -1815,7 +1982,7 @@ function MptsRoadmapPage() {
         <SectionHeader label="Execution Timeline" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
           {timelineBands.map((band) => (
-            <div key={band.id} style={{ background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}>
+            <div key={band.id} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: band.color, opacity: 0.5 }} />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                 <div>
@@ -1862,10 +2029,10 @@ function MptsRoadmapPage() {
 // ============================================================
 
 const valueProjects = [
-  { name: "Nova 2.0", color: "#10B981", desc: "Internal pricing intelligence engine replacing Excel-based pricing models. Automates buy/sell economics across WAC, contract price, VCD, FFS, GPO admin fees, and OIDs with AI deal recommendations.", customerValue: "$1.5M", sdlcValue: "$1.5M", customerRaw: 1500000, sdlcRaw: 1500000, status: "In dev" },
-  { name: "X-Ray", color: "#3B82F6", desc: "Customer-facing drug pricing transparency. Delivers the complete cost walk from WAC through discounts and rebates to net price, with per-drug net cost recovery visibility for practices and field reps.", customerValue: "$1M", sdlcValue: "$1.0M", customerRaw: 1000000, sdlcRaw: 1000000, status: "Building" },
+  { name: "Nova 2.0", color: "#10B981", desc: "Internal pricing intelligence engine replacing Excel-based pricing models. Automates buy/sell economics across WAC, contract price, VCD, FFS, GPO admin fees, and OIDs with AI deal recommendations.", customerValue: "$2.3M", sdlcValue: "$1.5M", customerRaw: 2300000, sdlcRaw: 1500000, status: "Pilot" },
+  { name: "X-Ray", color: "#3B82F6", desc: "Customer-facing drug pricing transparency. Delivers the complete cost walk from WAC through discounts and rebates to net price, with per-drug net cost recovery visibility for practices and field reps.", customerValue: "$1.3M", sdlcValue: "$1.0M", customerRaw: 1300000, sdlcRaw: 1000000, status: "Pilot" },
   { name: "Titan", color: "#F59E0B", desc: "Payer policy intelligence. Automated 24/7 surveillance of formularies, step therapy requirements, and preferred drug lists across oncology drugs and biosimilars.", customerValue: "$1.25M", sdlcValue: "$1.5M", customerRaw: 1250000, sdlcRaw: 1500000, status: "Live" },
-  { name: PRACTICE_NAME, color: "#EF4444", desc: "Dynamic QBR portal replacing static PowerPoint decks. Pulls data from 6+ sources into a unified schema with natural language query engine for reps and customers.", customerValue: "$1.2M", sdlcValue: "$2.2M", customerRaw: 1200000, sdlcRaw: 2200000, status: "Planning" },
+  { name: PRACTICE_NAME, color: "#EF4444", desc: "Dynamic QBR portal replacing static PowerPoint decks. Pulls data from 6+ sources into a unified schema with natural language query engine for reps and customers.", customerValue: "$1.2M", sdlcValue: "$2.2M", customerRaw: 1200000, sdlcRaw: 2200000, status: "Pilot" },
   { name: "Meridian", color: "#8B5CF6", desc: "Oncology expansion intelligence platform. Scores ~2,500 ZIP codes across 6 states to identify optimal clinic expansion opportunities with AI-generated market reports.", customerValue: "$1M", sdlcValue: "$750K", customerRaw: 1000000, sdlcRaw: 750000, status: "Live" },
   { name: "Axiom", color: "#06B6D4", desc: "GPO rebate reconciliation engine. Compares quarterly GPO rebate data from pharma manufacturers against McKesson rebate records to identify discrepancies and accelerate dispute resolution.", customerValue: "$750K", sdlcValue: "$1.0M", customerRaw: 750000, sdlcRaw: 1000000, status: "Building" },
 ];
@@ -1906,7 +2073,7 @@ function ValuePage() {
       <SectionHeader label="Portfolio Value Summary" />
       <Card style={{ padding: 0, overflow: "hidden" }}>
         {/* Header */}
-        <div style={{ display: "grid", gridTemplateColumns: "180px 1fr 140px 140px", padding: "14px 24px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(15,23,42,0.3)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "180px 1fr 140px 140px", padding: "14px 24px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(16,34,66,0.3)" }}>
           <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Application</span>
           <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Overview</span>
           <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981", textAlign: "right" }}>Annual Customer Value</span>
@@ -1920,7 +2087,7 @@ function ValuePage() {
               <div style={{ width: 4, height: 28, borderRadius: 2, background: proj.color, flexShrink: 0 }} />
               <div>
                 <div style={{ fontSize: 15, fontWeight: 600, color: proj.color }}>{proj.name}</div>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: proj.status === "Live" ? "#10B981" : proj.status === "In dev" || proj.status === "Building" ? "#F59E0B" : "#A8B8CC", marginTop: 2 }}>{proj.status}</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: proj.status === "Live" ? "#10B981" : proj.status === "Pilot" || proj.status === "In dev" || proj.status === "Building" ? "#F59E0B" : "#A8B8CC", marginTop: 2 }}>{proj.status}</span>
               </div>
             </div>
             <span style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.5, paddingRight: 16 }}>{proj.desc}</span>
@@ -1930,7 +2097,7 @@ function ValuePage() {
         ))}
 
         {/* Totals row */}
-        <div style={{ display: "grid", gridTemplateColumns: "180px 1fr 140px 140px", padding: "16px 24px", borderTop: "2px solid rgba(148,163,184,0.15)", background: "rgba(15,23,42,0.3)" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "180px 1fr 140px 140px", padding: "16px 24px", borderTop: "2px solid rgba(148,163,184,0.15)", background: "rgba(16,34,66,0.3)" }}>
           <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF" }}>Total</span>
           <span style={{ fontSize: 14, color: "#B8C8DA" }}>6 applications</span>
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 700, color: "#10B981", textAlign: "right" }}>{formatTotal(totalCustomer)}</span>
@@ -2000,79 +2167,110 @@ function ValuePage() {
 }
 
 // ============================================================
+// DATA PLATFORM PAGE (placeholder until content arrives)
+// ============================================================
+
+function DataPlatformPage({ onNavigate }: { onNavigate: Navigate }) {
+  return (
+    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Data Platform</h1>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#F59E0B", background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Building</span>
+      </div>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>The data foundation of the Glide Platform</p>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 48px", maxWidth: 820, lineHeight: 1.6 }}>The Data Platform is the shared data layer that Bolt PaaS applications build on: unified, governed data so every application starts from the same trusted foundation.</p>
+
+      <DataDomainsSection />
+
+      <Card style={{ padding: "24px", marginTop: 28 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#F59E0B", marginBottom: 8 }}>Coming soon</div>
+        <p style={{ fontSize: 16, color: "#E2EAF2", margin: 0, lineHeight: 1.6 }}>Architecture, governance, and how Bolt applications consume the Data Platform will be added here.</p>
+      </Card>
+
+      <div style={{ marginTop: 28, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <CrossLink label="Powers Bolt PaaS" target="bolt" onNavigate={onNavigate} color="#8B5CF6" />
+        <CrossLink label="Powers the Solutions" target="solutions" onNavigate={onNavigate} color="#3B82F6" />
+      </div>
+      <div style={{ height: 64 }} />
+    </div>
+  );
+}
+
+// ============================================================
 // MAIN APP — TAB NAVIGATION
 // ============================================================
 
-const pages = [
-  { id: "glide", label: "Glide Stack", icon: "\u25C8" },
-  { id: "novaxray", label: "Nova + X-Ray", icon: "\u25CA" },
-  { id: "meridian", label: "Meridian", icon: "\u25CE" },
-  { id: "skynet", label: PRACTICE_NAME, icon: "\u2756" },
-  { id: "bolt", label: "Bolt PaaS", icon: "\u26A1" },
-  { id: "roadmap", label: "MPTS Roadmap", icon: "\uD83D\uDDFA" },
-  { id: "value", label: "Value", icon: "\uD83D\uDCC8" },
-  { id: "timeline", label: "AI Evolution", icon: "\u25C6" },
-  { id: "framework", label: "Knowledge Levels", icon: "\u2726" },
+const navGroups = [
+  { label: "Glide Platform", items: [
+    { id: "bolt", label: "Bolt PaaS" },
+    { id: "dataplatform", label: "Data Platform" },
+  ]},
+  { label: "Solutions", items: [
+    { id: "solutions", label: "Overview" },
+    { id: "titan", label: "Titan" },
+    { id: "novaxray", label: "Nova + X-Ray" },
+    { id: "meridian", label: "Meridian" },
+    { id: "skynet", label: PRACTICE_NAME },
+  ]},
+  { label: "Roadmap", items: [
+    { id: "roadmap", label: "MPTS Roadmap" },
+    { id: "value", label: "Value" },
+  ]},
+  { label: "AI Literacy", items: [
+    { id: "timeline", label: "AI Evolution" },
+    { id: "framework", label: "Knowledge Levels" },
+  ]},
 ];
-
-type NavItem = { type: "link"; id: string } | { type: "group"; label: string; children: string[] };
-
-const navItems: NavItem[] = [
-  { type: "link", id: "glide" },
-  { type: "link", id: "bolt" },
-  { type: "group", label: "Products", children: ["novaxray", "meridian", "skynet"] },
-  { type: "group", label: "Strategy", children: ["roadmap", "value"] },
-  { type: "group", label: "AI Literacy", children: ["timeline", "framework"] },
-];
-
-const pageById = (id: string) => pages.find((p) => p.id === id)!;
-
-const NavChevron = ({ color, open }: { color: string; open: boolean }) => (
-  <svg width="10" height="10" viewBox="0 0 10 10" style={{ transition: "transform 0.2s ease", transform: open ? "rotate(180deg)" : "none" }}>
-    <path d="M2 3.5 L5 6.5 L8 3.5" fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
 
 export default function App() {
-  const [activePage, setActivePage] = useState("glide");
-  const [openGroup, setOpenGroup] = useState<string | null>(null);
-  const navButtonStyle = (isActive: boolean): React.CSSProperties => ({ background: isActive ? "rgba(59,130,246,0.12)" : "transparent", border: isActive ? "1px solid rgba(59,130,246,0.25)" : "1px solid transparent", borderRadius: 8, padding: "8px 16px", cursor: "pointer", outline: "none", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s ease", whiteSpace: "nowrap" });
-  const navLabelStyle = (isActive: boolean): React.CSSProperties => ({ fontSize: 15, fontWeight: isActive ? 600 : 500, color: isActive ? "#F0F4F8" : "#D0DAE6", transition: "color 0.2s ease", whiteSpace: "nowrap" });
+  const [activePage, setActivePage] = useState("bolt");
+  const navigate: Navigate = (id) => { setActivePage(id); setOpenMenu(null); if (typeof window !== "undefined") window.scrollTo(0, 0); };
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+
   return (
-    <div style={{ minHeight: "100vh", background: "#141B2D", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#0B1A33", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
       <link href={FONT_LINK} rel="stylesheet" />
       <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } } * { box-sizing: border-box; }`}</style>
-      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(11,15,26,0.9)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(148,163,184,0.08)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56, gap: 16 }}>
-          <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-            {navItems.map((item) => {
-              if (item.type === "link") {
-                const page = pageById(item.id);
-                const isActive = activePage === page.id;
-                return (
-                  <button key={page.id} onClick={() => setActivePage(page.id)} style={navButtonStyle(isActive)} onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(148,163,184,0.06)"; }} onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
-                    <span style={{ fontSize: 15, color: isActive ? "#3B82F6" : "#B8C8DA" }}>{page.icon}</span>
-                    <span style={navLabelStyle(isActive)}>{page.label}</span>
-                  </button>
-                );
-              }
-              const isActive = item.children.includes(activePage);
-              const isOpen = openGroup === item.label;
+      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(7,16,33,0.95)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(148,163,184,0.08)" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
+          <div style={{ display: "flex", gap: 2, alignItems: "center" }}>
+            {navGroups.map((group) => {
+              const isGroupActive = group.items.some(i => i.id === activePage);
+              const isOpen = openMenu === group.label;
               return (
-                <div key={item.label} style={{ position: "relative", paddingBottom: isOpen ? 4 : 0, marginBottom: isOpen ? -4 : 0 }} onMouseEnter={() => setOpenGroup(item.label)} onMouseLeave={() => setOpenGroup(null)}>
-                  <button onClick={() => setOpenGroup(isOpen ? null : item.label)} style={{ ...navButtonStyle(isActive), background: isActive ? "rgba(59,130,246,0.12)" : isOpen ? "rgba(148,163,184,0.06)" : "transparent" }}>
-                    <span style={navLabelStyle(isActive)}>{item.label}</span>
-                    <NavChevron color={isActive ? "#3B82F6" : "#B8C8DA"} open={isOpen} />
+                <div key={group.label} style={{ position: "relative", paddingBottom: isOpen ? 4 : 0 }}
+                  onMouseEnter={() => setOpenMenu(group.label)}
+                  onMouseLeave={() => setOpenMenu(null)}>
+                  <button style={{
+                    background: isGroupActive ? "rgba(59,130,246,0.12)" : "transparent",
+                    border: isGroupActive ? "1px solid rgba(59,130,246,0.25)" : "1px solid transparent",
+                    borderRadius: 8, padding: "8px 18px", cursor: "pointer", outline: "none",
+                    display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s ease",
+                  }}>
+                    <span style={{ fontSize: 15, fontWeight: isGroupActive ? 600 : 500, color: isGroupActive ? "#F0F4F8" : "#D0DAE6", whiteSpace: "nowrap", transition: "color 0.2s ease" }}>{group.label}</span>
+                    <svg width="10" height="10" viewBox="0 0 10 10" style={{ transition: "transform 0.2s ease", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}>
+                      <path d="M1.5 3.5 L5 7 L8.5 3.5" fill="none" stroke="#B8C8DA" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
                   </button>
                   {isOpen && (
-                    <div style={{ position: "absolute", top: "100%", left: 0, minWidth: 200, background: "rgba(15,20,34,0.98)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 10, padding: 6, boxShadow: "0 12px 32px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", gap: 2 }}>
-                      {item.children.map((childId) => {
-                        const page = pageById(childId);
-                        const isChildActive = activePage === page.id;
+                    <div style={{
+                      position: "absolute", top: "100%", left: 0,
+                      background: "rgba(7,16,33,0.98)", border: "1px solid rgba(148,163,184,0.12)",
+                      borderRadius: 10, padding: "6px", minWidth: 200, boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+                      animation: "fadeIn 0.15s ease",
+                    }}>
+                      {group.items.map((item) => {
+                        const isActive = activePage === item.id;
                         return (
-                          <button key={page.id} onClick={() => { setActivePage(page.id); setOpenGroup(null); }} style={{ ...navButtonStyle(isChildActive), width: "100%", padding: "8px 12px", textAlign: "left" }} onMouseEnter={(e) => { if (!isChildActive) e.currentTarget.style.background = "rgba(148,163,184,0.08)"; }} onMouseLeave={(e) => { if (!isChildActive) e.currentTarget.style.background = "transparent"; }}>
-                            <span style={{ fontSize: 15, color: isChildActive ? "#3B82F6" : "#B8C8DA", width: 20, textAlign: "center" }}>{page.icon}</span>
-                            <span style={navLabelStyle(isChildActive)}>{page.label}</span>
+                          <button key={item.id} onClick={() => { setActivePage(item.id); setOpenMenu(null); }} style={{
+                            display: "block", width: "100%", textAlign: "left",
+                            background: isActive ? "rgba(59,130,246,0.12)" : "transparent",
+                            border: "none", borderRadius: 6, padding: "10px 14px",
+                            cursor: "pointer", outline: "none", transition: "background 0.15s ease",
+                          }}
+                            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "rgba(148,163,184,0.08)"; }}
+                            onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
+                            <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 400, color: isActive ? "#3B82F6" : "#E2EAF2", whiteSpace: "nowrap" }}>{item.label}</span>
                           </button>
                         );
                       })}
@@ -2086,11 +2284,13 @@ export default function App() {
         </div>
       </nav>
       <div key={activePage} style={{ animation: "fadeIn 0.3s ease" }}>
-        {activePage === "glide" && <GlideStackPage />}
+        {activePage === "solutions" && <SolutionsOverviewPage onNavigate={navigate} />}
+        {activePage === "titan" && <TitanPage onNavigate={navigate} />}
         {activePage === "novaxray" && <NovaXrayPage />}
         {activePage === "meridian" && <MeridianPage />}
         {activePage === "skynet" && <SkynetPage />}
-        {activePage === "bolt" && <BoltPaaSPage />}
+        {activePage === "bolt" && <BoltPaaSPage onNavigate={navigate} />}
+        {activePage === "dataplatform" && <DataPlatformPage onNavigate={navigate} />}
         {activePage === "roadmap" && <MptsRoadmapPage />}
         {activePage === "value" && <ValuePage />}
         {activePage === "timeline" && <TimelinePage />}
