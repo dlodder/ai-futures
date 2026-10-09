@@ -2267,14 +2267,53 @@ function BoltStackDiagram({ onNavigate }: { onNavigate: Navigate }) {
   );
 }
 
+// Where partner work hands off to Bolt, in role columns (shared counts as half)
+const engBoundary = (cells: EngCell[]) => cells.reduce((n, c) => n + (c === "partner" ? 1 : c === "shared" ? 0.5 : 0), 0);
+
 function BoltEngagementMatrix() {
   const [activeModel, setActiveModel] = useState<string | null>(null);
   const [scrollFocused, setScrollFocused] = useState(false);
+  const [hoverRole, setHoverRole] = useState<number | null>(null);
+  const [revealRef, inView] = useInViewOnce<HTMLDivElement>(0.3);
+  const [motionOk, setMotionOk] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const rowRefs = useRef<(HTMLTableRowElement | null)[]>([]);
+  const [geo, setGeo] = useState<{ w: number; h: number; rows: { top: number; bottom: number }[] } | null>(null);
+  useEffect(() => { setMotionOk(!prefersReducedMotion()); }, []);
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const measure = () => {
+      const wr = wrap.getBoundingClientRect();
+      const rows = rowRefs.current.map((r) => {
+        if (!r) return { top: 0, bottom: 0 };
+        const b = r.getBoundingClientRect();
+        return { top: b.top - wr.top, bottom: b.bottom - wr.top };
+      });
+      setGeo({ w: wr.width, h: wr.height, rows });
+    };
+    measure();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    ro?.observe(wrap);
+    return () => ro?.disconnect();
+  }, [activeModel]);
+  const handoffPath = (() => {
+    if (!geo || geo.rows.length !== boltEngagementModels.length) return "";
+    const x = (k: number) => geo.w * (0.24 + 0.135 * k);
+    const pts = boltEngagementModels.map((m) => x(engBoundary(m.cells)));
+    let d = `M ${pts[0]} ${geo.rows[0].top + 6}`;
+    pts.forEach((px, i) => {
+      if (i > 0) d += ` M ${pts[i - 1]} ${geo.rows[i].top} H ${px}`;
+      d += ` V ${i < pts.length - 1 ? geo.rows[i].bottom : geo.rows[i].bottom - 6}`;
+    });
+    return d;
+  })();
+  const flipIn = (delay: number): React.CSSProperties => inView ? { animation: `boltFlip 0.55s ease-out ${delay}s both` } : { opacity: 0 };
   const teamColor = (cell: EngCell) => cell === "bolt" ? "#3B82F6" : cell === "partner" ? "#F59E0B" : "rgba(184,200,218,0.5)";
   const toggleModel = (id: string) => setActiveModel((current) => current === id ? null : id);
 
   return (
-    <div style={{ minWidth: 0, maxWidth: "100%", background: "rgba(16,34,66,0.5)", border: "1px solid rgba(184,200,218,0.16)", borderRadius: 16, overflow: "hidden" }}>
+    <div ref={revealRef} style={{ minWidth: 0, maxWidth: "100%", background: "rgba(16,34,66,0.5)", border: "1px solid rgba(184,200,218,0.16)", borderRadius: 16, overflow: "hidden" }}>
       <p id="bolt-engagement-help" style={{ margin: 0, padding: "20px 24px 8px", fontSize: 16, lineHeight: 1.5, color: "#B8C8DA" }}>
         Select a model for responsibilities. Scroll the table sideways on smaller screens.
       </p>
@@ -2287,7 +2326,27 @@ function BoltEngagementMatrix() {
         onBlur={() => setScrollFocused(false)}
         style={{ overflowX: "auto", maxWidth: "100%", padding: "0 16px", outline: scrollFocused ? `3px solid ${BOLT_COLOR}` : "none", outlineOffset: -3 }}
       >
-        <table style={{ width: "100%", minWidth: 960, tableLayout: "fixed", borderCollapse: "collapse", fontSize: 16, lineHeight: 1.45, textAlign: "left" }}>
+        <div ref={wrapRef} style={{ position: "relative", minWidth: 960 }}>
+        {handoffPath && (
+          <svg aria-hidden="true" width={geo ? geo.w : 0} height={geo ? geo.h : 0} style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none", overflow: "visible", zIndex: 0 }}>
+            <defs>
+              <linearGradient id="boltHandoffGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3B82F6" />
+                <stop offset="55%" stopColor="#F59E0B" />
+                <stop offset="100%" stopColor="#F59E0B" />
+              </linearGradient>
+            </defs>
+            <path d={handoffPath} fill="none" stroke="#F59E0B" strokeOpacity={0.18} strokeWidth={10} strokeLinejoin="round" pathLength={1} strokeDasharray="1" className="bolt-anim" style={{ strokeDashoffset: inView ? 0 : 1, transition: "stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1) 0.9s" }} />
+            <path d={handoffPath} fill="none" stroke="url(#boltHandoffGrad)" strokeWidth={2.5} strokeLinejoin="round" pathLength={1} strokeDasharray="1" className="bolt-anim" style={{ strokeDashoffset: inView ? 0 : 1, transition: "stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1) 0.9s", filter: "drop-shadow(0 0 4px rgba(245,158,11,0.7))" }} />
+            {motionOk && inView && (
+              <circle r={5} fill="#FFFFFF" opacity={0} style={{ filter: `drop-shadow(0 0 6px ${BOLT_COLOR})` }}>
+                <set attributeName="opacity" to="1" begin="2.8s" />
+                <animateMotion dur="5s" begin="2.8s" repeatCount="indefinite" path={handoffPath} />
+              </circle>
+            )}
+          </svg>
+        )}
+        <table style={{ position: "relative", zIndex: 1, width: "100%", tableLayout: "fixed", borderCollapse: "collapse", fontSize: 16, lineHeight: 1.45, textAlign: "left" }}>
           <caption style={{ textAlign: "left", color: "#E2EAF2", fontSize: 16, fontWeight: 600, padding: "12px 8px 16px" }}>Role ownership by engagement model</caption>
           <colgroup>
             <col style={{ width: "24%" }} />
@@ -2297,17 +2356,17 @@ function BoltEngagementMatrix() {
           <thead>
             <tr>
               <th scope="col" style={{ padding: "12px 8px", color: "#B8C8DA", fontWeight: 600, borderBottom: "1px solid rgba(184,200,218,0.24)" }}>Engagement model</th>
-              {boltEngagementRoles.map((role, roleIndex) => <th key={role} scope="col" style={{ padding: "12px 8px", color: "#B8C8DA", fontWeight: 600, textAlign: "center", borderBottom: "1px solid rgba(184,200,218,0.24)", verticalAlign: "bottom" }}><span style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}><span aria-hidden="true" style={{ width: 40, height: 40, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", background: "rgba(16,34,66,0.9)", border: "1px solid rgba(184,200,218,0.35)" }}><BoltGlyphIcon kind={(["briefcase", "code", "app", "server"] as BoltGlyph[])[roleIndex]} size={20} color="#D0DAE6" /></span>{role}</span></th>)}
+              {boltEngagementRoles.map((role, roleIndex) => <th key={role} scope="col" onMouseEnter={() => setHoverRole(roleIndex)} onMouseLeave={() => setHoverRole(null)} style={{ padding: "12px 8px", color: hoverRole === roleIndex ? "#FFFFFF" : "#B8C8DA", fontWeight: 600, textAlign: "center", borderBottom: "1px solid rgba(184,200,218,0.24)", verticalAlign: "bottom", background: hoverRole === roleIndex ? "rgba(45,212,191,0.07)" : "transparent", transition: "background 0.2s ease, color 0.2s ease" }}><span style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}><span aria-hidden="true" className="bolt-anim" style={{ width: 40, height: 40, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", background: "rgba(16,34,66,0.9)", border: `1px solid ${hoverRole === roleIndex ? BOLT_COLOR : "rgba(184,200,218,0.35)"}`, boxShadow: hoverRole === roleIndex ? `0 0 16px ${BOLT_COLOR}66` : "none", transform: hoverRole === roleIndex ? "translateY(-3px)" : "none", transition: "all 0.25s ease" }}><BoltGlyphIcon kind={(["briefcase", "code", "app", "server"] as BoltGlyph[])[roleIndex]} size={20} color="#D0DAE6" /></span>{role}</span></th>)}
               <th scope="col" style={{ padding: "12px 12px", color: "#B8C8DA", fontWeight: 600, borderBottom: "1px solid rgba(184,200,218,0.24)" }}>Examples</th>
             </tr>
           </thead>
-          {boltEngagementModels.map((model) => {
+          {boltEngagementModels.map((model, mi) => {
             const isActive = activeModel === model.id;
             const detailId = `bolt-engagement-detail-${model.id}`;
             const triggerId = `bolt-engagement-trigger-${model.id}`;
             return (
               <tbody key={model.id}>
-                <tr onClick={() => toggleModel(model.id)} style={{ cursor: "pointer", background: isActive ? "rgba(45,212,191,0.08)" : "transparent", borderBottom: isActive ? "none" : "1px solid rgba(184,200,218,0.13)" }}>
+                <tr ref={(el) => { rowRefs.current[mi] = el; }} onClick={() => toggleModel(model.id)} style={{ cursor: "pointer", background: isActive ? "rgba(45,212,191,0.08)" : "transparent", borderBottom: isActive ? "none" : "1px solid rgba(184,200,218,0.13)" }}>
                   <th scope="row" style={{ padding: "12px 4px", fontWeight: 600, textAlign: "left", verticalAlign: "middle" }}>
                     <BoltButton
                       id={triggerId}
@@ -2327,8 +2386,8 @@ function BoltEngagementMatrix() {
                     </BoltButton>
                   </th>
                   {model.cells.map((cell, index) => (
-                    <td key={boltEngagementRoles[index]} style={{ padding: "16px 6px", textAlign: "center", verticalAlign: "middle" }}>
-                      <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 7, minWidth: 76, boxSizing: "border-box", padding: "7px 9px", borderRadius: 7, background: ENG_STYLES[cell].bg, border: `1.5px solid ${teamColor(cell)}`, fontSize: 16, fontWeight: 700, color: ENG_STYLES[cell].text }}>
+                    <td key={boltEngagementRoles[index]} onMouseEnter={() => setHoverRole(index)} onMouseLeave={() => setHoverRole(null)} style={{ padding: "16px 6px", textAlign: "center", verticalAlign: "middle", background: hoverRole === index ? "rgba(45,212,191,0.07)" : "transparent", transition: "background 0.2s ease" }}>
+                      <span className="bolt-anim" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 7, minWidth: 76, boxSizing: "border-box", padding: "7px 9px", borderRadius: 7, background: cell === "bolt" ? "rgba(23,42,82,0.92)" : cell === "partner" ? "rgba(58,44,24,0.92)" : "rgba(40,54,78,0.92)", border: `1.5px solid ${teamColor(cell)}`, fontSize: 16, fontWeight: 700, color: ENG_STYLES[cell].text, boxShadow: hoverRole === index || isActive ? `0 0 14px ${teamColor(cell)}66` : "none", ...flipIn(0.15 + mi * 0.18 + index * 0.07) }}>
                         {cell === "shared" && <span aria-hidden="true" style={{ display: "inline-flex", width: 14, height: 14, borderRadius: 3, overflow: "hidden", flexShrink: 0 }}><span style={{ width: "50%", background: "#3B82F6" }} /><span style={{ width: "50%", background: "#F59E0B" }} /></span>}
                         {ENG_STYLES[cell].label}
                       </span>
@@ -2338,7 +2397,7 @@ function BoltEngagementMatrix() {
                 </tr>
                 <tr id={detailId} hidden={!isActive}>
                   <td colSpan={6} style={{ padding: "4px 12px 24px", background: "rgba(45,212,191,0.08)", borderBottom: "1px solid rgba(184,200,218,0.2)" }}>
-                    <div role="region" aria-labelledby={triggerId} style={{ padding: "16px 16px 0", borderTop: "1px solid rgba(45,212,191,0.28)" }}>
+                    <div role="region" aria-labelledby={triggerId} className="bolt-anim" style={{ padding: "16px 16px 0", borderTop: "1px solid rgba(45,212,191,0.28)", animation: isActive ? "boltIn 0.35s ease-out both" : undefined }}>
                       <p style={{ margin: "0 0 18px", fontSize: 17, lineHeight: 1.6, color: "#E2EAF2" }}>{model.desc}</p>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
                         {(["partner", "bolt"] as EngCell[]).map((side) => {
@@ -2358,9 +2417,10 @@ function BoltEngagementMatrix() {
             );
           })}
         </table>
+        </div>
       </div>
       <p style={{ margin: 0, padding: "16px 24px 20px", color: "#B8C8DA", fontSize: 15, lineHeight: 1.6 }}>
-        <strong style={{ color: "#E2EAF2" }}>Bolt</strong>{" = Bolt team provides · "}<strong style={{ color: "#E2EAF2" }}>Partner</strong>{" = Partner team provides · "}<strong style={{ color: "#E2EAF2" }}>Shared</strong>{" = both teams provide"}
+        <strong style={{ color: "#E2EAF2" }}>Bolt</strong>{" = Bolt team provides · "}<strong style={{ color: "#E2EAF2" }}>Partner</strong>{" = Partner team provides · "}<strong style={{ color: "#E2EAF2" }}>Shared</strong>{" = both teams provide · "}<svg aria-hidden="true" width="26" height="10" style={{ verticalAlign: "middle", marginRight: 6 }}><path d="M1 5h24" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" /></svg><strong style={{ color: "#E2EAF2" }}>Handoff line</strong>{" = partner work to the left, Bolt to the right"}
       </p>
     </div>
   );
