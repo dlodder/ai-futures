@@ -260,138 +260,13 @@ const roleMapping = [
 // TIMELINE PAGE
 // ============================================================
 
-function TimelinePage() {
-  const [activeEra, setActiveEra] = useState<number | null>(null);
-  const selected = activeEra !== null ? eras[activeEra] : null;
-
-  return (
-    <>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", color: "#D0DAE6" }}>AI Timeline</span>
-        </div>
-        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: "0 0 8px", lineHeight: 1.15 }}>The Evolution of AI</h1>
-        <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 48px", maxWidth: 660, lineHeight: 1.6 }}>From ChatGPT&apos;s launch to the orchestration era &mdash; how AI transformed from a curiosity to a production platform in four years.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
-          {eras.map((era, i) => (
-            <div key={era.id} onClick={() => setActiveEra(activeEra === i ? null : i)} style={{ background: activeEra === i ? `${era.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeEra === i ? era.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: era.color, opacity: activeEra === i ? 1 : 0.4 }} />
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: era.color }}>{era.years}</span>
-                <span style={{ fontSize: 18 }}>{era.icon}</span>
-              </div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: "#FFFFFF", marginBottom: 4 }}>{era.title}</div>
-              <div style={{ fontSize: 15, color: "#D0DAE6" }}>{era.tagline}</div>
-            </div>
-          ))}
-        </div>
-
-        {selected && (
-          <div style={{ margin: "12px 0 0", background: `${selected.color}08`, border: `1px solid ${selected.color}20`, borderRadius: 12, padding: "28px 28px 24px", animation: "fadeIn 0.2s ease" }}>
-            <p style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.7, margin: "0 0 24px" }}>{selected.summary}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-              <Card><SectionHeader label="What It Could Do" /><DotList items={selected.capabilities} color={selected.color} /></Card>
-              <Card><SectionHeader label="What It Couldn&apos;t Do Yet" /><DotList items={selected.limitations} dimColor="#D0DAE6" /></Card>
-            </div>
-            <Card style={{ marginBottom: 16 }}>
-              <SectionHeader label="Key Milestones" />
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 8 }}>
-                {selected.milestones.map((m, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 8, background: m.highlight ? `${selected.color}0C` : "transparent", border: m.highlight ? `1px solid ${selected.color}20` : "1px solid transparent" }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: selected.color, whiteSpace: "nowrap", minWidth: 72 }}>{m.date}</span>
-                    <span style={{ fontSize: 16, color: m.highlight ? "#F0F4F8" : "#E2EAF2", fontWeight: m.highlight ? 600 : 400 }}>{m.event}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-            <div style={{ padding: "18px 22px", background: `${selected.color}08`, border: `1px solid ${selected.color}18`, borderRadius: 10, display: "flex", alignItems: "flex-start", gap: 14 }}>
-              <span style={{ fontSize: 16, color: selected.color, marginTop: 1 }}>{"\u25C6"}</span>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: selected.color, marginBottom: 6 }}>What This Meant for Enterprise</div>
-                <span style={{ fontSize: 17, color: "#E2EAF2", lineHeight: 1.65 }}>{selected.enterprise}</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <VelocityChart />
-
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "52px 24px 0" }}>
-        <SectionHeader label="The Numbers Tell the Story" />
-        <Card style={{ padding: 0, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "200px repeat(4, 1fr)", borderBottom: "1px solid rgba(148,163,184,0.1)", padding: "14px 20px" }}>
-            <span />
-            {eras.map((era, i) => (<span key={era.id} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: activeEra === i ? era.color : "#D0DAE6", textAlign: "center", transition: "color 0.2s ease" }}>{era.years}</span>))}
-          </div>
-          {stats.map((stat, si) => (
-            <div key={si} style={{ display: "grid", gridTemplateColumns: "200px repeat(4, 1fr)", padding: "12px 20px", borderBottom: si < stats.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none" }}>
-              <span style={{ fontSize: 15, color: "#D0DAE6" }}>{stat.label}</span>
-              {stat.values.map((v, vi) => (<span key={vi} style={{ fontSize: 15, textAlign: "center", fontWeight: activeEra === vi ? 600 : 400, color: activeEra === vi ? eras[vi].color : "#E2EAF2", transition: "all 0.2s ease" }}>{v}</span>))}
-            </div>
-          ))}
-        </Card>
-      </div>
-
-      <ComputeGrowthChart />
-      <div style={{ height: 64 }} />
-    </>
-  );
-}
+// (TimelinePage moved to the modern Roadmap / AI Literacy pages)
 
 // ============================================================
 // COMPUTE GROWTH CHART
 // ============================================================
 
-function ComputeGrowthChart() {
-  const [activeMetric, setActiveMetric] = useState(0);
-  const metrics = [
-    { id: "tokens", label: "Tokens per Watt", unit: "Relative throughput index (Nov 2022 = 1\u00D7)", description: "How much useful AI output is produced per watt of energy consumed. Hardware and inference software optimizations compound independently from raw chip performance.", source: "Sources: MLCommons MLPerf Inference benchmarks (2022\u20132025), Anthropic efficiency disclosures", mooresColor: "#A8B8CC", aiColor: "#8B5CF6", mooresLabel: "Expected hardware gains", aiLabel: "Actual tokens / watt", moores: [{ x: 0, y: 1 }, { x: 12, y: 1.4 }, { x: 24, y: 2 }, { x: 36, y: 2.8 }, { x: 40, y: 3.2 }], ai: [{ x: 0, y: 1 }, { x: 8, y: 3 }, { x: 16, y: 8 }, { x: 24, y: 18 }, { x: 32, y: 35 }, { x: 40, y: 60 }], callout: "Tokens per watt has improved ~60\u00D7 since 2022 \u2014 driven by H100 hardware, inference optimization, and model distillation. Hardware improvements alone would have delivered ~3\u00D7." },
-    { id: "flops", label: "Training Compute", unit: "Relative FLOP index \u2014 log scale (Nov 2022 = 1\u00D7)", description: "Total floating point operations invested in training frontier models. Sets the ceiling for model capability and reflects the industry\u2019s compounding investment in AI intelligence.", source: "Sources: Epoch AI Training Compute Database (2024), OpenAI scaling law papers, Anthropic model cards", mooresColor: "#A8B8CC", aiColor: "#F59E0B", mooresLabel: "Moore\u2019s Law expectation", aiLabel: "Frontier model training FLOP", moores: [{ x: 0, y: 1 }, { x: 12, y: 1.4 }, { x: 24, y: 2 }, { x: 36, y: 2.8 }, { x: 40, y: 3.2 }], ai: [{ x: 0, y: 1 }, { x: 6, y: 3 }, { x: 14, y: 10 }, { x: 22, y: 30 }, { x: 30, y: 80 }, { x: 40, y: 200 }], callout: "Training compute for frontier models has grown ~200\u00D7 since GPT-3.5 \u2014 doubling roughly every 6 months vs. every 24 months under Moore\u2019s Law." },
-  ];
-  const m = metrics[activeMetric];
-  const W = 900, H = 270, PAD = { t: 24, r: 20, b: 52, l: 72 };
-  const innerW = W - PAD.l - PAD.r, innerH = H - PAD.t - PAD.b;
-  const xMax = 40;
-  const allY = [...m.moores.map((p: {x:number,y:number}) => p.y), ...m.ai.map((p: {x:number,y:number}) => p.y)];
-  const logMin = Math.log10(Math.min(...allY) * 0.8), logMax = Math.log10(Math.max(...allY) * 1.15);
-  const cx = (x: number) => PAD.l + (x / xMax) * innerW;
-  const cy = (y: number) => PAD.t + innerH - ((Math.log10(y) - logMin) / (logMax - logMin)) * innerH;
-  const toPath = (pts: {x:number,y:number}[]) => pts.map((p, i) => `${i === 0 ? "M" : "L"} ${cx(p.x).toFixed(1)} ${cy(p.y).toFixed(1)}`).join(" ");
-  const xLabels = [{ x: 0, label: "Nov '22" }, { x: 10, label: "Sep '23" }, { x: 20, label: "Jul '24" }, { x: 30, label: "May '25" }, { x: 40, label: "Mar '26" }];
-
-  return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "52px 24px 0" }}>
-      <SectionHeader label="Compute Growth vs. Moore&apos;s Law" />
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-        {metrics.map((met, i) => (<button key={met.id} onClick={() => setActiveMetric(i)} style={{ background: activeMetric === i ? "rgba(59,130,246,0.12)" : "transparent", border: activeMetric === i ? "1px solid rgba(59,130,246,0.3)" : "1px solid rgba(148,163,184,0.15)", borderRadius: 8, padding: "8px 16px", cursor: "pointer", outline: "none", fontSize: 15, fontWeight: activeMetric === i ? 600 : 400, color: activeMetric === i ? "#F0F4F8" : "#B8C8DA", transition: "all 0.2s ease" }}>{met.label}</button>))}
-      </div>
-      <Card style={{ padding: "24px 24px 20px" }}>
-        <div style={{ fontSize: 14, color: "#B8C8DA", marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>{m.unit}</div>
-        <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block", overflow: "visible" }}>
-          {(() => { const ticks: React.ReactNode[] = []; const tickCandidates = [0.1, 0.25, 0.5, 1, 2, 3, 5, 10, 20, 30, 50, 100, 200, 500]; const yDataMin = Math.min(...allY); const yDataMax = Math.max(...allY); tickCandidates.filter(v => v >= yDataMin * 0.7 && v <= yDataMax * 1.3).forEach((v, i) => { const yPos = cy(v); const label = v >= 1000 ? `${Math.round(v/1000)}K\u00D7` : v >= 10 ? `${Math.round(v)}\u00D7` : v >= 1 ? `${parseFloat(v.toFixed(1))}\u00D7` : `${parseFloat(v.toFixed(2))}\u00D7`; ticks.push(<g key={i}><line x1={PAD.l - 4} y1={yPos} x2={W - PAD.r} y2={yPos} stroke="rgba(196,208,222,0.10)" strokeWidth="1" /><text x={PAD.l - 8} y={yPos} textAnchor="end" dominantBaseline="central" fontSize="11" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">{label}</text></g>); }); return ticks; })()}
-          <line x1={PAD.l} y1={PAD.t} x2={PAD.l} y2={PAD.t + innerH} stroke="rgba(196,208,222,0.15)" strokeWidth="1" />
-          <path d={toPath(m.moores)} fill="none" stroke={m.mooresColor} strokeWidth="2" strokeDasharray="6 4" />
-          <path d={toPath(m.ai)} fill="none" stroke={m.aiColor} strokeWidth="2.5" />
-          {m.ai.map((p: {x:number,y:number}, i: number) => (<circle key={i} cx={cx(p.x)} cy={cy(p.y)} r="4" fill={m.aiColor} />))}
-          {xLabels.map(l => (<text key={l.x} x={cx(l.x)} y={H - 8} textAnchor="middle" fontSize="11" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">{l.label}</text>))}
-          <line x1={PAD.l + 4} y1={PAD.t + 8} x2={PAD.l + 28} y2={PAD.t + 8} stroke={m.mooresColor} strokeWidth="2" strokeDasharray="6 4" />
-          <text x={PAD.l + 34} y={PAD.t + 13} fontSize="12" fill="#D0DAE6" fontFamily="DM Sans, sans-serif">{m.mooresLabel}</text>
-          <line x1={PAD.l + 220} y1={PAD.t + 8} x2={PAD.l + 244} y2={PAD.t + 8} stroke={m.aiColor} strokeWidth="2.5" />
-          <text x={PAD.l + 250} y={PAD.t + 13} fontSize="12" fill={m.aiColor} fontWeight="600" fontFamily="DM Sans, sans-serif">{m.aiLabel}</text>
-        </svg>
-        <div style={{ marginTop: 16, padding: "14px 18px", background: `${m.aiColor}0A`, border: `1px solid ${m.aiColor}20`, borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}>
-          <span style={{ color: m.aiColor, fontSize: 16, flexShrink: 0, marginTop: 1 }}>{"\u25C6"}</span>
-          <div>
-            <div style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>{m.callout}</div>
-            <div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 6, fontFamily: "'JetBrains Mono', monospace" }}>{m.source}</div>
-          </div>
-        </div>
-        <div style={{ marginTop: 12, fontSize: 15, color: "#B8C8DA", lineHeight: 1.6 }}>{m.description}</div>
-      </Card>
-    </div>
-  );
-}
+// (ComputeGrowthChart moved to the modern Roadmap / AI Literacy pages)
 
 // ============================================================
 // SDLC VELOCITY CHART
@@ -406,121 +281,13 @@ const velocityData = [
   { era: "Next-gen agents (projected)", period: "Q1 2027 est.", multiplier: 14, color: "#10B981", projected: true, description: "Projected: autonomous sprint planning, self-healing test suites, continuous deployment pipelines. Human role is outcome definition and governance.", source: "Estimated \u2014 extrapolated from Epoch AI scaling trajectory and current agent benchmark progression" },
 ];
 
-function VelocityChart() {
-  const [hovered, setHovered] = useState<number | null>(null);
-  const maxMult = 20;
-  return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      <SectionHeader label="Developer Velocity \u2014 AI Coding Tools Over Time" />
-      <div style={{ fontSize: 15, color: "#B8C8DA", marginBottom: 24, lineHeight: 1.6, maxWidth: 720 }}>Output multiplier relative to a developer working without AI assistance. Based on published benchmarks and research \u2014 hover each bar for source details.</div>
-      <Card style={{ padding: "28px 24px" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {velocityData.map((d, i) => { const pct = (d.multiplier / maxMult) * 100; const isHovered = hovered === i; return (
-            <div key={i} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}>
-              <div style={{ display: "grid", gridTemplateColumns: "172px 1fr 56px", alignItems: "center", gap: 14 }}>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: d.projected ? "#B8C8DA" : "#E2EAF2", lineHeight: 1.3 }}>{d.era}</div>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: d.color, marginTop: 2 }}>{d.period}</div>
-                </div>
-                <div style={{ height: 36, borderRadius: 6, background: "rgba(148,163,184,0.08)", position: "relative", overflow: "hidden", border: `1px solid ${isHovered ? d.color : d.color + "90"}`, transition: "all 0.15s ease", cursor: "default" }}>
-                  <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: d.projected ? `repeating-linear-gradient(45deg, ${d.color}CC, ${d.color}CC 6px, ${d.color}66 6px, ${d.color}66 12px)` : isHovered ? `${d.color}EE` : `${d.color}BB`, borderRight: `3px solid ${d.color}`, borderRadius: "0 4px 4px 0", transition: "all 0.3s ease", boxShadow: isHovered ? `0 0 24px ${d.color}80` : `0 0 10px ${d.color}30` }} />
-                  {d.projected && <div style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: d.color, fontWeight: 600, letterSpacing: 0.5 }}>ESTIMATED</div>}
-                </div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 700, color: d.color, textAlign: "right" }}>{d.multiplier}&times;</div>
-              </div>
-              {isHovered && (
-                <div style={{ marginTop: 8, marginLeft: 186, padding: "10px 14px", background: `${d.color}08`, border: `1px solid ${d.color}18`, borderRadius: 8, animation: "fadeIn 0.15s ease" }}>
-                  <div style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.55, marginBottom: d.source ? 6 : 0 }}>{d.description}</div>
-                  {d.source && <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA" }}>{d.source}</div>}
-                </div>
-              )}
-            </div>
-          ); })}
-        </div>
-        <div style={{ marginTop: 28, padding: "18px 20px", background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.18)", borderRadius: 10, display: "flex", alignItems: "flex-start", gap: 14 }}>
-          <span style={{ color: "#3B82F6", fontSize: 16, flexShrink: 0, marginTop: 1 }}>{"\u25C6"}</span>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: "#3B82F6", marginBottom: 6 }}>The urgency case</div>
-            <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.7 }}>A team with access to Opus 4.6 Agent Teams today ships roughly <strong style={{ color: "#FFFFFF" }}>7&times; the output</strong> of a team working without AI assistance &mdash; compared to <strong style={{ color: "#FFFFFF" }}>1.25&times; with Copilot alone</strong>. The gap between organizations using advanced AI tooling and those still on basic autocomplete is not incremental. It is structural, and it compounds every sprint.</span>
-          </div>
-        </div>
-      </Card>
-    </div>
-  );
-}
+// (VelocityChart moved to the modern Roadmap / AI Literacy pages)
 
 // ============================================================
 // FRAMEWORK PAGE
 // ============================================================
 
-function FrameworkPage() {
-  const [activeLevel, setActiveLevel] = useState<number | null>(null);
-  const selected = activeLevel !== null ? levels[activeLevel] : null;
-  return (
-    <>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#8B5CF6", boxShadow: "0 0 12px #8B5CF6" }} />
-          <span style={{ fontSize: 14, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", color: "#D0DAE6" }}>Assessment Framework</span>
-        </div>
-        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: "0 0 8px", lineHeight: 1.15 }}>AI Knowledge Levels</h1>
-        <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 48px", maxWidth: 660, lineHeight: 1.6 }}>A five-level framework for assessing AI literacy &mdash; from effective prompting to LLM customization.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12, marginBottom: 4 }}>
-          {levels.map((l, i) => (
-            <div key={l.level} onClick={() => setActiveLevel(activeLevel === i ? null : i)} style={{ background: activeLevel === i ? `${l.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeLevel === i ? l.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: l.color, opacity: activeLevel === i ? 1 : 0.4 }} />
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: l.color, fontWeight: 600, marginBottom: 6 }}>Level {l.level}</div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", marginBottom: 4, lineHeight: 1.3 }}>{l.title}</div>
-              <div style={{ fontSize: 14, color: "#B8C8DA" }}>{l.subtitle}</div>
-            </div>
-          ))}
-        </div>
-        {selected && (
-          <div style={{ margin: "12px 0 0", background: `${selected.color}08`, border: `1px solid ${selected.color}20`, borderRadius: 12, padding: "28px 28px 24px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 20, background: `${selected.color}15`, border: `1px solid ${selected.color}30`, marginBottom: 20 }}>
-              <span style={{ fontSize: 15, color: selected.color }}>{"\u2726"}</span>
-              <span style={{ fontSize: 15, color: selected.color, fontWeight: 500 }}>{selected.analogy}</span>
-            </div>
-            <p style={{ fontSize: 17, color: "#F0F4F8", lineHeight: 1.7, margin: "0 0 24px", maxWidth: 740 }}>{selected.description}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-              <Card><SectionHeader label="Expected Competencies" /><DotList items={selected.competencies} color={selected.color} /></Card>
-              <Card>
-                <SectionHeader label="Interview Assessment" />
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  {selected.interview.map((item, i) => (
-                    <div key={i} style={{ padding: "14px 16px", background: `${selected.color}08`, border: `1px solid ${selected.color}18`, borderRadius: 8 }}>
-                      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: selected.color, marginBottom: 4, letterSpacing: 0.5 }}>{item.type}</div>
-                      <div style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.5 }}>{item.desc}</div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </div>
-          </div>
-        )}
-      </div>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "52px 24px 0" }}>
-        <SectionHeader label="Target Levels by Role" />
-        <Card style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {roleMapping.map((r, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "280px 60px 1fr", alignItems: "center", gap: 16 }}>
-              <span style={{ fontSize: 16, color: "#E2EAF2" }}>{r.role}</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, color: "#F0F4F8", fontWeight: 600 }}>{r.levels}</span>
-              <div style={{ height: 6, borderRadius: 3, background: "rgba(148,163,184,0.08)", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${(r.bar / 5) * 100}%`, borderRadius: 3, background: `linear-gradient(90deg, ${levels[0].color}, ${levels[Math.min(Math.round(r.bar) - 1, 4)].color})`, opacity: 0.7 }} />
-              </div>
-            </div>
-          ))}
-        </Card>
-        <div style={{ marginTop: 32, padding: "16px 20px", background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.15)", borderRadius: 8, display: "flex", alignItems: "flex-start", gap: 12 }}>
-          <span style={{ color: "#3B82F6", fontSize: 16, marginTop: 1 }}>{"\u25C6"}</span>
-          <span style={{ fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>Level 2 is the floor.</strong>{" "}Every role should target at least Level 2 &mdash; the ability to structure AI projects, design personas, and engineer context. Levels are cumulative: a Level 4 candidate demonstrates all prior competencies.</span>
-        </div>
-      </div>
-      <div style={{ height: 64 }} />
-    </>
-  );
-}
+// (FrameworkPage moved to the modern Roadmap / AI Literacy pages)
 
 // ============================================================
 // NOVA + X-RAY DATA
@@ -760,6 +527,9 @@ const BOLT_CSS = `
 @media (max-width: 760px) { .siq-legs { grid-template-columns: 1fr !important; } }
 @keyframes solGlow { 0%, 18%, 100% { box-shadow: none; } 7% { box-shadow: 0 0 18px var(--sol); border-color: var(--sol); } }
 @keyframes titanScan { from { top: 0; } to { top: 100%; } }
+@keyframes litDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes litUp { from { transform: scaleY(0.15); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (max-width: 760px) { .lit-3col { grid-template-columns: 1fr !important; } .lit-flow { grid-template-columns: 1fr !important; } .lit-flow-arrow { flex-direction: row !important; gap: 10px !important; padding: 2px 0; } .lit-flow-svg { transform: rotate(90deg); width: 34px; } }
 @media (max-width: 760px) { .xray-grid { grid-template-columns: 1fr !important; } }
 @media (prefers-reduced-motion: reduce) { .bolt-anim { animation: none !important; transition: none !important; } }
 `;
@@ -2497,243 +2267,7 @@ const timelineBands = [
 // MPTS ROADMAP PAGE
 // ============================================================
 
-function MptsRoadmapPage() {
-  const [activeTier, setActiveTier] = useState<number | null>(null);
-  const [activePath, setActivePath] = useState<number | null>(null);
-  const [activeTool, setActiveTool] = useState<number | null>(null);
-
-  const selectedTier = activeTier !== null ? portfolioTiers[activeTier] : null;
-  const selectedPath = activePath !== null ? migrationPaths[activePath] : null;
-  const selectedTool = activeTool !== null ? aiToolsRoadmap[activeTool] : null;
-
-  return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      {/* HERO */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>MPTS Roadmap</h1>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: "#F59E0B", background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.25)", borderRadius: 4, padding: "3px 10px", letterSpacing: 0.5, marginTop: 12 }}>Building</span>
-      </div>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>McKesson Provider Technology Solutions &mdash; Application Portfolio &amp; Migration Strategy</p>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>A three-tier view of every application we manage, where each is headed, and the tools and timelines that get them there.</p>
-      <div style={{ display: "flex", gap: 16, marginBottom: 48 }}>
-        {[{ label: "Applications", value: "10" }, { label: "Tiers", value: "3" }, { label: "Target velocity", value: "12\u00D7" }, { label: "Platform", value: "Bolt / AWS" }].map((stat, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: "#FFFFFF", fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span>
-            <span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* PORTFOLIO MAP */}
-      <SectionHeader label="Application Portfolio" />
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginBottom: 4 }}>
-        {portfolioTiers.map((tier, ti) => (
-          <div key={tier.id} onClick={() => setActiveTier(activeTier === ti ? null : ti)} style={{ cursor: "pointer" }}>
-            <div style={{ background: `${tier.color}0C`, border: `1px solid ${tier.color}30`, borderRadius: "12px 12px 0 0", padding: "16px 20px", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: tier.color, opacity: activeTier === ti ? 1 : 0.5 }} />
-              <div style={{ fontSize: 18, fontWeight: 700, color: tier.color }}>{tier.title}</div>
-              <div style={{ fontSize: 13, color: "#D0DAE6", marginTop: 2 }}>{tier.subtitle}</div>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA", marginTop: 6 }}>{tier.apps.length} {tier.apps.length === 1 ? "application" : "applications"}</div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-              {tier.apps.map((app, ai) => (
-                <div key={ai} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderTop: ai === 0 ? "none" : "1px solid rgba(148,163,184,0.06)", borderRadius: ai === tier.apps.length - 1 ? "0 0 12px 12px" : 0, padding: "14px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-                  <span style={{ fontSize: 18, flexShrink: 0 }}>{app.icon}</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#FFFFFF" }}>{app.name}</div>
-                    <div style={{ fontSize: 12, color: "#B8C8DA", lineHeight: 1.3, marginTop: 2 }}>{app.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {selectedTier && (
-        <div style={{ margin: "12px 0 0", background: `${selectedTier.color}08`, border: `1px solid ${selectedTier.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedTier.color, marginBottom: 16 }}>{selectedTier.title} Tier &mdash; {selectedTier.apps.length} applications</div>
-          <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(selectedTier.apps.length, 3)}, 1fr)`, gap: 12 }}>
-            {selectedTier.apps.map((app, i) => (
-              <div key={i} style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: "16px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                  <span style={{ fontSize: 20 }}>{app.icon}</span>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: "#FFFFFF" }}>{app.name}</div>
-                </div>
-                <div style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.5, marginBottom: 8 }}>{app.desc}</div>
-                {"users" in app && app.users && <div style={{ fontSize: 12, color: "#B8C8DA" }}>{app.users}</div>}
-                {"status" in app && app.status && <div style={{ fontSize: 12, color: selectedTier.color, marginTop: 4 }}>Status: {app.status}</div>}
-                {app.target !== "native" && (
-                  <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 12, color: "#B8C8DA" }}>Bolt migration:</span>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: selectedTier.color }}>{app.migration}</span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* MIGRATION FLOW VISUAL */}
-      <div style={{ margin: "48px 0 0" }}>
-        <SectionHeader label="Migration Flow" />
-        <Card style={{ padding: "28px 24px" }}>
-          <svg viewBox="0 0 920 100" style={{ width: "100%", display: "block" }}>
-            <rect x={0} y={10} width={260} height={80} rx={12} fill={`${ROADMAP_COLORS.legacy}0C`} stroke={`${ROADMAP_COLORS.legacy}30`} strokeWidth={1} />
-            <rect x={0} y={10} width={260} height={3} rx={1.5} fill={ROADMAP_COLORS.legacy} opacity={0.6} />
-            <text x={130} y={42} textAnchor="middle" fontSize="16" fontWeight="700" fill={ROADMAP_COLORS.legacy} fontFamily="DM Sans, sans-serif">Legacy</text>
-            <text x={130} y={62} textAnchor="middle" fontSize="12" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">5 applications</text>
-            <text x={130} y={80} textAnchor="middle" fontSize="11" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Lynx, RetinaOS, Glide, RP, CC</text>
-            <line x1={272} y1={50} x2={318} y2={50} stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} />
-            <path d="M314 46 L320 50 L314 54" fill="none" stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-            <text x={296} y={38} textAnchor="middle" fontSize="10" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Sourcegraph</text>
-            <text x={296} y={68} textAnchor="middle" fontSize="10" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">+ Blitzy</text>
-            <rect x={330} y={10} width={260} height={80} rx={12} fill={`${ROADMAP_COLORS.intermediate}0C`} stroke={`${ROADMAP_COLORS.intermediate}30`} strokeWidth={1} />
-            <rect x={330} y={10} width={260} height={3} rx={1.5} fill={ROADMAP_COLORS.intermediate} opacity={0.6} />
-            <text x={460} y={42} textAnchor="middle" fontSize="16" fontWeight="700" fill={ROADMAP_COLORS.intermediate} fontFamily="DM Sans, sans-serif">Intermediate</text>
-            <text x={460} y={62} textAnchor="middle" fontSize="12" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">4 applications</text>
-            <text x={460} y={80} textAnchor="middle" fontSize="11" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Titan, Nova, X-Ray, {PRACTICE_NAME}</text>
-            <line x1={602} y1={50} x2={648} y2={50} stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} />
-            <path d="M644 46 L650 50 L644 54" fill="none" stroke="rgba(148,163,184,0.3)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-            <text x={626} y={38} textAnchor="middle" fontSize="10" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">Claude Code</text>
-            <text x={626} y={68} textAnchor="middle" fontSize="10" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">+ Review Gate</text>
-            <rect x={660} y={10} width={260} height={80} rx={12} fill={`${ROADMAP_COLORS.bolt}0C`} stroke={`${ROADMAP_COLORS.bolt}30`} strokeWidth={1} />
-            <rect x={660} y={10} width={260} height={3} rx={1.5} fill={ROADMAP_COLORS.bolt} opacity={0.6} />
-            <text x={790} y={42} textAnchor="middle" fontSize="16" fontWeight="700" fill={ROADMAP_COLORS.bolt} fontFamily="DM Sans, sans-serif">Bolt PaaS</text>
-            <text x={790} y={62} textAnchor="middle" fontSize="12" fill="#D0DAE6" fontFamily="JetBrains Mono, monospace">Meridian, Axiom + new</text>
-            <text x={790} y={80} textAnchor="middle" fontSize="11" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">{"12\u00D7 faster delivery"}</text>
-          </svg>
-        </Card>
-      </div>
-
-      {/* MIGRATION PATHS */}
-      <div style={{ margin: "28px 0 0" }}>
-        <SectionHeader label="Migration Paths" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 4 }}>
-          {migrationPaths.map((path, i) => (
-            <div key={path.id} onClick={() => setActivePath(activePath === i ? null : i)} style={{ background: activePath === i ? `${path.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activePath === i ? path.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: path.color, opacity: activePath === i ? 1 : 0.4 }} />
-              <div style={{ fontSize: 16, fontWeight: 600, color: path.color, marginBottom: 4 }}>{path.title}</div>
-              <div style={{ fontSize: 13, color: "#D0DAE6", marginBottom: 8, lineHeight: 1.4 }}>{path.subtitle}</div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#B8C8DA" }}>{path.timeline}</span>
-                <div style={{ display: "flex", gap: 4 }}>
-                  {path.tools.slice(0, 2).map((t, j) => (<span key={j} style={{ fontSize: 11, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 6px" }}>{t}</span>))}
-                  {path.tools.length > 2 && <span style={{ fontSize: 11, color: "#B8C8DA", padding: "2px 4px" }}>+{path.tools.length - 2}</span>}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        {selectedPath && (
-          <div style={{ margin: "12px 0 0", background: `${selectedPath.color}08`, border: `1px solid ${selectedPath.color}20`, borderRadius: 12, padding: "28px 28px 24px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedPath.color, marginBottom: 6 }}>{selectedPath.title}</div>
-            <div style={{ fontSize: 14, color: selectedPath.color, marginBottom: 16 }}>Applications: {selectedPath.apps}</div>
-            <p style={{ fontSize: 16, color: "#E2EAF2", margin: "0 0 20px", lineHeight: 1.65, maxWidth: 800 }}>{selectedPath.description}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Migration Steps</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-                  {selectedPath.steps.map((step, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                      <div style={{ width: 20, height: 20, borderRadius: "50%", background: `${selectedPath.color}20`, border: `1px solid ${selectedPath.color}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: selectedPath.color }}>{i + 1}</span>
-                      </div>
-                      <span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.5 }}>{step}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div style={{ background: "rgba(16,34,66,0.5)", border: "1px solid rgba(148,163,184,0.08)", borderRadius: 10, padding: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: "#D0DAE6", marginBottom: 14 }}>Tools Required</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {selectedPath.tools.map((tool, i) => (<span key={i} style={{ fontSize: 14, color: selectedPath.color, background: `${selectedPath.color}12`, border: `1px solid ${selectedPath.color}25`, borderRadius: 6, padding: "6px 14px" }}>{tool}</span>))}
-                </div>
-                <div style={{ marginTop: 16, padding: "12px 16px", background: `${selectedPath.color}08`, border: `1px solid ${selectedPath.color}15`, borderRadius: 8 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: selectedPath.color, marginBottom: 4 }}>Timeline</div>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, color: "#FFFFFF" }}>{selectedPath.timeline}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* AI TOOLING LANDSCAPE */}
-      <div style={{ margin: "28px 0 0" }}>
-        <SectionHeader label="AI Tooling Landscape" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 4 }}>
-          {aiToolsRoadmap.map((tool, i) => (
-            <div key={i} onClick={() => setActiveTool(activeTool === i ? null : i)} style={{ background: activeTool === i ? `${tool.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeTool === i ? tool.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "20px 18px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: tool.color, opacity: activeTool === i ? 1 : 0.4 }} />
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: tool.color }}>{tool.name}</div>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: tool.status === "Approved" ? "#10B981" : tool.status === "Pending AI Council" ? "#F59E0B" : "#3B82F6", background: tool.status === "Approved" ? "rgba(16,185,129,0.1)" : tool.status === "Pending AI Council" ? "rgba(245,158,11,0.1)" : "rgba(59,130,246,0.1)", border: `1px solid ${tool.status === "Approved" ? "rgba(16,185,129,0.25)" : tool.status === "Pending AI Council" ? "rgba(245,158,11,0.25)" : "rgba(59,130,246,0.25)"}`, borderRadius: 4, padding: "1px 6px" }}>{tool.status}</span>
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                {tool.tiers.map((t, j) => (<span key={j} style={{ fontSize: 11, color: "#D0DAE6", background: "rgba(148,163,184,0.08)", borderRadius: 4, padding: "2px 6px" }}>{t}</span>))}
-              </div>
-            </div>
-          ))}
-        </div>
-        {selectedTool && (
-          <div style={{ margin: "12px 0 0", background: `${selectedTool.color}08`, border: `1px solid ${selectedTool.color}20`, borderRadius: 12, padding: "24px 28px", animation: "fadeIn 0.2s ease" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase", color: selectedTool.color, marginBottom: 8 }}>{selectedTool.name}</div>
-            <p style={{ fontSize: 16, color: "#E2EAF2", margin: "0 0 12px", lineHeight: 1.65 }}>{selectedTool.desc}</p>
-            <div style={{ padding: "10px 14px", background: "rgba(148,163,184,0.06)", border: "1px solid rgba(148,163,184,0.1)", borderRadius: 8 }}>
-              <span style={{ fontSize: 13, color: "#B8C8DA" }}>Limitation: {selectedTool.limitation}</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* TIMELINE */}
-      <div style={{ margin: "28px 0 0" }}>
-        <SectionHeader label="Execution Timeline" />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-          {timelineBands.map((band) => (
-            <div key={band.id} style={{ background: "rgba(16,34,66,0.6)", border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12, padding: "20px 18px", position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: band.color, opacity: 0.5 }} />
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                <div>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: band.color }}>{band.label}</div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: "#FFFFFF", marginTop: 2 }}>{band.title}</div>
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {band.actions.map((action, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                    <div style={{ width: 4, height: 4, borderRadius: "50%", background: band.color, marginTop: 7, flexShrink: 0 }} />
-                    <span style={{ fontSize: 14, color: "#E2EAF2", lineHeight: 1.5 }}>{action}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* BOTTOM CALLOUT */}
-      <div style={{ marginTop: 28, padding: "20px 24px", background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.15)", borderRadius: 8 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {[
-            "Every application in the portfolio has a path to Bolt \u2014 the question is sequence, not whether",
-            "Intermediate apps move first because they\u2019re smaller, modern, and prove the migration pattern",
-            "Legacy modernization requires new tooling (Sourcegraph, Blitzy) \u2014 which requires AI Council tool expansion",
-            "The AI Council decision is the single gate: approve tool expansion and the entire roadmap accelerates",
-          ].map((item, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-              <span style={{ color: "#10B981", fontSize: 14, marginTop: 2, flexShrink: 0 }}>{"\u25C6"}</span>
-              <span style={{ fontSize: 15, color: "#E2EAF2", lineHeight: 1.55 }}>{item}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div style={{ height: 64 }} />
-    </div>
-  );
-}
+// (MptsRoadmapPage moved to the modern Roadmap / AI Literacy pages)
 
 // ============================================================
 // VALUE DATA
@@ -2752,130 +2286,7 @@ const valueProjects = [
 // VALUE PAGE
 // ============================================================
 
-function ValuePage() {
-  const [activeRow, setActiveRow] = useState<number | null>(null);
-  const totalCustomer = valueProjects.reduce((sum, p) => sum + p.customerRaw, 0);
-  const totalSdlc = valueProjects.reduce((sum, p) => sum + p.sdlcRaw, 0);
-  const formatTotal = (v: number) => `$${(v / 1000000).toFixed(2)}M`;
-
-  return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
-      {/* HERO */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-        <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Value</h1>
-      </div>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 780, lineHeight: 1.6 }}>MPTS Application Portfolio &mdash; Business Value &amp; SDLC Investment</p>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 12px", maxWidth: 820, lineHeight: 1.6 }}>Annual Customer Value represents the business impact each application delivers. SDLC Value represents the cost to build and maintain using traditional development methods &mdash; the investment that AI-powered development compresses.</p>
-      <div style={{ display: "flex", gap: 24, marginBottom: 48 }}>
-        {[
-          { label: "Total Annual Customer Value", value: formatTotal(totalCustomer), color: "#10B981" },
-          { label: "Total SDLC Value", value: formatTotal(totalSdlc), color: "#3B82F6" },
-          { label: "Combined", value: formatTotal(totalCustomer + totalSdlc), color: "#FFFFFF" },
-          { label: "Applications", value: "6", color: "#FFFFFF" },
-        ].map((stat, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-            <span style={{ fontSize: 18, fontWeight: 700, color: stat.color, fontFamily: "'JetBrains Mono', monospace" }}>{stat.value}</span>
-            <span style={{ fontSize: 13, color: "#B8C8DA" }}>{stat.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* VALUE TABLE */}
-      <SectionHeader label="Portfolio Value Summary" />
-      <Card style={{ padding: 0, overflow: "hidden" }}>
-        {/* Header */}
-        <div style={{ display: "grid", gridTemplateColumns: "180px 1fr 140px 140px", padding: "14px 24px", borderBottom: "1px solid rgba(148,163,184,0.1)", background: "rgba(16,34,66,0.3)" }}>
-          <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Application</span>
-          <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#B8C8DA" }}>Overview</span>
-          <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#10B981", textAlign: "right" }}>Annual Customer Value</span>
-          <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#3B82F6", textAlign: "right" }}>SDLC Value</span>
-        </div>
-
-        {/* Rows */}
-        {valueProjects.map((proj, i) => (
-          <div key={i} onClick={() => setActiveRow(activeRow === i ? null : i)} style={{ display: "grid", gridTemplateColumns: "180px 1fr 140px 140px", padding: "16px 24px", borderBottom: i < valueProjects.length - 1 ? "1px solid rgba(148,163,184,0.06)" : "none", alignItems: "center", cursor: "pointer", background: activeRow === i ? `${proj.color}08` : "transparent", transition: "background 0.2s ease" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 4, height: 28, borderRadius: 2, background: proj.color, flexShrink: 0 }} />
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: proj.color }}>{proj.name}</div>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: proj.status === "Live" ? "#10B981" : proj.status === "Pilot" || proj.status === "In dev" || proj.status === "Building" ? "#F59E0B" : "#A8B8CC", marginTop: 2 }}>{proj.status}</span>
-              </div>
-            </div>
-            <span style={{ fontSize: 14, color: "#D0DAE6", lineHeight: 1.5, paddingRight: 16 }}>{proj.desc}</span>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 600, color: "#10B981", textAlign: "right" }}>{proj.customerValue}</span>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 600, color: "#3B82F6", textAlign: "right" }}>{proj.sdlcValue}</span>
-          </div>
-        ))}
-
-        {/* Totals row */}
-        <div style={{ display: "grid", gridTemplateColumns: "180px 1fr 140px 140px", padding: "16px 24px", borderTop: "2px solid rgba(148,163,184,0.15)", background: "rgba(16,34,66,0.3)" }}>
-          <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF" }}>Total</span>
-          <span style={{ fontSize: 14, color: "#B8C8DA" }}>6 applications</span>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 700, color: "#10B981", textAlign: "right" }}>{formatTotal(totalCustomer)}</span>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 700, color: "#3B82F6", textAlign: "right" }}>{formatTotal(totalSdlc)}</span>
-        </div>
-      </Card>
-
-      {/* VALUE BARS */}
-      <div style={{ marginTop: 28 }}>
-        <SectionHeader label="Value by Application" />
-        <Card style={{ padding: "28px 24px" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {valueProjects.map((proj, i) => {
-              const maxVal = Math.max(...valueProjects.map(p => Math.max(p.customerRaw, p.sdlcRaw)));
-              return (
-                <div key={i}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: proj.color }}>{proj.name}</span>
-                    <div style={{ display: "flex", gap: 16 }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#10B981" }}>{proj.customerValue}</span>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#3B82F6" }}>{proj.sdlcValue}</span>
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                    <div style={{ height: 8, borderRadius: 4, background: "rgba(148,163,184,0.06)", position: "relative", overflow: "hidden" }}>
-                      <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${(proj.customerRaw / maxVal) * 100}%`, borderRadius: 4, background: "#10B981", opacity: 0.7, transition: "width 0.5s ease" }} />
-                    </div>
-                    <div style={{ height: 8, borderRadius: 4, background: "rgba(148,163,184,0.06)", position: "relative", overflow: "hidden" }}>
-                      <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${(proj.sdlcRaw / maxVal) * 100}%`, borderRadius: 4, background: "#3B82F6", opacity: 0.7, transition: "width 0.5s ease" }} />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div style={{ display: "flex", gap: 24, marginTop: 20 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}><div style={{ width: 16, height: 8, borderRadius: 4, background: "#10B981", opacity: 0.7 }} /><span style={{ fontSize: 13, color: "#B8C8DA" }}>Annual Customer Value</span></div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}><div style={{ width: 16, height: 8, borderRadius: 4, background: "#3B82F6", opacity: 0.7 }} /><span style={{ fontSize: 13, color: "#B8C8DA" }}>SDLC Value</span></div>
-          </div>
-        </Card>
-      </div>
-
-      {/* COMBINED VALUE CALLOUT */}
-      <div style={{ marginTop: 28, padding: "24px", background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.15)", borderRadius: 12 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24 }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 32, fontWeight: 700, color: "#10B981", lineHeight: 1 }}>{formatTotal(totalCustomer)}</div>
-            <div style={{ fontSize: 14, color: "#D0DAE6", marginTop: 8 }}>Annual Customer Value</div>
-            <div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 4 }}>Revenue impact, cost avoidance, efficiency gains</div>
-          </div>
-          <div style={{ textAlign: "center", borderLeft: "1px solid rgba(148,163,184,0.1)", borderRight: "1px solid rgba(148,163,184,0.1)" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 32, fontWeight: 700, color: "#3B82F6", lineHeight: 1 }}>{formatTotal(totalSdlc)}</div>
-            <div style={{ fontSize: 14, color: "#D0DAE6", marginTop: 8 }}>SDLC Value</div>
-            <div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 4 }}>Traditional development cost compressed by AI tooling</div>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 32, fontWeight: 700, color: "#FFFFFF", lineHeight: 1 }}>{formatTotal(totalCustomer + totalSdlc)}</div>
-            <div style={{ fontSize: 14, color: "#D0DAE6", marginTop: 8 }}>Combined Portfolio Value</div>
-            <div style={{ fontSize: 13, color: "#B8C8DA", marginTop: 4 }}>Total measurable impact across 6 applications</div>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ height: 64 }} />
-    </div>
-  );
-}
+// (ValuePage moved to the modern Roadmap / AI Literacy pages)
 
 // ============================================================
 // DATA PLATFORM PAGE (placeholder until content arrives)
@@ -3777,7 +3188,7 @@ function SolPage({ id, children }: { id: string; children: React.ReactNode }) {
 
 type SolTile = { head: string; label: string; sub: string };
 
-function SolHero({ eyebrow, name, status, statusColor, color, line1, line2, tiles, sections, visual }: { eyebrow: string; name: string; status: string; statusColor: string; color: string; line1: string; line2: string; tiles: SolTile[]; sections: { id: string; label: string }[]; visual?: React.ReactNode }) {
+function SolHero({ eyebrow, name, status, statusColor = "#B8C8DA", color, line1, line2, tiles, sections, visual }: { eyebrow: string; name: string; status?: string; statusColor?: string; color: string; line1: string; line2: string; tiles: SolTile[]; sections: { id: string; label: string }[]; visual?: React.ReactNode }) {
   const [ref, inView] = useInViewOnce<HTMLDivElement>(0.2);
   return (
     <header style={{ position: "relative", marginBottom: 8 }}>
@@ -3787,7 +3198,7 @@ function SolHero({ eyebrow, name, status, statusColor, color, line1, line2, tile
           <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color }}>{eyebrow}</p>
           <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
             <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>{name}</h1>
-            <span style={{ fontFamily: MONO, fontSize: 12, fontWeight: 600, color: statusColor, background: `${statusColor}1F`, border: `1px solid ${statusColor}55`, borderRadius: 4, padding: "3px 8px" }}>{status}</span>
+            {status && <span style={{ fontFamily: MONO, fontSize: 12, fontWeight: 600, color: statusColor, background: `${statusColor}1F`, border: `1px solid ${statusColor}55`, borderRadius: 4, padding: "3px 8px" }}>{status}</span>}
           </div>
           <p style={{ fontSize: 22, color: "#FFFFFF", fontWeight: 600, margin: "14px 0 0", lineHeight: 1.4 }}>{line1}</p>
           <p style={{ fontSize: 18, color: "#D0DAE6", margin: "10px 0 0", lineHeight: 1.55 }}>{line2}</p>
@@ -3919,11 +3330,11 @@ function SolPlatform({ color, intelligence, data, extra, onNavigate }: { color: 
   );
 }
 
-function SolFooter({ strong, text, onNavigate }: { strong: string; text: string; onNavigate: Navigate }) {
+function SolFooter({ strong, text, onNavigate, cta = { label: "All Solutions", target: "solutions", color: "#93C5FD" } }: { strong: string; text: string; onNavigate: Navigate; cta?: { label: string; target: string; color: string } }) {
   return (
     <footer style={{ marginTop: 48, paddingTop: 28, borderTop: "1px solid rgba(184,200,218,0.25)", display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
       <p style={{ flex: "1 1 480px", fontSize: 18, color: "#D0DAE6", margin: 0, lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>{strong}</strong>{" " + text}</p>
-      <BoltButton onClick={() => onNavigate("solutions")} style={{ color: "#93C5FD", borderColor: "#60A5FA" }}><span>All Solutions</span><BoltIcon kind="arrow" /></BoltButton>
+      <BoltButton onClick={() => onNavigate(cta.target)} style={{ color: cta.color, borderColor: cta.color }}><span>{cta.label}</span><BoltIcon kind="arrow" /></BoltButton>
     </footer>
   );
 }
@@ -4534,6 +3945,704 @@ function RetentionIQPage({ onNavigate }: { onNavigate: Navigate }) {
 
 
 // ============================================================
+// ROADMAP + AI LITERACY PAGES (modern)
+// ============================================================
+
+const EVO_COLOR = "#818CF8";
+const LEVELS_COLOR = "#C084FC";
+const ROADMAP_COLOR = "#38BDF8";
+const VALUE_COLOR = "#FACC15";
+
+const litLabel = (c = "#B8C8DA"): React.CSSProperties => ({ margin: 0, fontFamily: MONO, fontSize: 12.5, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", color: c });
+const litPanel = (c: string): React.CSSProperties => ({ borderRadius: 16, padding: "clamp(16px, 2.5vw, 26px)", background: `linear-gradient(160deg, ${c}1A, rgba(16,34,66,0.7) 55%)`, border: `1px solid ${c}55` });
+
+function LitMark({ good, color }: { good: boolean; color: string }) {
+  return (
+    <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 4 }}>
+      {good ? <path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke={color} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /> : <path d="M7 7l10 10M17 7 7 17" fill="none" stroke="#F87171" strokeWidth="2.4" strokeLinecap="round" />}
+    </svg>
+  );
+}
+
+function LitCallout({ color, title, children }: { color: string; title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginTop: 16, borderRadius: 12, padding: "16px 18px", borderLeft: `3px solid ${color}`, background: `${color}10`, border: `1px solid ${color}40`, borderLeftWidth: 3 }}>
+      <p style={litLabel(color)}>{title}</p>
+      <div style={{ margin: "6px 0 0", fontSize: 16, color: "#E2EAF2", lineHeight: 1.65 }}>{children}</div>
+    </div>
+  );
+}
+
+// ---------------- AI EVOLUTION ----------------
+
+function EraExplorer() {
+  const [idx, setIdx] = useState(eras.length - 1);
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.1);
+  const era = eras[idx];
+  const pct = (idx / (eras.length - 1)) * 100;
+  return (
+    <div>
+      <div ref={ref} style={{ position: "relative" }}>
+        <div aria-hidden="true" style={{ position: "absolute", left: "12.5%", right: "12.5%", top: 25, height: 3, borderRadius: 2, background: "rgba(184,200,218,0.18)" }}>
+          <div className="bolt-anim" style={{ height: "100%", width: `${pct}%`, borderRadius: 2, background: `linear-gradient(90deg, ${eras[0].color}, ${era.color})`, transition: "width 0.5s cubic-bezier(.4,0,.2,1)", transformOrigin: "left", ...(inView ? { animation: "boltGrowX 0.9s ease-out both" } : { transform: "scaleX(0)" }) }} />
+        </div>
+        <div role="tablist" aria-label="AI eras" style={{ position: "relative", display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 6 }}>
+          {eras.map((e, i) => {
+            const on = i === idx;
+            const past = i <= idx;
+            return (
+              <button key={e.id} type="button" role="tab" aria-selected={on} onClick={() => setIdx(i)} style={{ fontFamily: "inherit", background: "transparent", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: "4px 2px 8px", color: "#FFFFFF" }}>
+                <span aria-hidden="true" style={{ height: 52, display: "flex", alignItems: "center" }}>
+                  <span className="bolt-anim" style={{ width: on ? 42 : 30, height: on ? 42 : 30, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", background: past ? e.color : "#0B1A33", border: `2px solid ${e.color}`, boxShadow: on ? `0 0 0 6px ${e.color}2E, 0 0 26px ${e.color}88` : "none", transition: "all 0.3s ease", fontFamily: MONO, fontSize: 13, fontWeight: 700, color: past ? "#0B1A33" : e.color, ...(inView ? { animation: `boltPop 0.5s ease-out ${0.2 + i * 0.15}s both` } : { opacity: 0 }) }}>{String(i + 1)}</span>
+                </span>
+                <span style={{ fontFamily: MONO, fontSize: 13, fontWeight: 600, color: e.color }}>{e.years}</span>
+                <span style={{ fontSize: "clamp(13px, 1.5vw, 16px)", fontWeight: on ? 700 : 500, color: on ? "#FFFFFF" : "#B8C8DA", textAlign: "center", lineHeight: 1.25 }}>{e.title}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div role="tabpanel" key={era.id} className="bolt-anim" style={{ ...litPanel(era.color), marginTop: 12, animation: "boltIn 0.35s ease-out both" }}>
+        <p style={litLabel(era.color)}>{era.tagline}</p>
+        <p style={{ margin: "8px 0 18px", fontSize: 17, color: "#E2EAF2", lineHeight: 1.65, maxWidth: 900 }}>{era.summary}</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 12 }}>
+          {[{ t: "What it could do", items: era.capabilities, good: true }, { t: "What it couldn't do yet", items: era.limitations, good: false }].map((col) => (
+            <div key={col.t} style={{ borderRadius: 12, padding: "14px 16px", background: "rgba(7,18,38,0.6)", border: "1px solid rgba(184,200,218,0.15)" }}>
+              <p style={litLabel(col.good ? era.color : "#B8C8DA")}>{col.t}</p>
+              <ul style={{ listStyle: "none", margin: "10px 0 0", padding: 0, display: "grid", gap: 8 }}>
+                {col.items.map((it, k) => <li key={it} className="bolt-anim" style={{ display: "flex", gap: 9, fontSize: 15, color: "#E2EAF2", lineHeight: 1.45, animation: `boltIn 0.3s ease-out ${0.08 + k * 0.05}s both` }}><LitMark good={col.good} color={era.color} />{it}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <p style={{ ...litLabel(), margin: "20px 0 8px" }}>{"Key milestones"}</p>
+        <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 300px), 1fr))", gap: 6 }}>
+          {era.milestones.map((m, k) => (
+            <li key={m.date + m.event} className="bolt-anim" style={{ display: "flex", gap: 12, alignItems: "baseline", padding: "9px 12px", borderRadius: 9, background: m.highlight ? `${era.color}1C` : "rgba(7,18,38,0.35)", border: `1px solid ${m.highlight ? era.color + "66" : "rgba(184,200,218,0.1)"}`, animation: `boltIn 0.3s ease-out ${0.1 + k * 0.05}s both` }}>
+              <span style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 600, color: era.color, minWidth: 68, whiteSpace: "nowrap" }}>{m.date}</span>
+              <span style={{ fontSize: 15, color: m.highlight ? "#FFFFFF" : "#D0DAE6", fontWeight: m.highlight ? 600 : 400, lineHeight: 1.4 }}>{m.event}</span>
+            </li>
+          ))}
+        </ol>
+        <LitCallout color={era.color} title="What it meant for enterprise">{era.enterprise}</LitCallout>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginTop: 16 }}>
+          <BoltButton disabled={idx === 0} onClick={() => setIdx(idx - 1)} style={{ background: "transparent", opacity: idx === 0 ? 0.4 : 1 }}><span>{"Previous era"}</span></BoltButton>
+          <BoltButton disabled={idx === eras.length - 1} onClick={() => setIdx(idx + 1)} style={{ background: "transparent", opacity: idx === eras.length - 1 ? 0.4 : 1 }}><span>{"Next era"}</span><BoltIcon kind="arrow" /></BoltButton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EvoVelocity() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.1);
+  const [sel, setSel] = useState(4);
+  const max = 15;
+  const d = velocityData[sel];
+  return (
+    <div ref={ref}>
+      <div style={{ display: "grid", gap: 6 }}>
+        {velocityData.map((v, i) => {
+          const on = i === sel;
+          return (
+            <button key={v.era} type="button" aria-pressed={on} onClick={() => setSel(i)} onMouseEnter={() => setSel(i)} style={{ fontFamily: "inherit", textAlign: "left", cursor: "pointer", display: "grid", gridTemplateColumns: "minmax(110px, 200px) minmax(0, 1fr) 52px", gap: 12, alignItems: "center", padding: "8px 10px", borderRadius: 10, border: `1px solid ${on ? v.color : "transparent"}`, background: on ? `${v.color}14` : "transparent", color: "#FFFFFF", transition: "all 0.2s ease" }}>
+              <span>
+                <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, color: v.projected ? "#B8C8DA" : "#FFFFFF", lineHeight: 1.25 }}>{v.era}</span>
+                <span style={{ fontFamily: MONO, fontSize: 12, color: v.color }}>{v.period}</span>
+              </span>
+              <span style={{ position: "relative", height: 26, borderRadius: 6, background: "rgba(184,200,218,0.08)", overflow: "hidden" }}>
+                <span className="bolt-anim" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${(v.multiplier / max) * 100}%`, borderRadius: 6, background: v.projected ? `repeating-linear-gradient(45deg, ${v.color}CC 0 6px, ${v.color}55 6px 12px)` : `linear-gradient(90deg, ${v.color}77, ${v.color})`, boxShadow: on ? `0 0 18px ${v.color}88` : "none", transformOrigin: "left", ...(inView ? { animation: `boltGrowX 0.9s cubic-bezier(.2,.7,.2,1) ${0.1 + i * 0.12}s both` } : { transform: "scaleX(0)" }) }} />
+              </span>
+              <span style={{ fontFamily: MONO, fontSize: 17, fontWeight: 700, color: v.color, textAlign: "right" }}>{v.multiplier + "×"}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div key={sel} aria-live="polite" className="bolt-anim" style={{ marginTop: 10, borderRadius: 12, padding: "14px 16px", background: `${d.color}12`, border: `1px solid ${d.color}55`, animation: "boltIn 0.3s ease-out both" }}>
+        <p style={{ margin: 0, fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>{d.description}</p>
+        {d.source && <p style={{ margin: "6px 0 0", fontFamily: MONO, fontSize: 12.5, color: "#B8C8DA", lineHeight: 1.5 }}>{d.source}</p>}
+      </div>
+      <LitCallout color={EVO_COLOR} title="The urgency case">
+        {"A team on multi-agent tooling ships roughly "}<strong style={{ color: "#FFFFFF" }}>{"7× the output"}</strong>{" of a team without AI assistance, against "}<strong style={{ color: "#FFFFFF" }}>{"1.25× with autocomplete alone"}</strong>{". The gap is not incremental. It is structural, and it compounds every sprint."}
+      </LitCallout>
+    </div>
+  );
+}
+
+function EvoNumbers() {
+  const [col, setCol] = useState(eras.length - 1);
+  return (
+    <div style={{ overflowX: "auto", borderRadius: 14, border: "1px solid rgba(184,200,218,0.18)", background: "rgba(16,34,66,0.55)" }}>
+      <div style={{ minWidth: 640 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "190px repeat(4, minmax(0, 1fr))", padding: "12px 18px", borderBottom: "1px solid rgba(184,200,218,0.12)" }}>
+          <span />
+          {eras.map((e, i) => <button key={e.id} type="button" aria-pressed={col === i} onClick={() => setCol(i)} onMouseEnter={() => setCol(i)} style={{ fontFamily: MONO, fontSize: 13.5, fontWeight: 700, color: col === i ? e.color : "#B8C8DA", background: col === i ? `${e.color}1A` : "transparent", border: "none", borderRadius: 6, padding: "4px 0", cursor: "pointer" }}>{e.years}</button>)}
+        </div>
+        {stats.map((s, si) => (
+          <div key={s.label} style={{ display: "grid", gridTemplateColumns: "190px repeat(4, minmax(0, 1fr))", padding: "12px 18px", borderBottom: si < stats.length - 1 ? "1px solid rgba(184,200,218,0.07)" : "none", alignItems: "center" }}>
+            <span style={{ fontSize: 15, color: "#D0DAE6" }}>{s.label}</span>
+            {s.values.map((v, vi) => <span key={vi} style={{ textAlign: "center", fontSize: col === vi ? 16.5 : 15, fontWeight: col === vi ? 700 : 400, color: col === vi ? eras[vi].color : "#E2EAF2", transition: "all 0.2s ease" }}>{v}</span>)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function EvoCompute() {
+  const [active, setActive] = useState(0);
+  const metrics = [
+    { id: "tokens", label: "Tokens per watt", unit: "Relative throughput index (Nov 2022 = 1×)", source: "Sources: MLCommons MLPerf Inference benchmarks (2022–2025), Anthropic efficiency disclosures", color: "#8B5CF6", base: "Expected hardware gains", line: "Actual tokens per watt", moores: [{ x: 0, y: 1 }, { x: 12, y: 1.4 }, { x: 24, y: 2 }, { x: 36, y: 2.8 }, { x: 40, y: 3.2 }], ai: [{ x: 0, y: 1 }, { x: 8, y: 3 }, { x: 16, y: 8 }, { x: 24, y: 18 }, { x: 32, y: 35 }, { x: 40, y: 60 }], callout: "Tokens per watt has improved ~60× since 2022, driven by newer hardware, inference optimization and model distillation. Hardware improvements alone would have delivered ~3×." },
+    { id: "flops", label: "Training compute", unit: "Relative FLOP index, log scale (Nov 2022 = 1×)", source: "Sources: Epoch AI Training Compute Database (2024), OpenAI scaling law papers, Anthropic model cards", color: "#F59E0B", base: "Moore’s Law expectation", line: "Frontier model training FLOP", moores: [{ x: 0, y: 1 }, { x: 12, y: 1.4 }, { x: 24, y: 2 }, { x: 36, y: 2.8 }, { x: 40, y: 3.2 }], ai: [{ x: 0, y: 1 }, { x: 6, y: 3 }, { x: 14, y: 10 }, { x: 22, y: 30 }, { x: 30, y: 80 }, { x: 40, y: 200 }], callout: "Training compute for frontier models has grown ~200× since GPT-3.5, doubling roughly every 6 months against every 24 months under Moore’s Law." },
+  ];
+  const m = metrics[active];
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.1);
+  const W = 900, H = 280, P = { t: 40, r: 24, b: 40, l: 64 };
+  const iw = W - P.l - P.r, ih = H - P.t - P.b;
+  const ys = [...m.moores, ...m.ai].map((p) => p.y);
+  const lo = Math.log10(Math.min(...ys) * 0.8), hi = Math.log10(Math.max(...ys) * 1.15);
+  const cx = (x: number) => P.l + (x / 40) * iw;
+  const cy = (y: number) => P.t + ih - ((Math.log10(y) - lo) / (hi - lo)) * ih;
+  const path = (pts: { x: number; y: number }[]) => pts.map((p, i) => `${i ? "L" : "M"} ${cx(p.x).toFixed(1)} ${cy(p.y).toFixed(1)}`).join(" ");
+  const area = path(m.ai) + ` L ${cx(40).toFixed(1)} ${(P.t + ih).toFixed(1)} L ${cx(0).toFixed(1)} ${(P.t + ih).toFixed(1)} Z`;
+  const ticks = [1, 2, 3, 5, 10, 20, 50, 100, 200].filter((v) => v >= Math.min(...ys) * 0.7 && v <= Math.max(...ys) * 1.3);
+  const xl = [{ x: 0, l: "Nov '22" }, { x: 10, l: "Sep '23" }, { x: 20, l: "Jul '24" }, { x: 30, l: "May '25" }, { x: 40, l: "Mar '26" }];
+  const last = m.ai[m.ai.length - 1];
+  return (
+    <div ref={ref}>
+      <div role="tablist" style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+        {metrics.map((mm, i) => <button key={mm.id} type="button" role="tab" aria-selected={active === i} onClick={() => setActive(i)} style={{ fontFamily: "inherit", fontSize: 15, fontWeight: 700, padding: "9px 14px", borderRadius: 9, cursor: "pointer", border: `1.5px solid ${active === i ? mm.color : "rgba(184,200,218,0.25)"}`, background: active === i ? `${mm.color}22` : "rgba(16,34,66,0.6)", color: "#FFFFFF" }}>{mm.label}</button>)}
+      </div>
+      <div style={{ ...litPanel(m.color), padding: "18px 18px 16px" }}>
+        <p style={{ margin: "0 0 4px", fontFamily: MONO, fontSize: 12.5, color: "#B8C8DA" }}>{m.unit}</p>
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={m.callout} style={{ display: "block", overflow: "visible" }}>
+          <defs><linearGradient id={`evo-area-${m.id}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={m.color} stopOpacity="0.35" /><stop offset="100%" stopColor={m.color} stopOpacity="0" /></linearGradient></defs>
+          {ticks.map((v) => <g key={v}><line x1={P.l} x2={W - P.r} y1={cy(v)} y2={cy(v)} stroke="rgba(184,200,218,0.1)" /><text x={P.l - 10} y={cy(v)} textAnchor="end" dominantBaseline="central" fontSize="12" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">{v + "×"}</text></g>)}
+          {xl.map((l) => <text key={l.x} x={cx(l.x)} y={H - 10} textAnchor="middle" fontSize="12" fill="#B8C8DA" fontFamily="JetBrains Mono, monospace">{l.l}</text>)}
+          <g key={m.id}>
+            <path d={area} fill={`url(#evo-area-${m.id})`} className="bolt-anim" style={inView ? { animation: "boltIn 1s ease-out 0.6s both" } : { opacity: 0 }} />
+            <path d={path(m.moores)} fill="none" stroke="#A8B8CC" strokeWidth="2" strokeDasharray="6 5" className="bolt-anim" style={inView ? { animation: "boltIn 0.6s ease-out both" } : { opacity: 0 }} />
+            <path d={path(m.ai)} fill="none" stroke={m.color} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" pathLength={1} strokeDasharray="1" className="bolt-anim" style={inView ? { animation: "litDraw 1.4s cubic-bezier(.4,0,.2,1) both" } : { strokeDashoffset: 1 }} />
+            {m.ai.map((p, i) => <circle key={i} cx={cx(p.x)} cy={cy(p.y)} r="5" fill="#0B1A33" stroke={m.color} strokeWidth="2.5" className="bolt-anim" style={{ transformBox: "fill-box", transformOrigin: "center", ...(inView ? { animation: `boltPop 0.4s ease-out ${0.2 + i * 0.22}s both` } : { opacity: 0 }) }} />)}
+            <text x={cx(last.x) - 10} y={cy(last.y) - 14} textAnchor="end" fontSize="22" fontWeight="700" fill={m.color} fontFamily="JetBrains Mono, monospace" className="bolt-anim" style={inView ? { animation: "boltIn 0.5s ease-out 1.4s both" } : { opacity: 0 }}>{last.y + "×"}</text>
+          </g>
+          <line x1={P.l + 4} x2={P.l + 30} y1={14} y2={14} stroke="#A8B8CC" strokeWidth="2" strokeDasharray="6 5" />
+          <text x={P.l + 38} y={18} fontSize="13" fill="#D0DAE6" fontFamily="DM Sans, sans-serif">{m.base}</text>
+          <line x1={P.l + 250} x2={P.l + 276} y1={14} y2={14} stroke={m.color} strokeWidth="3" />
+          <text x={P.l + 284} y={18} fontSize="13" fontWeight="600" fill={m.color} fontFamily="DM Sans, sans-serif">{m.line}</text>
+        </svg>
+        <p style={{ margin: "12px 0 0", fontSize: 16, color: "#E2EAF2", lineHeight: 1.6 }}>{m.callout}</p>
+        <p style={{ margin: "6px 0 0", fontFamily: MONO, fontSize: 12, color: "#B8C8DA" }}>{m.source}</p>
+      </div>
+    </div>
+  );
+}
+
+function TimelinePage({ onNavigate }: { onNavigate: Navigate }) {
+  const sections = [{ id: "ev-eras", label: "Eras" }, { id: "ev-speed", label: "Velocity" }, { id: "ev-numbers", label: "Numbers" }, { id: "ev-compute", label: "Compute" }];
+  return (
+    <SolPage id="evolution-page">
+      <SolHero eyebrow="AI Literacy · How we got here" name="The Evolution of AI" color={EVO_COLOR}
+        line1="From a chat window to directing teams of AI agents in four years."
+        line2="How AI moved from a curiosity to a production platform, era by era: what each generation could do, what it couldn't yet, and what it meant for enterprises like McKesson."
+        tiles={[{ head: "4 eras", label: "Chat to orchestration", sub: "Nov 2022 to today" }, { head: "Structural", label: "The productivity gap", sub: "Teams on agentic tools pull ahead every sprint" }, { head: "Adoption", label: "Is the advantage now", sub: "Everyone has frontier models; speed of use differs" }]}
+        sections={sections} />
+      <SolSection id="ev-eras" num="01" label="Eras" title="Four eras, each faster than the last" sub="Pick an era, or step through them in order." icon="layers" color={EVO_COLOR}>
+        <EraExplorer />
+      </SolSection>
+      <SolSection id="ev-speed" num="02" label="Velocity" title="Developer output, multiplied" sub="Output relative to a developer working without AI. Select a bar for the source behind it." icon="trend" color={EVO_COLOR}>
+        <EvoVelocity />
+      </SolSection>
+      <SolSection id="ev-numbers" num="03" label="Numbers" title="The numbers tell the story" sub="Adoption, context, investment and jobs across the four eras." icon="chart" color={EVO_COLOR}>
+        <EvoNumbers />
+      </SolSection>
+      <SolSection id="ev-compute" num="04" label="Compute" title="Outrunning Moore's Law" sub="AI efficiency and training compute have grown far faster than chip improvements alone would predict." icon="pulse" color={EVO_COLOR}>
+        <EvoCompute />
+      </SolSection>
+      <SolFooter strong="The model is no longer the moat." text="How fast an organization puts AI to work is. The next step is knowing where each person stands." onNavigate={onNavigate} cta={{ label: "Knowledge Levels", target: "framework", color: LEVELS_COLOR }} />
+    </SolPage>
+  );
+}
+
+// ---------------- KNOWLEDGE LEVELS ----------------
+
+function LevelLadder() {
+  const [sel, setSel] = useState(1);
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.1);
+  const L = levels[sel];
+  return (
+    <div>
+      <div ref={ref} role="tablist" aria-label="Knowledge levels" style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: 8, alignItems: "end", minHeight: 240 }}>
+        {levels.map((l, i) => {
+          const on = i === sel;
+          return (
+            <button key={l.level} type="button" role="tab" aria-selected={on} onClick={() => setSel(i)} className="bolt-anim" style={{ fontFamily: "inherit", cursor: "pointer", height: 100 + i * 34, borderRadius: "12px 12px 6px 6px", border: `1.5px solid ${on ? l.color : l.color + "55"}`, background: on ? `linear-gradient(180deg, ${l.color}55, ${l.color}14)` : `linear-gradient(180deg, ${l.color}24, rgba(16,34,66,0.6))`, boxShadow: on ? `0 0 26px ${l.color}66` : "none", padding: "12px 10px", display: "flex", flexDirection: "column", textAlign: "left", color: "#FFFFFF", transformOrigin: "bottom", transition: "box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease", ...(inView ? { animation: `litUp 0.6s cubic-bezier(.2,.7,.2,1) ${i * 0.12}s both` } : { opacity: 0 }) }}>
+              <span style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 700, color: l.color }}>{"Level " + l.level}</span>
+              <span style={{ fontSize: "clamp(13px, 1.6vw, 17px)", fontWeight: 700, lineHeight: 1.2, marginTop: 4 }}>{l.title}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div role="tabpanel" key={L.level} className="bolt-anim" style={{ ...litPanel(L.color), marginTop: 12, animation: "boltIn 0.35s ease-out both" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <p style={litLabel(L.color)}>{"Level " + L.level + " · " + L.subtitle}</p>
+            <h3 style={{ margin: "4px 0 0", fontSize: 24, color: "#FFFFFF" }}>{L.title}</h3>
+          </div>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 600, color: L.color, background: `${L.color}18`, border: `1px solid ${L.color}55`, borderRadius: 999, padding: "6px 14px" }}><BoltGlyphIcon kind="target" size={16} color={L.color} />{L.analogy}</span>
+        </div>
+        <p style={{ margin: "12px 0 16px", fontSize: 17, color: "#E2EAF2", lineHeight: 1.65, maxWidth: 880 }}>{L.description}</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: 12 }}>
+          <div style={{ borderRadius: 12, padding: "14px 16px", background: "rgba(7,18,38,0.6)", border: "1px solid rgba(184,200,218,0.15)" }}>
+            <p style={litLabel(L.color)}>{"Expected competencies"}</p>
+            <ul style={{ listStyle: "none", margin: "10px 0 0", padding: 0, display: "grid", gap: 8 }}>
+              {L.competencies.map((c, k) => <li key={c} className="bolt-anim" style={{ display: "flex", gap: 9, fontSize: 15, color: "#E2EAF2", lineHeight: 1.45, animation: `boltIn 0.3s ease-out ${0.08 + k * 0.05}s both` }}><LitMark good color={L.color} />{c}</li>)}
+            </ul>
+          </div>
+          <div style={{ borderRadius: 12, padding: "14px 16px", background: "rgba(7,18,38,0.6)", border: "1px solid rgba(184,200,218,0.15)" }}>
+            <p style={litLabel(L.color)}>{"Interview prompts"}</p>
+            <div style={{ display: "grid", gap: 8, marginTop: 10 }}>
+              {L.interview.map((q, k) => (
+                <div key={q.type} className="bolt-anim" style={{ borderRadius: 10, padding: "10px 12px", background: `${L.color}10`, border: `1px solid ${L.color}33`, animation: `boltIn 0.3s ease-out ${0.12 + k * 0.08}s both` }}>
+                  <p style={{ margin: 0, fontFamily: MONO, fontSize: 12.5, fontWeight: 600, color: L.color }}>{q.type}</p>
+                  <p style={{ margin: "3px 0 0", fontSize: 15, color: "#E2EAF2", lineHeight: 1.45 }}>{q.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LevelSelfCheck() {
+  const items = levels.map((l) => l.competencies.slice(0, 2));
+  const [checked, setChecked] = useState<string[]>([]);
+  let reached = 0;
+  for (let i = 0; i < levels.length; i++) { if (items[i].some((c) => checked.includes(c))) reached = i + 1; else break; }
+  const L = reached > 0 ? levels[reached - 1] : null;
+  const next = reached < levels.length ? levels[reached] : null;
+  const toggle = (c: string) => setChecked((cur) => cur.includes(c) ? cur.filter((x) => x !== c) : [...cur, c]);
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 14, alignItems: "start" }}>
+      <div style={{ display: "grid", gap: 10 }}>
+        {levels.map((l, i) => (
+          <fieldset key={l.level} style={{ margin: 0, borderRadius: 12, padding: "10px 14px 12px", border: `1px solid ${l.color}40`, background: "rgba(16,34,66,0.55)" }}>
+            <legend style={{ padding: "0 6px", fontFamily: MONO, fontSize: 12.5, fontWeight: 700, color: l.color }}>{"Level " + l.level + " · " + l.title}</legend>
+            {items[i].map((c) => {
+              const on = checked.includes(c);
+              return (
+                <label key={c} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: "6px 4px", cursor: "pointer", fontSize: 15, color: on ? "#FFFFFF" : "#D0DAE6", lineHeight: 1.45 }}>
+                  <input type="checkbox" checked={on} onChange={() => toggle(c)} style={{ marginTop: 4, width: 17, height: 17, accentColor: l.color, flexShrink: 0 }} />{c}
+                </label>
+              );
+            })}
+          </fieldset>
+        ))}
+      </div>
+      <div aria-live="polite" style={{ position: "sticky", top: 84, ...litPanel(L ? L.color : LEVELS_COLOR) }}>
+        <p style={litLabel(L ? L.color : "#B8C8DA")}>{"Your level"}</p>
+        <div aria-hidden="true" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 5, margin: "12px 0 14px" }}>
+          {levels.map((l, i) => <span key={l.level} style={{ height: 10, borderRadius: 5, background: i < reached ? l.color : "rgba(184,200,218,0.14)", boxShadow: i === reached - 1 ? `0 0 14px ${l.color}` : "none", transition: "all 0.35s ease" }} />)}
+        </div>
+        <p key={reached} className="bolt-anim" style={{ margin: 0, fontSize: 26, fontWeight: 700, color: "#FFFFFF", animation: "boltIn 0.3s ease-out both" }}>{L ? "Level " + L.level + ": " + L.title : "Not yet placed"}</p>
+        <p style={{ margin: "6px 0 0", fontSize: 15.5, color: "#D0DAE6", lineHeight: 1.55 }}>{L ? L.analogy + "." : "Tick the statements that describe you today. Levels build on each other, so start from Level 1."}</p>
+        {next && <div style={{ marginTop: 14, borderRadius: 10, padding: "10px 12px", background: "rgba(7,18,38,0.6)", border: `1px solid ${next.color}44` }}>
+          <p style={litLabel(next.color)}>{"Next: Level " + next.level}</p>
+          <p style={{ margin: "4px 0 0", fontSize: 15, color: "#E2EAF2", lineHeight: 1.45 }}>{next.competencies[0]}</p>
+        </div>}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginTop: 14 }}>
+          <span style={{ fontSize: 13, color: "#7F93AE" }}>{"A quick self-check, not an assessment."}</span>
+          <BoltButton onClick={() => setChecked([])} style={{ background: "transparent", padding: "6px 12px", minHeight: 36 }}><span>{"Reset"}</span></BoltButton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LevelRoles() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.1);
+  return (
+    <div ref={ref} style={{ borderRadius: 14, padding: "18px clamp(14px, 2vw, 22px)", background: "rgba(16,34,66,0.55)", border: "1px solid rgba(184,200,218,0.18)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(110px, 38%) minmax(0, 1fr)", gap: 14, marginBottom: 8 }}>
+        <span />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)" }}>{levels.map((l) => <span key={l.level} style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 700, color: l.color, textAlign: "center" }}>{"L" + l.level}</span>)}</div>
+      </div>
+      <div style={{ display: "grid", gap: 12 }}>
+        {roleMapping.map((r, i) => {
+          const [a, b] = r.levels.split("–").map(Number);
+          return (
+            <div key={r.role} style={{ display: "grid", gridTemplateColumns: "minmax(110px, 38%) minmax(0, 1fr)", gap: 14, alignItems: "center" }}>
+              <span style={{ fontSize: 15.5, color: "#E2EAF2", lineHeight: 1.35 }}>{r.role}</span>
+              <div style={{ position: "relative", height: 30, borderRadius: 8, background: "repeating-linear-gradient(90deg, rgba(184,200,218,0.07) 0 calc(20% - 2px), transparent calc(20% - 2px) 20%)" }}>
+                <div className="bolt-anim" style={{ position: "absolute", top: 3, bottom: 3, left: `${((a - 1) / 5) * 100}%`, width: `${((b - a + 1) / 5) * 100}%`, borderRadius: 7, background: `linear-gradient(90deg, ${levels[a - 1].color}, ${levels[b - 1].color})`, boxShadow: `0 0 16px ${levels[b - 1].color}55`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: MONO, fontSize: 13, fontWeight: 700, color: "#0B1A33", transformOrigin: "left", ...(inView ? { animation: `boltGrowX 0.7s cubic-bezier(.2,.7,.2,1) ${0.1 + i * 0.12}s both` } : { transform: "scaleX(0)" }) }}>{r.levels}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function FrameworkPage({ onNavigate }: { onNavigate: Navigate }) {
+  const sections = [{ id: "kl-levels", label: "Levels" }, { id: "kl-check", label: "Self-check" }, { id: "kl-roles", label: "Roles" }];
+  return (
+    <SolPage id="levels-page">
+      <SolHero eyebrow="AI Literacy · Assessment framework" name="AI Knowledge Levels" color={LEVELS_COLOR}
+        line1="Five levels, from writing a good prompt to customizing the model itself."
+        line2="A shared yardstick for AI skills at McKesson: what each level can do, how to test for it in an interview, and the level each role should aim for."
+        tiles={[{ head: "5 levels", label: "AI User to AI Architect", sub: "Cumulative: each includes the last" }, { head: "Level 2", label: "The floor for every role", sub: "Structure projects and engineer context" }, { head: "Testable", label: "Interview prompts per level", sub: "Three practical questions each" }]}
+        sections={sections} />
+      <SolSection id="kl-levels" num="01" label="Levels" title="Climb one level at a time" sub="Select a level to see its competencies and how to test for them." icon="trend" color={LEVELS_COLOR}>
+        <LevelLadder />
+      </SolSection>
+      <SolSection id="kl-check" num="02" label="Self-check" title="Where are you today?" sub="Tick what you can already do. Your level is the highest one you reach without skipping a step." icon="check" color={LEVELS_COLOR}>
+        <LevelSelfCheck />
+      </SolSection>
+      <SolSection id="kl-roles" num="03" label="Roles" title="Target levels by role" sub="The range each role should reach." icon="people" color={LEVELS_COLOR}>
+        <LevelRoles />
+        <LitCallout color={LEVELS_COLOR} title="Level 2 is the floor">{"Every role should reach at least Level 2: structuring AI projects, designing personas and engineering context. Levels are cumulative, so a Level 4 candidate demonstrates everything below it."}</LitCallout>
+      </SolSection>
+      <SolFooter strong="Skills set the pace." text="The AI Evolution page shows why the pace matters." onNavigate={onNavigate} cta={{ label: "AI Evolution", target: "timeline", color: EVO_COLOR }} />
+    </SolPage>
+  );
+}
+
+// ---------------- MPTS ROADMAP ----------------
+
+function RoadmapFlow() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.1);
+  const node = (t: (typeof portfolioTiers)[number], i: number) => (
+    <div className="bolt-anim" style={{ borderRadius: 14, padding: "16px 18px", background: `linear-gradient(160deg, ${t.color}22, rgba(16,34,66,0.7) 60%)`, border: `1px solid ${t.color}66`, borderTop: `3px solid ${t.color}`, ...(inView ? { animation: `boltRise 0.55s cubic-bezier(.2,.7,.2,1) ${i * 0.25}s both` } : { opacity: 0 }) }}>
+      <p style={{ margin: 0, fontSize: 19, fontWeight: 700, color: t.color }}>{t.title}</p>
+      <p style={{ margin: "2px 0 8px", fontSize: 14, color: "#D0DAE6" }}>{t.subtitle}</p>
+      <p style={{ margin: 0, fontSize: 13.5, color: "#B8C8DA", lineHeight: 1.45 }}>{t.apps.map((a) => a.name).join(", ")}</p>
+    </div>
+  );
+  const arrow = (top: string, bottom: string, from: string, to: string, i: number) => (
+    <div className="lit-flow-arrow" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, minWidth: 96 }}>
+      <span style={{ fontFamily: MONO, fontSize: 12, color: "#D0DAE6", whiteSpace: "nowrap" }}>{top}</span>
+      <svg aria-hidden="true" width="88" height="20" viewBox="0 0 88 20" className="lit-flow-svg">
+        <defs><linearGradient id={`rmf-${i}`} x1="0" x2="1"><stop offset="0%" stopColor={from} /><stop offset="100%" stopColor={to} /></linearGradient></defs>
+        <line x1="2" y1="10" x2="78" y2="10" stroke={`url(#rmf-${i})`} strokeWidth="3" strokeDasharray="7 5" className="bolt-anim" style={{ animation: "dpDash 0.9s linear infinite" }} />
+        <path d="M76 4 84 10 76 16" fill="none" stroke={to} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <span style={{ fontFamily: MONO, fontSize: 12, color: "#B8C8DA", whiteSpace: "nowrap" }}>{bottom}</span>
+    </div>
+  );
+  const [lg, im, bo] = portfolioTiers;
+  return (
+    <div ref={ref} className="lit-flow" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr)", gap: 8, alignItems: "stretch" }}>
+      {node(lg, 0)}{arrow("Sourcegraph", "+ Blitzy", lg.color, im.color, 0)}{node(im, 1)}{arrow("Claude Code", "+ review gate", im.color, bo.color, 1)}{node(bo, 2)}
+    </div>
+  );
+}
+
+function RoadmapPortfolio() {
+  const [sel, setSel] = useState<string | null>(null);
+  const all = portfolioTiers.flatMap((t) => t.apps.map((a) => ({ ...a, tier: t })));
+  const cur = all.find((a) => a.name === sel) || null;
+  const cx: Record<string, string> = { HIGH: "#F87171", MEDIUM: "#FBBF24", LOW: "#34D399" };
+  return (
+    <div>
+      <div className="lit-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+        {portfolioTiers.map((t) => (
+          <div key={t.id} style={{ borderRadius: 14, padding: "14px", background: "rgba(16,34,66,0.55)", border: `1px solid ${t.color}44` }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
+              <p style={{ margin: 0, fontSize: 17, fontWeight: 700, color: t.color }}>{t.title}</p>
+              <span style={{ fontFamily: MONO, fontSize: 12, color: "#B8C8DA" }}>{t.apps.length + (t.apps.length === 1 ? " app" : " apps")}</span>
+            </div>
+            <div style={{ display: "grid", gap: 6 }}>
+              {t.apps.map((a) => {
+                const on = sel === a.name;
+                return (
+                  <button key={a.name} type="button" aria-pressed={on} onClick={() => setSel(on ? null : a.name)} style={{ fontFamily: "inherit", textAlign: "left", cursor: "pointer", borderRadius: 10, padding: "10px 12px", border: `1px solid ${on ? t.color : "rgba(184,200,218,0.16)"}`, background: on ? `${t.color}1F` : "rgba(7,18,38,0.5)", boxShadow: on ? `0 0 16px ${t.color}44` : "none", color: "#FFFFFF", transition: "all 0.2s ease" }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 8 }}><span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: "50%", background: t.color, flexShrink: 0 }} /><span style={{ fontSize: 15, fontWeight: 700 }}>{a.name}</span></span>
+                    <span style={{ display: "block", fontSize: 13.5, color: "#B8C8DA", lineHeight: 1.35, marginTop: 3 }}>{a.desc}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div aria-live="polite" style={{ marginTop: 12 }}>
+        {cur ? (
+          <div key={cur.name} className="bolt-anim" style={{ ...litPanel(cur.tier.color), animation: "boltIn 0.3s ease-out both" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "space-between", alignItems: "baseline" }}>
+              <h3 style={{ margin: 0, fontSize: 22, color: "#FFFFFF" }}>{cur.name}</h3>
+              <span style={litLabel(cur.tier.color)}>{cur.tier.title + " tier"}</span>
+            </div>
+            <p style={{ margin: "6px 0 14px", fontSize: 16, color: "#D0DAE6" }}>{cur.desc}</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 170px), 1fr))", gap: 10 }}>
+              {[
+                "users" in cur && cur.users ? { k: "Users", v: cur.users } : null,
+                "age" in cur && cur.age ? { k: "Age", v: cur.age } : null,
+                "status" in cur && cur.status ? { k: "Status", v: cur.status } : null,
+                { k: cur.target === "native" ? "On Bolt" : "Bolt migration", v: cur.migration },
+              ].filter((x): x is { k: string; v: string } => x !== null).map((x) => (
+                <div key={x.k} style={{ borderRadius: 10, padding: "10px 12px", background: "rgba(7,18,38,0.6)", border: "1px solid rgba(184,200,218,0.15)" }}>
+                  <p style={litLabel()}>{x.k}</p>
+                  <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>{x.v}</p>
+                </div>
+              ))}
+              {cur.complexity in cx && <div style={{ borderRadius: 10, padding: "10px 12px", background: "rgba(7,18,38,0.6)", border: `1px solid ${cx[cur.complexity]}55` }}>
+                <p style={litLabel()}>{"Complexity"}</p>
+                <p style={{ margin: "4px 0 0", fontSize: 16, fontWeight: 700, color: cx[cur.complexity] }}>{cur.complexity}</p>
+              </div>}
+            </div>
+          </div>
+        ) : (
+          <div style={{ borderRadius: 12, padding: 16, border: "1.5px dashed rgba(184,200,218,0.28)", fontSize: 15, color: "#7F93AE", textAlign: "center" }}>{"Select any application to see its users, migration window and complexity."}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function RoadmapPaths() {
+  const [sel, setSel] = useState(0);
+  const p = migrationPaths[sel];
+  return (
+    <div>
+      <div role="tablist" className="lit-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 10 }}>
+        {migrationPaths.map((m, i) => {
+          const on = i === sel;
+          return (
+            <button key={m.id} type="button" role="tab" aria-selected={on} onClick={() => setSel(i)} style={{ fontFamily: "inherit", textAlign: "left", cursor: "pointer", borderRadius: 12, padding: "14px 16px", border: `1.5px solid ${on ? m.color : "rgba(184,200,218,0.2)"}`, background: on ? `${m.color}1F` : "rgba(16,34,66,0.6)", boxShadow: on ? `0 0 20px ${m.color}44` : "none", color: "#FFFFFF", transition: "all 0.2s ease" }}>
+              <span style={{ display: "block", fontSize: 16, fontWeight: 700, color: on ? "#FFFFFF" : m.color }}>{m.title}</span>
+              <span style={{ display: "block", fontSize: 13.5, color: "#B8C8DA", marginTop: 3, lineHeight: 1.35 }}>{m.subtitle}</span>
+              <span style={{ display: "block", fontFamily: MONO, fontSize: 12.5, color: m.color, marginTop: 8 }}>{m.timeline}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div role="tabpanel" key={p.id} className="bolt-anim" style={{ ...litPanel(p.color), marginTop: 12, animation: "boltIn 0.35s ease-out both" }}>
+        <p style={litLabel(p.color)}>{"Applications: " + p.apps}</p>
+        <p style={{ margin: "8px 0 16px", fontSize: 16.5, color: "#E2EAF2", lineHeight: 1.65, maxWidth: 900 }}>{p.description}</p>
+        <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${p.steps.length > 4 ? 170 : 200}px), 1fr))`, gap: 8 }}>
+          {p.steps.map((s, k) => (
+            <li key={s} className="bolt-anim" style={{ borderRadius: 10, padding: "12px 12px", background: "rgba(7,18,38,0.6)", border: `1px solid ${p.color}44`, animation: `boltIn 0.35s ease-out ${0.1 + k * 0.1}s both` }}>
+              <span style={{ display: "inline-flex", width: 24, height: 24, borderRadius: "50%", alignItems: "center", justifyContent: "center", background: `${p.color}2E`, fontFamily: MONO, fontSize: 12.5, fontWeight: 700, color: p.color }}>{String(k + 1)}</span>
+              <p style={{ margin: "8px 0 0", fontSize: 14.5, color: "#E2EAF2", lineHeight: 1.4 }}>{s}</p>
+            </li>
+          ))}
+        </ol>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14, alignItems: "center" }}>
+          <span style={litLabel()}>{"Tools"}</span>
+          {p.tools.map((t) => <span key={t} style={{ fontSize: 14, color: "#FFFFFF", background: `${p.color}1F`, border: `1px solid ${p.color}55`, borderRadius: 999, padding: "4px 12px" }}>{t}</span>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RoadmapTools() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.1);
+  const sc = (s: string) => s === "Approved" ? "#34D399" : s === "Pending AI Council" ? "#FBBF24" : "#60A5FA";
+  return (
+    <div ref={ref} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 12 }}>
+      {aiToolsRoadmap.map((t, i) => (
+        <div key={t.name} className="bolt-anim" style={{ borderRadius: 14, padding: "16px 16px", background: `linear-gradient(165deg, ${t.color}16, rgba(16,34,66,0.7) 55%)`, border: `1px solid ${t.color}55`, borderTop: `3px solid ${t.color}`, display: "flex", flexDirection: "column", gap: 10, ...(inView ? { animation: `boltRise 0.55s cubic-bezier(.2,.7,.2,1) ${i * 0.1}s both` } : { opacity: 0 }) }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 8, alignItems: "flex-start" }}>
+            <p style={{ margin: 0, fontSize: 17, fontWeight: 700, color: "#FFFFFF" }}>{t.name}</p>
+            <span style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 600, color: sc(t.status), border: `1px solid ${sc(t.status)}77`, background: `${sc(t.status)}14`, borderRadius: 4, padding: "1px 6px", whiteSpace: "nowrap" }}>{t.status}</span>
+          </div>
+          <p style={{ margin: 0, fontSize: 14.5, color: "#D0DAE6", lineHeight: 1.5, flex: 1 }}>{t.desc}</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>{t.tiers.map((x) => <span key={x} style={{ fontSize: 12, color: "#E2EAF2", background: "rgba(184,200,218,0.1)", borderRadius: 4, padding: "2px 7px" }}>{x}</span>)}</div>
+          <p style={{ margin: 0, fontSize: 13.5, color: "#B8C8DA", borderTop: "1px solid rgba(184,200,218,0.12)", paddingTop: 8 }}>{"Limitation: " + t.limitation}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RoadmapTimeline() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.1);
+  return (
+    <div ref={ref}>
+      <div aria-hidden="true" style={{ height: 4, borderRadius: 2, background: `linear-gradient(90deg, ${timelineBands.map((b) => b.color).join(", ")})`, transformOrigin: "left", marginBottom: 12, ...(inView ? { animation: "boltGrowX 1.2s cubic-bezier(.4,0,.2,1) both" } : { transform: "scaleX(0)" }) }} />
+      <div className="lit-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+        {timelineBands.map((b, i) => (
+          <div key={b.id} className="bolt-anim" style={{ borderRadius: 14, padding: "16px 16px", background: "rgba(16,34,66,0.6)", border: `1px solid ${b.color}55`, ...(inView ? { animation: `boltRise 0.55s cubic-bezier(.2,.7,.2,1) ${0.2 + i * 0.3}s both` } : { opacity: 0 }) }}>
+            <p style={litLabel(b.color)}>{b.label}</p>
+            <p style={{ margin: "3px 0 10px", fontSize: 19, fontWeight: 700, color: "#FFFFFF" }}>{b.title}</p>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 }}>
+              {b.actions.map((a) => <li key={a} style={{ display: "flex", gap: 9, fontSize: 14.5, color: "#E2EAF2", lineHeight: 1.45 }}><LitMark good color={b.color} />{a}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MptsRoadmapPage({ onNavigate }: { onNavigate: Navigate }) {
+  const sections = [{ id: "rm-portfolio", label: "Portfolio" }, { id: "rm-paths", label: "Paths" }, { id: "rm-tools", label: "Tooling" }, { id: "rm-timeline", label: "Timeline" }];
+  return (
+    <SolPage id="roadmap-page">
+      <SolHero eyebrow="Roadmap · Application portfolio" name="MPTS Roadmap" status="Building" statusColor="#F59E0B" color={ROADMAP_COLOR}
+        line1="Every application has a path to Bolt. The question is sequence, not whether."
+        line2="A three-tier view of the applications MPTS manages, where each one is headed, and the tools and timelines that get it there."
+        tiles={[{ head: "3 tiers", label: "Legacy, Intermediate, Bolt", sub: "Where every application sits today" }, { head: "3 paths", label: "Migrate, modernize or rewrite", sub: "Matched to codebase size and risk" }, { head: "1 gate", label: "AI Council tool approval", sub: "Unlocks the whole roadmap" }]}
+        sections={sections} />
+      <SolSection id="rm-portfolio" num="01" label="Portfolio" title="Three tiers, one direction" sub="Applications move left to right as tooling and the platform mature. Select any application for detail." icon="layers" color={ROADMAP_COLOR}>
+        <RoadmapFlow />
+        <div style={{ marginTop: 14 }}><RoadmapPortfolio /></div>
+      </SolSection>
+      <SolSection id="rm-paths" num="02" label="Paths" title="Three ways to get to Bolt" sub="The route depends on how big and how old the codebase is." icon="repeat" color={ROADMAP_COLOR}>
+        <RoadmapPaths />
+      </SolSection>
+      <SolSection id="rm-tools" num="03" label="Tooling" title="The AI tools each path needs" sub="Approval status sets the pace of the whole roadmap." icon="code" color={ROADMAP_COLOR}>
+        <RoadmapTools />
+      </SolSection>
+      <SolSection id="rm-timeline" num="04" label="Timeline" title="Foundation, acceleration, transformation" sub="What happens in each window." icon="trend" color={ROADMAP_COLOR}>
+        <RoadmapTimeline />
+        <LitCallout color={ROADMAP_COLOR} title="What it comes down to">
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
+            {["Every application in the portfolio has a path to Bolt; the question is sequence, not whether", "Intermediate apps move first because they are smaller, modern and prove the migration pattern", "Legacy modernization needs new tooling (Sourcegraph, Blitzy), which needs AI Council tool expansion", "The AI Council decision is the single gate: approve tool expansion and the whole roadmap accelerates"].map((t) => <li key={t} style={{ display: "flex", gap: 9 }}><LitMark good color={ROADMAP_COLOR} />{t}</li>)}
+          </ul>
+        </LitCallout>
+      </SolSection>
+      <SolFooter strong="Sequence, not whether." text="The Value page shows what the portfolio is worth along the way." onNavigate={onNavigate} cta={{ label: "Value", target: "value", color: VALUE_COLOR }} />
+    </SolPage>
+  );
+}
+
+// ---------------- VALUE ----------------
+
+const fmtM = (v: number) => `$${(v / 1000000).toFixed(2)}M`;
+const valueTotals = { customer: valueProjects.reduce((s, p) => s + p.customerRaw, 0), sdlc: valueProjects.reduce((s, p) => s + p.sdlcRaw, 0) };
+const VALUE_CUST = "#34D399";
+const VALUE_SDLC = "#60A5FA";
+
+function ValueBoard() {
+  const [metric, setMetric] = useState<"customer" | "sdlc" | "both">("both");
+  const [open, setOpen] = useState<string | null>(null);
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.1);
+  const score = (p: (typeof valueProjects)[number]) => metric === "customer" ? p.customerRaw : metric === "sdlc" ? p.sdlcRaw : p.customerRaw + p.sdlcRaw;
+  const rows = [...valueProjects].sort((a, b) => score(b) - score(a));
+  const max = Math.max(...valueProjects.map((p) => metric === "both" ? p.customerRaw + p.sdlcRaw : Math.max(p.customerRaw, p.sdlcRaw)));
+  const opts: { id: "customer" | "sdlc" | "both"; label: string; c: string }[] = [{ id: "both", label: "Combined", c: VALUE_COLOR }, { id: "customer", label: "Customer value", c: VALUE_CUST }, { id: "sdlc", label: "SDLC value", c: VALUE_SDLC }];
+  const sc = (s: string) => s === "Live" ? "#34D399" : "#FBBF24";
+  return (
+    <div ref={ref}>
+      <div role="radiogroup" aria-label="Rank by" style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginBottom: 12 }}>
+        <span style={litLabel()}>{"Rank by"}</span>
+        {opts.map((o) => <button key={o.id} type="button" role="radio" aria-checked={metric === o.id} onClick={() => setMetric(o.id)} style={{ fontFamily: "inherit", fontSize: 14.5, fontWeight: 700, padding: "8px 14px", borderRadius: 9, cursor: "pointer", border: `1.5px solid ${metric === o.id ? o.c : "rgba(184,200,218,0.25)"}`, background: metric === o.id ? `${o.c}22` : "rgba(16,34,66,0.6)", color: "#FFFFFF" }}>{o.label}</button>)}
+      </div>
+      <div key={metric} style={{ display: "grid", gap: 8 }}>
+        {rows.map((p, i) => {
+          const on = open === p.name;
+          const seg = (v: number, c: string, d: number) => <span className="bolt-anim" style={{ display: "block", height: "100%", width: `${(v / max) * 100}%`, background: `linear-gradient(90deg, ${c}88, ${c})`, transformOrigin: "left", ...(inView ? { animation: `boltGrowX 0.8s cubic-bezier(.2,.7,.2,1) ${d}s both` } : { transform: "scaleX(0)" }) }} />;
+          return (
+            <div key={p.name} className="bolt-anim" style={{ borderRadius: 12, border: `1px solid ${on ? p.color : "rgba(184,200,218,0.16)"}`, background: on ? `${p.color}12` : "rgba(16,34,66,0.55)", animation: `boltIn 0.35s ease-out ${i * 0.06}s both` }}>
+              <button type="button" aria-expanded={on} onClick={() => setOpen(on ? null : p.name)} style={{ fontFamily: "inherit", width: "100%", textAlign: "left", cursor: "pointer", background: "transparent", border: "none", color: "#FFFFFF", display: "grid", gridTemplateColumns: "minmax(110px, 170px) minmax(0, 1fr) auto", gap: 14, alignItems: "center", padding: "12px 14px" }}>
+                <span>
+                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}><span aria-hidden="true" style={{ width: 4, height: 22, borderRadius: 2, background: p.color }} /><span style={{ fontSize: 16, fontWeight: 700 }}>{p.name}</span></span>
+                  <span style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 600, color: sc(p.status), marginLeft: 12 }}>{p.status}</span>
+                </span>
+                <span style={{ display: "grid", gap: 4 }}>
+                  {metric === "both" ? (
+                    <span style={{ display: "flex", height: 16, borderRadius: 5, overflow: "hidden", background: "rgba(184,200,218,0.07)" }}>{seg(p.customerRaw, VALUE_CUST, 0.1 + i * 0.08)}{seg(p.sdlcRaw, VALUE_SDLC, 0.3 + i * 0.08)}</span>
+                  ) : (
+                    <span style={{ display: "flex", height: 16, borderRadius: 5, overflow: "hidden", background: "rgba(184,200,218,0.07)" }}>{seg(metric === "customer" ? p.customerRaw : p.sdlcRaw, metric === "customer" ? VALUE_CUST : VALUE_SDLC, 0.1 + i * 0.08)}</span>
+                  )}
+                </span>
+                <span style={{ fontFamily: MONO, fontSize: 15.5, fontWeight: 700, textAlign: "right", whiteSpace: "nowrap", color: metric === "customer" ? VALUE_CUST : metric === "sdlc" ? VALUE_SDLC : "#FFFFFF" }}>{fmtM(score(p))}</span>
+              </button>
+              {on && <div className="bolt-anim" style={{ padding: "0 14px 14px", animation: "boltIn 0.25s ease-out both" }}>
+                <p style={{ margin: "0 0 10px", fontSize: 15, color: "#D0DAE6", lineHeight: 1.55 }}>{p.desc}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+                  <span style={{ fontSize: 14, color: "#B8C8DA" }}>{"Customer value "}<strong style={{ fontFamily: MONO, color: VALUE_CUST }}>{p.customerValue}</strong></span>
+                  <span style={{ fontSize: 14, color: "#B8C8DA" }}>{"SDLC value "}<strong style={{ fontFamily: MONO, color: VALUE_SDLC }}>{p.sdlcValue}</strong></span>
+                </div>
+              </div>}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display: "flex", gap: 18, marginTop: 10, flexWrap: "wrap" }}>
+        {[{ c: VALUE_CUST, l: "Annual customer value" }, { c: VALUE_SDLC, l: "SDLC value" }].map((x) => <span key={x.l} style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13.5, color: "#B8C8DA" }}><span style={{ width: 16, height: 8, borderRadius: 4, background: x.c }} />{x.l}</span>)}
+        <span style={{ fontSize: 13.5, color: "#7F93AE" }}>{"Select a row for detail."}</span>
+      </div>
+    </div>
+  );
+}
+
+function ValueMix() {
+  const [hover, setHover] = useState<string | null>(null);
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.1);
+  const bars: { label: string; total: number; key: "customerRaw" | "sdlcRaw"; c: string }[] = [{ label: "Annual customer value", total: valueTotals.customer, key: "customerRaw", c: VALUE_CUST }, { label: "SDLC value", total: valueTotals.sdlc, key: "sdlcRaw", c: VALUE_SDLC }];
+  return (
+    <div ref={ref} style={{ display: "grid", gap: 18 }}>
+      {bars.map((b, bi) => (
+        <div key={b.label}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+            <span style={{ fontSize: 15.5, fontWeight: 600, color: "#FFFFFF" }}>{b.label}</span>
+            <span style={{ fontFamily: MONO, fontSize: 16, fontWeight: 700, color: b.c }}>{fmtM(b.total)}</span>
+          </div>
+          <div style={{ display: "flex", height: 40, borderRadius: 10, overflow: "hidden", gap: 2, transformOrigin: "left", ...(inView ? { animation: `boltGrowX 1s cubic-bezier(.4,0,.2,1) ${bi * 0.25}s both` } : { transform: "scaleX(0)" }) }}>
+            {valueProjects.map((p) => {
+              const share = p[b.key] / b.total;
+              const dim = hover !== null && hover !== p.name;
+              return (
+                <button key={p.name} type="button" onMouseEnter={() => setHover(p.name)} onMouseLeave={() => setHover(null)} onFocus={() => setHover(p.name)} onBlur={() => setHover(null)} aria-label={`${p.name}: ${Math.round(share * 100)}% of ${b.label}`} style={{ flex: `${share} 1 0`, minWidth: 0, border: "none", cursor: "default", background: p.color, opacity: dim ? 0.3 : 1, transition: "opacity 0.2s ease", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: MONO, fontSize: 12.5, fontWeight: 700, color: "#0B1A33", overflow: "hidden", whiteSpace: "nowrap", padding: 0 }}>{share >= 0.11 ? Math.round(share * 100) + "%" : ""}</button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
+        {valueProjects.map((p) => <span key={p.name} onMouseEnter={() => setHover(p.name)} onMouseLeave={() => setHover(null)} style={{ display: "inline-flex", alignItems: "center", gap: 7, fontSize: 14, color: hover === p.name ? "#FFFFFF" : "#D0DAE6", fontWeight: hover === p.name ? 700 : 400 }}><span style={{ width: 10, height: 10, borderRadius: 3, background: p.color }} />{p.name}</span>)}
+      </div>
+    </div>
+  );
+}
+
+function ValueTotals() {
+  const [ref, inView] = useInViewOnce<HTMLDivElement>(0.4);
+  const t = useCountUp(inView, 1600);
+  const cells = [{ v: valueTotals.customer, l: "Annual customer value", s: "Revenue impact, cost avoidance, efficiency gains", c: VALUE_CUST }, { v: valueTotals.sdlc, l: "SDLC value", s: "Traditional development cost that AI tooling compresses", c: VALUE_SDLC }, { v: valueTotals.customer + valueTotals.sdlc, l: "Combined portfolio value", s: "Total measurable impact across " + valueProjects.length + " applications", c: VALUE_COLOR }];
+  return (
+    <div ref={ref} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 12 }}>
+      {cells.map((c) => (
+        <div key={c.l} style={{ borderRadius: 14, padding: "22px 22px", textAlign: "center", background: `linear-gradient(165deg, ${c.c}1A, rgba(16,34,66,0.7) 60%)`, border: `1px solid ${c.c}55`, boxShadow: inView ? `0 0 30px ${c.c}1F` : "none", transition: "box-shadow 1s ease" }}>
+          <p style={{ margin: 0, fontFamily: MONO, fontSize: "clamp(28px, 3.5vw, 36px)", fontWeight: 700, color: c.c, lineHeight: 1.1 }}>{fmtM(c.v * t)}</p>
+          <p style={{ margin: "10px 0 2px", fontSize: 16, fontWeight: 600, color: "#FFFFFF" }}>{c.l}</p>
+          <p style={{ margin: 0, fontSize: 14, color: "#B8C8DA" }}>{c.s}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ValuePage({ onNavigate }: { onNavigate: Navigate }) {
+  const sections = [{ id: "va-apps", label: "By application" }, { id: "va-mix", label: "Mix" }, { id: "va-total", label: "Totals" }];
+  return (
+    <SolPage id="value-page">
+      <SolHero eyebrow="Roadmap · Portfolio value" name="Value" color={VALUE_COLOR}
+        line1="What the portfolio is worth to customers, and what it would cost to build the old way."
+        line2="Annual customer value is the business impact each application delivers. SDLC value is the cost to build and maintain it with traditional development: the investment AI-powered development compresses."
+        tiles={[{ head: fmtM(valueTotals.customer), label: "Annual customer value", sub: "Across " + valueProjects.length + " applications" }, { head: fmtM(valueTotals.sdlc), label: "SDLC value", sub: "Traditional build-and-maintain cost" }, { head: fmtM(valueTotals.customer + valueTotals.sdlc), label: "Combined", sub: "Total measurable impact" }]}
+        sections={sections} />
+      <SolSection id="va-apps" num="01" label="By application" title="Where the value sits" sub="Re-rank the portfolio by customer value, SDLC value, or both." icon="chart" color={VALUE_COLOR}>
+        <ValueBoard />
+      </SolSection>
+      <SolSection id="va-mix" num="02" label="Mix" title="Each application's share" sub="How the totals split across the portfolio. Hover an application to isolate it." icon="sliders" color={VALUE_COLOR}>
+        <ValueMix />
+      </SolSection>
+      <SolSection id="va-total" num="03" label="Totals" title="The portfolio in three numbers" icon="target" color={VALUE_COLOR}>
+        <ValueTotals />
+      </SolSection>
+      <SolFooter strong="Value compounds with speed." text="The roadmap shows the order in which each application gets there." onNavigate={onNavigate} cta={{ label: "MPTS Roadmap", target: "roadmap", color: ROADMAP_COLOR }} />
+    </SolPage>
+  );
+}
+
+// ============================================================
 // MAIN APP — TAB NAVIGATION
 // ============================================================
 
@@ -4552,12 +4661,12 @@ const navGroups = [
     { id: "retentioniq", label: "RetentionIQ" },
   ]},
   { label: "Roadmap", items: [
-    { id: "roadmap", label: "MPTS Roadmap" },
-    { id: "value", label: "Value" },
+    { id: "roadmap", label: "MPTS Roadmap", desc: "Portfolio and paths to Bolt" },
+    { id: "value", label: "Value", desc: "What the portfolio delivers" },
   ]},
   { label: "AI Literacy", items: [
-    { id: "timeline", label: "AI Evolution" },
-    { id: "framework", label: "Knowledge Levels" },
+    { id: "timeline", label: "AI Evolution", desc: "Four years of AI, era by era" },
+    { id: "framework", label: "Knowledge Levels", desc: "Five-level AI skills framework" },
   ]},
 ];
 
@@ -4569,10 +4678,10 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: "#0B1A33", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
       <link href={FONT_LINK} rel="stylesheet" />
-      <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } } * { box-sizing: border-box; }`}</style>
+      <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } } * { box-sizing: border-box; } @media (max-width: 760px) { .app-nav { padding: 0 6px !important; } .app-nav-by { display: none !important; } .app-nav-btn { padding: 8px 7px !important; gap: 4px !important; } .app-nav-btn > span { font-size: 14px !important; } .app-nav-btn > svg { display: none; } .app-nav-groups { gap: 0 !important; } .app-nav-groups > div:nth-child(n+3) .app-nav-menu { left: auto !important; right: 0; } .app-nav-menu { min-width: 190px !important; max-width: calc(100vw - 12px); } .app-nav-menu span { white-space: normal !important; } }`}</style>
       <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(7,16,33,0.95)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(148,163,184,0.08)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
-          <div style={{ display: "flex", gap: 2, alignItems: "center" }}>
+        <div className="app-nav" style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
+          <div className="app-nav-groups" style={{ display: "flex", gap: 2, alignItems: "center" }}>
             {navGroups.map((group) => {
               const isGroupActive = group.items.some(i => i.id === activePage);
               const isOpen = openMenu === group.label;
@@ -4580,7 +4689,7 @@ export default function App() {
                 <div key={group.label} style={{ position: "relative", paddingBottom: isOpen ? 4 : 0 }}
                   onMouseEnter={() => setOpenMenu(group.label)}
                   onMouseLeave={() => setOpenMenu(null)}>
-                  <button style={{
+                  <button className="app-nav-btn" aria-expanded={isOpen} onClick={() => setOpenMenu(group.label)} style={{
                     background: isGroupActive ? "rgba(59,130,246,0.12)" : "transparent",
                     border: isGroupActive ? "1px solid rgba(59,130,246,0.25)" : "1px solid transparent",
                     borderRadius: 8, padding: "8px 18px", cursor: "pointer", outline: "none",
@@ -4592,7 +4701,7 @@ export default function App() {
                     </svg>
                   </button>
                   {isOpen && (
-                    <div style={{
+                    <div className="app-nav-menu" style={{
                       position: "absolute", top: "100%", left: 0,
                       background: "rgba(7,16,33,0.98)", border: "1px solid rgba(148,163,184,0.12)",
                       borderRadius: 10, padding: "6px", minWidth: 200, boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
@@ -4601,7 +4710,7 @@ export default function App() {
                       {group.items.map((item) => {
                         const isActive = activePage === item.id;
                         return (
-                          <button key={item.id} onClick={() => { setActivePage(item.id); setOpenMenu(null); }} style={{
+                          <button key={item.id} onClick={() => navigate(item.id)} style={{
                             display: "block", width: "100%", textAlign: "left",
                             background: isActive ? "rgba(59,130,246,0.12)" : "transparent",
                             border: "none", borderRadius: 6, padding: "10px 14px",
@@ -4620,7 +4729,7 @@ export default function App() {
               );
             })}
           </div>
-          <span style={{ fontSize: 14, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.3, whiteSpace: "nowrap" }}>{"Dan Lodder \u00B7 October 2026"}</span>
+          <span className="app-nav-by" style={{ fontSize: 14, color: "#B8C8DA", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 0.3, whiteSpace: "nowrap" }}>{"Dan Lodder \u00B7 October 2026"}</span>
         </div>
       </nav>
       <div key={activePage} style={{ animation: "fadeIn 0.3s ease" }}>
@@ -4633,10 +4742,10 @@ export default function App() {
         {activePage === "retentioniq" && <RetentionIQPage onNavigate={navigate} />}
         {activePage === "bolt" && <BoltPaaSPage onNavigate={navigate} />}
         {activePage === "dataplatform" && <DataPlatformPage onNavigate={navigate} />}
-        {activePage === "roadmap" && <MptsRoadmapPage />}
-        {activePage === "value" && <ValuePage />}
-        {activePage === "timeline" && <TimelinePage />}
-        {activePage === "framework" && <FrameworkPage />}
+        {activePage === "roadmap" && <MptsRoadmapPage onNavigate={navigate} />}
+        {activePage === "value" && <ValuePage onNavigate={navigate} />}
+        {activePage === "timeline" && <TimelinePage onNavigate={navigate} />}
+        {activePage === "framework" && <FrameworkPage onNavigate={navigate} />}
       </div>
     </div>
   );
