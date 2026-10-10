@@ -487,7 +487,7 @@ const boltStack = [
   { id: "build", step: "Build", note: "Where certified builders work", color: "#3B82F6", items: [
     { name: "Claude Code", desc: "Terminal-native AI coding agent and the primary build tool for certified builders. Reads, writes, tests and commits code from plain-language instructions." },
     { name: "GitHub", desc: "Version control and collaboration. All builder code lives here, and every pull request triggers the review workflow." },
-    { name: "Supabase", desc: "PostgreSQL with row-level security, auth and real-time subscriptions, provisioned per project with managed migrations." },
+    { name: "PostgreSQL", desc: "Relational database with row-level security, provisioned per project with managed migrations." },
   ] },
   { id: "gate", step: "Review Gate", note: "Nothing reaches production unreviewed", color: "#F59E0B", items: [
     { name: "AI Review Agent", desc: "Automated review that scans for Bolt compliance, security issues and best-practice violations before a human looks at the code." },
@@ -623,7 +623,7 @@ function BoltKpis({ big = false }: { big?: boolean }) {
   const kpis = [
     { shown: `${Math.round(2 * p)}–${Math.round(4 * p)} weeks`, final: "2–4 weeks", label: "Idea to production", sub: `vs. ~6 months; up to ${Math.round(12 * p)}× faster`, subFinal: "vs. ~6 months; up to 12× faster", fade: false },
     { shown: `${Math.round(p)} handoff`, final: "1 handoff", label: "Builder to code review", sub: "vs. 4+ matrix teams", subFinal: "vs. 4+ matrix teams", fade: false },
-    { shown: `${Math.round(9 * p)} apps`, final: "9 apps", label: "In 163 days", sub: "Built on Bolt since April 2026", subFinal: "Built on Bolt since April 2026", fade: false },
+    { shown: `${Math.round(9 * p)} apps`, final: "9 apps", label: "In under 6 months", sub: "Built on Bolt since April 2026", subFinal: "Built on Bolt since April 2026", fade: false },
   ];
   return (
     <div ref={ref} style={{ position: "relative", display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${big ? 300 : 250}px), 1fr))`, gap: big ? 18 : 12 }}>
@@ -1271,7 +1271,7 @@ const proofMilestones: { day: string; date: string; title: string; detail: strin
   { day: "Day 36", date: "May 18", title: "Meridian", detail: "2nd business domain" },
   { day: "Day 66", date: "Jun 17", title: "Infrastructure", detail: "Terraform IaC formalized" },
   { day: "Day 94", date: "Jul 15", title: "Nova", detail: "3rd business domain" },
-  { day: "Days 119–127", date: "Aug 9–17", title: "GPO · RetentionIQ · " + PRACTICE_NAME, detail: "Three domains in nine days", burst: true },
+  { day: "Days 119–127", date: "Aug 9–17", title: "SavingsIQ · RetentionIQ · " + PRACTICE_NAME, detail: "Three domains in nine days", burst: true },
   { day: "Day 163", date: "Sep 22", title: "9 applications", detail: "Production hardening", now: true },
 ];
 
@@ -1576,7 +1576,7 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => vo
     { id: "proof", render: () => (
       <div>
         {eyebrow("02 · Proof")}
-        {title("Nine applications in 163 days")}
+        {title("Nine applications in under 6 months")}
         <div className="bolt-anim" style={rise(0.15)}><BoltProofTimeline big /></div>
         <div className="bolt-anim" style={{ ...rise(0.3), marginTop: 28 }}><BoltSnapshot big tilesOnly /></div>
       </div>
@@ -2087,7 +2087,7 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
       </section>
 
       <section id="proof" aria-labelledby="bolt-02-title" style={sectionStyle}>
-        <SectionTitle icon="chart" num="02" label="Proof" title="Nine applications in 163 days" sub="The harness and the first business domain launched together in April 2026, then Bolt expanded across business domains and infrastructure." color={BOLT_COLOR} />
+        <SectionTitle icon="chart" num="02" label="Proof" title="Nine applications in under 6 months" sub="The harness and the first business domain launched together in April 2026, then Bolt expanded across business domains and infrastructure." color={BOLT_COLOR} />
         <Reveal><Card style={{ padding: "clamp(18px, 2.5vw, 26px) clamp(12px, 2vw, 20px)" }}><BoltProofTimeline /></Card></Reveal>
         <div style={{ height: 16 }} />
         <Reveal delay={0.05}><BoltSnapshot /></Reveal>
