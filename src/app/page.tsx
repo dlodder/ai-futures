@@ -85,7 +85,7 @@ function DataDomainsSection() {
   return (
     <div>
       <SectionHeader label="Data Domains" />
-      <p style={{ fontSize: 15, color: "#D0DAE6", margin: "-6px 0 16px", lineHeight: 1.6, maxWidth: 820 }}>The eight data domains the Glide Platform unifies. Click any domain to see its full inventory.</p>
+      <p style={{ fontSize: 15, color: "#D0DAE6", margin: "-6px 0 16px", lineHeight: 1.6, maxWidth: 820 }}>The eight data domains Bolt Data unifies. Click any domain to see its full inventory.</p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
         {dataLayer.map((bucket, i) => (
           <div key={bucket.id} onClick={() => setActiveDataBucket(activeDataBucket === i ? null : i)} style={{ background: activeDataBucket === i ? `${bucket.color}14` : "rgba(16,34,66,0.6)", border: `1px solid ${activeDataBucket === i ? bucket.color + "40" : "rgba(148,163,184,0.12)"}`, borderRadius: 12, padding: "16px", cursor: "pointer", transition: "all 0.2s ease", position: "relative", overflow: "hidden" }}>
@@ -130,7 +130,7 @@ function SolutionsOverviewPage({ onNavigate }: { onNavigate: Navigate }) {
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 0" }}>
       <h1 style={{ fontSize: 42, fontWeight: 700, color: "#FFFFFF", margin: "0 0 8px", lineHeight: 1.15 }}>Solutions</h1>
-      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 720, lineHeight: 1.6 }}>Oncology and multi-specialty applications built on the Glide Platform</p>
+      <p style={{ fontSize: 17, color: "#D0DAE6", margin: "0 0 6px", maxWidth: 720, lineHeight: 1.6 }}>Oncology and multi-specialty applications built on Bolt PaaS</p>
       <p style={{ fontSize: 15, color: "#D0DAE6", margin: "0 0 48px", lineHeight: 1.5 }}>Click any application for a summary, or open its full page.</p>
 
       <SectionHeader label="Applications" />
@@ -188,8 +188,8 @@ function SolutionsOverviewPage({ onNavigate }: { onNavigate: Navigate }) {
       )}
 
       <div style={{ marginTop: 32, display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <CrossLink label="Built on Bolt PaaS" target="bolt" onNavigate={onNavigate} color={BOLT_COLOR} />
-        <CrossLink label="Powered by the Data Platform" target="dataplatform" onNavigate={onNavigate} color="#10B981" />
+        <CrossLink label="Built with Bolt Build" target="bolt" onNavigate={onNavigate} color={BOLT_COLOR} />
+        <CrossLink label="Powered by Bolt Data" target="dataplatform" onNavigate={onNavigate} color="#10B981" />
       </div>
       <div style={{ height: 64 }} />
     </div>
@@ -827,8 +827,8 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer 
   };
   const layers: { id: HeroLayer; y: number; dy: number; title: string; sub: string; color: string; action: string }[] = [
     { id: "apps", y: 62, dy: -22, title: "Applications", sub: "Built by the business", color: "#60A5FA", action: "Open Solutions" },
-    { id: "bolt", y: 126, dy: 0, title: "Bolt Platform", sub: "Build fast with AI", color: "#22D3EE", action: "See how it works" },
-    { id: "data", y: 190, dy: 20, title: "Data Platform", sub: "Governed data", color: "#34D399", action: "Open Data Platform" },
+    { id: "bolt", y: 126, dy: 0, title: "Bolt Build", sub: "Build fast with AI", color: "#22D3EE", action: "See how it works" },
+    { id: "data", y: 190, dy: 20, title: "Bolt Data", sub: "Governed data", color: "#34D399", action: "Open Bolt Data" },
   ];
   const interactive = !!onLayer;
   const layerProps = (l: (typeof layers)[number]) => interactive ? {
@@ -840,7 +840,7 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer 
   } : { style: { transform: `translateY(${exploded ? l.dy : 0}px)`, transition: "transform 0.55s cubic-bezier(.2,.7,.2,1)" } as React.CSSProperties };
   const lit = (id: HeroLayer) => focusLayer === id || litLayer === id;
   return (
-    <svg role={interactive ? "group" : "img"} aria-label="Applications built on the Bolt platform, which runs on the Data Platform" viewBox="0 -20 370 290" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{ width: "100%", maxWidth, height: "auto", display: "block", overflow: "visible" }}>
+    <svg role={interactive ? "group" : "img"} aria-label="Applications built with Bolt Build, which runs on Bolt Data" viewBox="0 -20 370 290" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{ width: "100%", maxWidth, height: "auto", display: "block", overflow: "visible" }}>
       <defs>
         <radialGradient id="boltHeroGlow" cx="35%" cy="55%" r="55%">
           <stop offset="0%" stopColor={BOLT_COLOR} stopOpacity={0.28} />
@@ -1521,8 +1521,8 @@ function BoltBuilders({ autoFill = false }: { autoFill?: boolean }) {
   );
 }
 
-function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => void; onNavigate: Navigate; deck?: "bolt" | "data" }) {
-  const [scene, setScene] = useState(0);
+function BoltPresenter({ onExit, onNavigate, deck = "bolt", start = 0 }: { onExit: () => void; onNavigate: Navigate; deck?: "bolt" | "data" | "full"; start?: number }) {
+  const [scene, setScene] = useState(start);
   const boxRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const zoomRef = useRef<HTMLDivElement>(null);
@@ -1551,7 +1551,7 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => vo
     { id: "title", render: () => (
       <div style={{ display: "flex", gap: 48, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ flex: "1 1 520px" }}>
-          {eyebrow("Glide Platform · Application layer")}
+          {eyebrow("Bolt PaaS · Application layer")}
           <h2 className="bolt-anim" style={{ ...rise(0.08), fontSize: "clamp(44px, 6vw, 80px)", lineHeight: 1.05, letterSpacing: -1.5, color: "#FFFFFF", margin: 0 }}>Build in weeks,<br />not months.</h2>
           <p className="bolt-anim" style={{ ...rise(0.2), fontSize: 24, lineHeight: 1.5, color: "#D0DAE6", margin: "24px 0 0", maxWidth: 620 }}>{"Business experts, product owners and engineers build with Claude Code and ship on McKesson’s governed AWS platform."}</p>
         </div>
@@ -1650,7 +1650,7 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => vo
     { id: "title", render: () => (
       <div style={{ display: "flex", gap: 48, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ flex: "1 1 520px" }}>
-          {eyebrow("Glide Platform · Data layer")}
+          {eyebrow("Bolt PaaS · Data layer")}
           <h2 className="bolt-anim" style={{ ...rise(0.08), fontSize: "clamp(44px, 5.6vw, 76px)", lineHeight: 1.05, letterSpacing: -1.5, color: "#FFFFFF", margin: 0 }}>{"Enterprise data,"}<br />{"turned into capabilities."}</h2>
           <p className="bolt-anim" style={{ ...rise(0.2), fontSize: 24, lineHeight: 1.5, color: "#D0DAE6", margin: "24px 0 0", maxWidth: 640 }}>{"A governed foundation where data products, analytics and AI are built once, reused everywhere and inherit enterprise controls by default."}</p>
         </div>
@@ -1659,7 +1659,7 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => vo
     ) },
     { id: "foundation", render: () => (
       <div>
-        {eyebrow("Data Platform")}
+        {eyebrow("Bolt Data")}
         {title("Transforming enterprise data into business capabilities through intent")}
         <div className="bolt-anim" style={rise(0.15)}><DpHeroTiles big /></div>
       </div>
@@ -1678,7 +1678,15 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => vo
       </div>
     ) },
   ];
-  const scenes = deck === "data" ? dataScenes : boltScenes;
+  const pick = (list: { id: string; render: () => React.ReactNode }[], ids: string[], prefix: string) => ids.map((id) => { const f = list.find((x) => x.id === id); if (!f) throw new Error(id); return { id: prefix + id, render: f.render }; });
+  const fullScenes = [
+    ...pick(boltScenes, ["title", "speed", "proof"], "b-"),
+    { id: "b-build", render: () => (<div>{eyebrow("Live demo")}{title("Watch a business owner build")}<div className="bolt-anim" style={rise(0.15)}><BoltLiveBuild autoStart big /></div></div>) },
+    ...pick(boltScenes, ["who", "close"], "b-"),
+    ...pick(dataScenes, ["title", "why", "domains", "reuse", "intent", "close"], "d-"),
+  ];
+  const scenes = deck === "full" ? fullScenes : deck === "data" ? dataScenes : boltScenes;
+  const isData = deck === "data" || (deck === "full" && scenes[scene].id.startsWith("d-"));
   const last = scenes.length - 1;
   useEffect(() => {
     boxRef.current?.focus();
@@ -1713,10 +1721,10 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => vo
   }, [last, onExit]);
   useEffect(() => { setZoom(false); }, [scene]);
   return (
-    <div ref={boxRef} onMouseMove={onMove} role="dialog" aria-modal="true" aria-label={deck === "data" ? "Data Platform presentation" : "Bolt PaaS presentation"} tabIndex={-1} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "radial-gradient(ellipse at 70% 20%, #12305A 0%, #0B1A33 55%, #071021 100%)", color: "#E2EAF2", display: "flex", flexDirection: "column", outline: "none", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+    <div ref={boxRef} onMouseMove={onMove} role="dialog" aria-modal="true" aria-label={deck === "full" ? "Bolt PaaS presentation" : deck === "data" ? "Bolt Data presentation" : "Bolt Build presentation"} tabIndex={-1} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "radial-gradient(ellipse at 70% 20%, #12305A 0%, #0B1A33 55%, #071021 100%)", color: "#E2EAF2", display: "flex", flexDirection: "column", outline: "none", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
       <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.14) 1px, transparent 1.2px)", backgroundSize: "26px 26px", WebkitMaskImage: "radial-gradient(ellipse at 75% 25%, black 0%, transparent 70%)", maskImage: "radial-gradient(ellipse at 75% 25%, black 0%, transparent 70%)" }} />
       <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 32px" }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 600, color: "#B8C8DA" }}><BoltGlyphIcon kind={deck === "data" ? "db" : "bolt"} size={20} color={deck === "data" ? DP_COLOR : BOLT_COLOR} />{deck === "data" ? "Data Platform" : "Bolt PaaS"}</span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 600, color: "#B8C8DA" }}><BoltGlyphIcon kind={isData ? "db" : "bolt"} size={20} color={isData ? DP_COLOR : BOLT_COLOR} />{deck === "full" ? "Bolt PaaS \u00B7 " + (isData ? "Bolt Data" : "Bolt Build") : isData ? "Bolt Data" : "Bolt Build"}</span>
         <BoltButton onClick={onExit} aria-label="Exit presentation" style={{ background: "transparent", padding: "8px 12px" }}><span style={{ fontSize: 14, fontWeight: 500, color: "#B8C8DA" }}>Esc</span><BoltIcon kind="close" /></BoltButton>
       </div>
       <div ref={stageRef} style={{ position: "relative", flex: 1, display: "flex", alignItems: "center", overflowY: zoom ? "hidden" : "auto", overflowX: "hidden" }}>
@@ -1729,7 +1737,7 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt" }: { onExit: () => vo
         <BoltButton onClick={() => setScene((v) => Math.max(0, v - 1))} disabled={scene === 0} aria-label="Previous scene" style={{ background: "transparent", opacity: scene === 0 ? 0.35 : 1, padding: "8px 12px" }}><span style={{ display: "inline-flex", transform: "rotate(180deg)" }}><BoltIcon kind="arrow" /></span></BoltButton>
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
           {scenes.map((sc, i) => (
-            <button key={sc.id} type="button" aria-label={`Go to scene ${i + 1}`} aria-current={i === scene ? "step" : undefined} onClick={() => setScene(i)} style={{ width: i === scene ? 30 : 10, height: 10, borderRadius: 5, border: "none", padding: 0, cursor: "pointer", background: i === scene ? BOLT_COLOR : "rgba(184,200,218,0.35)", transition: "width 0.3s ease, background 0.3s ease" }} />
+            <button key={sc.id} type="button" aria-label={`Go to scene ${i + 1}`} aria-current={i === scene ? "step" : undefined} onClick={() => setScene(i)} style={{ width: i === scene ? 30 : 10, height: 10, borderRadius: 5, border: "none", padding: 0, cursor: "pointer", background: i === scene ? (deck === "full" && sc.id.startsWith("d-") ? DP_COLOR : BOLT_COLOR) : "rgba(184,200,218,0.35)", transition: "width 0.3s ease, background 0.3s ease" }} />
           ))}
           <span style={{ marginLeft: 12, fontSize: 14, color: "#7F93AE", fontVariantNumeric: "tabular-nums" }}>{`${scene + 1} / ${scenes.length} · ← → navigate · hold L spotlight · Z zoom`}</span>
         </div>
@@ -1846,7 +1854,7 @@ function BoltStackDiagram({ onNavigate }: { onNavigate: Navigate }) {
         );
       })}
       <BoltButton onClick={() => onNavigate("dataplatform")} style={{ width: "100%", marginTop: 20, background: "rgba(45,212,191,0.08)", borderColor: BOLT_COLOR, color: BOLT_COLOR, padding: "16px 18px" }}>
-        <span style={{ display: "flex", gap: "4px 16px", alignItems: "baseline", flexWrap: "wrap" }}><span style={{ color: "#FFFFFF", fontSize: 18 }}>Data Platform foundation</span><span style={{ fontWeight: 400, color: "#D0DAE6", fontSize: 16 }}>Eight governed data domains</span></span><BoltIcon kind="arrow" />
+        <span style={{ display: "flex", gap: "4px 16px", alignItems: "baseline", flexWrap: "wrap" }}><span style={{ color: "#FFFFFF", fontSize: 18 }}>Bolt Data foundation</span><span style={{ fontWeight: 400, color: "#D0DAE6", fontSize: 16 }}>Eight governed data domains</span></span><BoltIcon kind="arrow" />
       </BoltButton>
       </div>
     </Card>
@@ -2044,9 +2052,9 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
         <div aria-hidden="true" style={{ position: "absolute", top: -40, left: 0, right: 0, height: 380, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.22) 1px, transparent 1.2px)", backgroundSize: "22px 22px", WebkitMaskImage: "radial-gradient(ellipse 70% 80% at 75% 35%, black 10%, transparent 75%)", maskImage: "radial-gradient(ellipse 70% 80% at 75% 35%, black 10%, transparent 75%)" }} />
         <div style={{ position: "relative", display: "flex", gap: "16px 32px", alignItems: "center", flexWrap: "wrap", marginBottom: 24 }}>
           <div style={{ flex: "1 1 480px", minWidth: 0 }}>
-            <p style={{ margin: "0 0 8px", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color: BOLT_COLOR }}>{"Glide Platform · Application layer"}</p>
+            <p style={{ margin: "0 0 8px", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color: BOLT_COLOR }}>{"Bolt PaaS · Application layer"}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
-              <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Bolt PaaS</h1>
+              <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Bolt Build</h1>
               <BoltButton onClick={() => setPresenting(true)} aria-keyshortcuts="P" style={{ background: "rgba(45,212,191,0.12)", borderColor: BOLT_COLOR, color: BOLT_COLOR, padding: "6px 14px", minHeight: 38 }}>
                 <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"><path d="M7 4v16l13-8L7 4Z" fill="currentColor" /></svg>
                 <span>Present</span><span style={{ fontSize: 12, fontWeight: 500, color: "#B8C8DA", border: "1px solid rgba(184,200,218,0.35)", borderRadius: 4, padding: "0 5px" }}>P</span>
@@ -2078,7 +2086,7 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
             <div role="region" aria-label="Full development comparison, scroll horizontally if needed" tabIndex={0} style={{ overflowX: "auto", padding: 4 }}>
               <table style={{ width: "100%", minWidth: 640, borderCollapse: "collapse", textAlign: "left", fontSize: 16 }}>
                 <caption style={{ textAlign: "left", color: "#FFFFFF", fontSize: 18, fontWeight: 700, paddingBottom: 12 }}>Full comparison</caption>
-                <thead><tr>{["Dimension", "Traditional development", "Bolt PaaS"].map((label) => <th key={label} scope="col" style={{ width: "33.33%", color: "#FFFFFF", borderBottom: "1px solid #B8C8DA", padding: "12px 12px 12px 0" }}>{label}</th>)}</tr></thead>
+                <thead><tr>{["Dimension", "Traditional development", "Bolt Build"].map((label) => <th key={label} scope="col" style={{ width: "33.33%", color: "#FFFFFF", borderBottom: "1px solid #B8C8DA", padding: "12px 12px 12px 0" }}>{label}</th>)}</tr></thead>
                 <tbody>{boltBeforeAfter.map((row) => <tr key={row.dimension}><th scope="row" style={{ fontWeight: 600, padding: "14px 16px 14px 0", borderBottom: "1px solid rgba(184,200,218,0.16)", verticalAlign: "top" }}>{row.dimension}</th><td style={{ color: "#B8C8DA", padding: "14px 16px 14px 0", borderBottom: "1px solid rgba(184,200,218,0.16)", verticalAlign: "top" }}>{row.before}</td><td style={{ color: "#E2EAF2", padding: "14px 0", borderBottom: "1px solid rgba(184,200,218,0.16)", verticalAlign: "top" }}>{row.after}</td></tr>)}</tbody>
               </table>
             </div>
@@ -2121,7 +2129,7 @@ function BoltPaaSPage({ onNavigate }: { onNavigate: Navigate }) {
 
       <footer style={{ marginTop: 48, paddingTop: 28, borderTop: "1px solid rgba(184,200,218,0.25)", display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
         <p style={{ flex: "1 1 530px", fontSize: 18, color: "#D0DAE6", margin: 0, lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>Domain experts build the tools.</strong>{" Engineers own the platform, guardrails and review gate."}</p>
-        <BoltButton onClick={() => onNavigate("dataplatform")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR }}><span>Explore the Data Platform</span><BoltIcon kind="arrow" /></BoltButton>
+        <BoltButton onClick={() => onNavigate("dataplatform")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR }}><span>Explore Bolt Data</span><BoltIcon kind="arrow" /></BoltButton>
       </footer>
       {presenting && <BoltPresenter onExit={exitPresenter} onNavigate={(id) => { exitPresenter(); onNavigate(id); }} />}
     </main>
@@ -2375,7 +2383,7 @@ function DpRelayCompare() {
   );
   const right = (
     <div>
-      <p style={eyebrowStyle(DP_COLOR)}>{"With Bolt + Data Platform"}</p>
+      <p style={eyebrowStyle(DP_COLOR)}>{"With Bolt Build + Bolt Data"}</p>
       <h3 style={{ fontSize: 19, color: "#FFFFFF", margin: "0 0 4px" }}>One intent layer</h3>
       <p style={{ fontSize: 14, color: "#B8C8DA", margin: "0 0 14px" }}>{"Business intent is translated into everything the outcome needs, together."}</p>
       <div style={{ padding: "10px 14px", borderRadius: 9, background: "#071226", border: "1px solid rgba(184,200,218,0.25)", fontSize: 15, fontWeight: 700, color: "#FFFFFF", display: "flex", alignItems: "center", gap: 10 }}><BoltGlyphIcon kind="target" size={18} color={DP_COLOR} />Business intent</div>
@@ -2619,7 +2627,7 @@ function DpIntentDemo({ autoStart = false, big = false }: { autoStart?: boolean;
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: 12 }}>
         {lane("Application layer", "Bolt translates intent into", dpAppOutputs, BOLT_COLOR, "app")}
-        {lane("Data layer", "The Data Platform translates intent into", dpDataOutputs, DP_COLOR, "db")}
+        {lane("Data layer", "Bolt Data translates intent into", dpDataOutputs, DP_COLOR, "db")}
       </div>
       <p aria-live="polite" style={{ margin: "14px 0 0", fontSize: 15 * fs, fontWeight: done ? 700 : 400, color: done ? DP_COLOR : "#D0DAE6" }}>
         {done ? "One request. The app and its governed data arrive together, with controls already applied." : started ? "Orchestrating application and data capabilities" : "Business experts describe the outcome, not the implementation."}
@@ -2729,9 +2737,9 @@ function DataPlatformPage({ onNavigate }: { onNavigate: Navigate }) {
         <div aria-hidden="true" style={{ position: "absolute", top: -40, left: 0, right: 0, height: 380, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.22) 1px, transparent 1.2px)", backgroundSize: "22px 22px", WebkitMaskImage: "radial-gradient(ellipse 70% 80% at 75% 35%, black 10%, transparent 75%)", maskImage: "radial-gradient(ellipse 70% 80% at 75% 35%, black 10%, transparent 75%)" }} />
         <div style={{ position: "relative", display: "flex", gap: "16px 32px", alignItems: "center", flexWrap: "wrap", marginBottom: 24 }}>
           <div style={{ flex: "1 1 480px", minWidth: 0 }}>
-            <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color: DP_COLOR }}>{"Glide Platform · Data layer"}</p>
+            <p style={{ margin: "0 0 8px", fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.4, textTransform: "uppercase", color: DP_COLOR }}>{"Bolt PaaS · Data layer"}</p>
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
-              <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Data Platform</h1>
+              <h1 style={{ fontSize: "clamp(34px, 4vw, 44px)", letterSpacing: -0.8, fontWeight: 700, color: "#FFFFFF", margin: 0, lineHeight: 1.15 }}>Bolt Data</h1>
               <BoltButton onClick={() => setPresenting(true)} aria-keyshortcuts="P" style={{ background: `${DP_COLOR}1F`, borderColor: DP_COLOR, color: DP_COLOR, padding: "6px 14px", minHeight: 38 }}>
                 <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24"><path d="M7 4v16l13-8L7 4Z" fill="currentColor" /></svg>
                 <span>Present</span><span style={{ fontSize: 12, fontWeight: 500, color: "#B8C8DA", border: "1px solid rgba(184,200,218,0.35)", borderRadius: 4, padding: "0 5px" }}>P</span>
@@ -2745,7 +2753,7 @@ function DataPlatformPage({ onNavigate }: { onNavigate: Navigate }) {
           </div>
         </div>
         <DpHeroTiles />
-        <nav aria-label="Data Platform page sections" style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 20 }}>
+        <nav aria-label="Bolt Data page sections" style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 20 }}>
           {dpSections.map((section, index) => <BoltButton key={section.id} onClick={() => jump(section.id, index)} style={{ background: "transparent", padding: "8px 14px" }}><span style={{ color: DP_COLOR, fontFamily: MONO }}>{"0" + (index + 1)}</span><span>{section.label}</span><BoltIcon kind="down" /></BoltButton>)}
         </nav>
       </header>
@@ -2771,7 +2779,7 @@ function DataPlatformPage({ onNavigate }: { onNavigate: Navigate }) {
       </section>
 
       <section id="dp-intent" aria-labelledby="bolt-05-title" style={sectionStyle}>
-        <SectionTitle icon="target" num="05" label="Intent" title="One intent layer for apps and data" sub="Bolt translates business intent into the application. The Data Platform applies the same idea to data. Both are created through one experience and inherit the same controls." color={DP_COLOR} />
+        <SectionTitle icon="target" num="05" label="Intent" title="One intent layer for apps and data" sub="Bolt translates business intent into the application. Bolt Data applies the same idea to data. Both are created through one experience and inherit the same controls." color={DP_COLOR} />
         <Reveal><DpIntentDemo /></Reveal>
       </section>
 
@@ -2783,7 +2791,7 @@ function DataPlatformPage({ onNavigate }: { onNavigate: Navigate }) {
       <footer style={{ marginTop: 48, paddingTop: 28, borderTop: "1px solid rgba(184,200,218,0.25)", display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
         <p style={{ flex: "1 1 530px", fontSize: 18, color: "#D0DAE6", margin: 0, lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>{"A connected, governed healthcare intelligence ecosystem."}</strong>{" Business teams turn ideas into applications, data products and AI through one experience."}</p>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <BoltButton onClick={() => onNavigate("bolt")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR }}><span>Explore Bolt PaaS</span><BoltIcon kind="arrow" /></BoltButton>
+          <BoltButton onClick={() => onNavigate("bolt")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR }}><span>Explore Bolt Build</span><BoltIcon kind="arrow" /></BoltButton>
           <BoltButton onClick={() => onNavigate("solutions")} style={{ color: "#93C5FD", borderColor: "#60A5FA" }}><span>See the Solutions</span><BoltIcon kind="arrow" /></BoltButton>
         </div>
       </footer>
@@ -3152,8 +3160,8 @@ function SavingsIQPage({ onNavigate }: { onNavigate: Navigate }) {
       <footer style={{ marginTop: 48, paddingTop: 28, borderTop: "1px solid rgba(184,200,218,0.25)", display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
         <p style={{ flex: "1 1 480px", fontSize: 18, color: "#D0DAE6", margin: 0, lineHeight: 1.6 }}><strong style={{ color: "#FFFFFF" }}>{"A competitive differentiator for GPO."}</strong>{" Prototyped with Claude Code, carried forward on Bolt."}</p>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <BoltButton onClick={() => onNavigate("bolt")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR }}><span>Bolt PaaS</span><BoltIcon kind="arrow" /></BoltButton>
-          <BoltButton onClick={() => onNavigate("dataplatform")} style={{ color: DP_COLOR, borderColor: DP_COLOR }}><span>Data Platform</span><BoltIcon kind="arrow" /></BoltButton>
+          <BoltButton onClick={() => onNavigate("bolt")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR }}><span>Bolt Build</span><BoltIcon kind="arrow" /></BoltButton>
+          <BoltButton onClick={() => onNavigate("dataplatform")} style={{ color: DP_COLOR, borderColor: DP_COLOR }}><span>Bolt Data</span><BoltIcon kind="arrow" /></BoltButton>
           <BoltButton onClick={() => onNavigate("solutions")} style={{ color: "#93C5FD", borderColor: "#60A5FA" }}><span>All Solutions</span><BoltIcon kind="arrow" /></BoltButton>
         </div>
       </footer>
@@ -3323,8 +3331,8 @@ function SolPlatform({ color, intelligence, data, extra, onNavigate }: { color: 
   const domainColor = (name: string) => (dataLayer.find((d) => d.title === name) || { color: DP_COLOR }).color;
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: 12 }}>
-      {intelligence.length > 0 && card("Built on Bolt · intelligence services", chips(intelligence, () => color), <BoltButton onClick={() => onNavigate("bolt")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR, padding: "8px 14px" }}><span>Bolt PaaS</span><BoltIcon kind="arrow" /></BoltButton>)}
-      {data.length > 0 && card("Data Platform · governed domains", chips(data, domainColor), <BoltButton onClick={() => onNavigate("dataplatform")} style={{ color: DP_COLOR, borderColor: DP_COLOR, padding: "8px 14px" }}><span>Data Platform</span><BoltIcon kind="arrow" /></BoltButton>)}
+      {intelligence.length > 0 && card("Built on Bolt · intelligence services", chips(intelligence, () => color), <BoltButton onClick={() => onNavigate("bolt")} style={{ color: BOLT_COLOR, borderColor: BOLT_COLOR, padding: "8px 14px" }}><span>Bolt Build</span><BoltIcon kind="arrow" /></BoltButton>)}
+      {data.length > 0 && card("Bolt Data · governed domains", chips(data, domainColor), <BoltButton onClick={() => onNavigate("dataplatform")} style={{ color: DP_COLOR, borderColor: DP_COLOR, padding: "8px 14px" }}><span>Bolt Data</span><BoltIcon kind="arrow" /></BoltButton>)}
       {extra && card(extra.title, <p style={{ margin: 0, fontSize: 15.5, color: "#E2EAF2", lineHeight: 1.55 }}>{extra.text}</p>, <BoltButton onClick={() => onNavigate(extra.target)} style={{ color: extra.linkColor, borderColor: extra.linkColor, padding: "8px 14px" }}><span>{extra.label}</span><BoltIcon kind="arrow" /></BoltButton>)}
     </div>
   );
@@ -3405,7 +3413,7 @@ function TitanPage({ onNavigate }: { onNavigate: Navigate }) {
       <SolSection id="ti-see" num="03" label="See it" title="A policy update, structured in seconds" sub="Titan reads the revised policy and turns it into a rule a practice can act on." icon="target" color={TITAN_COLOR}>
         <TitanDetectDemo />
       </SolSection>
-      <SolSection id="ti-platform" num="04" label="Platform" title="On the Glide Platform" sub="Titan runs on Bolt, draws on governed data domains, and feeds other solutions." icon="link" color={TITAN_COLOR}>
+      <SolSection id="ti-platform" num="04" label="Platform" title="On Bolt PaaS" sub="Titan runs on Bolt, draws on governed data domains, and feeds other solutions." icon="link" color={TITAN_COLOR}>
         <SolPlatform color={TITAN_COLOR} intelligence={["Agents", "AI Prompting Tools"]} data={["Payer Policy Surveillance", "Biosimilar Utilization"]} extra={{ title: "Feeds", text: "Titan's payer policy intelligence is a live data source for " + PRACTICE_NAME + "'s partnership reviews.", label: PRACTICE_NAME, target: "skynet", linkColor: "#F87171" }} onNavigate={onNavigate} />
       </SolSection>
       <SolFooter strong="Removes administrative barriers for cancer patients." text="The right drug is verified before treatment, not after a denial." onNavigate={onNavigate} />
@@ -3518,7 +3526,7 @@ function NovaXrayPage({ onNavigate }: { onNavigate: Navigate }) {
       <SolSection id="nx-road" num="03" label="Roadmap" title="From bid comparison to pricing strategist" sub="Four phases, each building on the data foundation the last one laid." icon="trend" color={NOVA_COLOR}>
         <SolTabs color={NOVA_COLOR} items={phases.map((ph) => ({ name: ph.label + " · " + ph.title, color: ph.color, status: ph.status, statusColor: ph.statusColor, description: ph.summary, highlights: ph.highlights }))} />
       </SolSection>
-      <SolSection id="nx-platform" num="04" label="Platform" title="On the Glide Platform" sub="Both apps draw on the same intelligence services and governed data domains." icon="link" color={NOVA_COLOR}>
+      <SolSection id="nx-platform" num="04" label="Platform" title="On Bolt PaaS" sub="Both apps draw on the same intelligence services and governed data domains." icon="link" color={NOVA_COLOR}>
         <SolPlatform color={NOVA_COLOR} intelligence={novaXrayIntelligence.map((l) => l.title)} data={novaXrayData.map((d) => d.title)} onNavigate={onNavigate} />
       </SolSection>
       <SolFooter strong="Pricing transparency for practices, pricing intelligence for McKesson." text="One foundation, two audiences." onNavigate={onNavigate} />
@@ -3775,7 +3783,7 @@ function SkynetPage({ onNavigate }: { onNavigate: Navigate }) {
       <SolSection id="pq-ask" num="03" label="Ask" title="Ask the portal, not an analyst" sub="A plain-English question is converted to SQL, run against live data, and returned as an answer." icon="target" color={PIQ_COLOR}>
         <PiqAskDemo />
       </SolSection>
-      <SolSection id="pq-platform" num="04" label="Platform" title="On the Glide Platform" sub="Powered by Bolt intelligence services and data from across the partnership, including Titan." icon="link" color={PIQ_COLOR}>
+      <SolSection id="pq-platform" num="04" label="Platform" title="On Bolt PaaS" sub="Powered by Bolt intelligence services and data from across the partnership, including Titan." icon="link" color={PIQ_COLOR}>
         <SolPlatform color={PIQ_COLOR} intelligence={["AI Prompting Tools", "Machine Learning", "Agents"]} data={["Distribution Pricing & Rebates", "GPO Rebates", "MID Data", "Biosimilar Utilization", "Inventory Management", "Payer Policy Surveillance"]} extra={{ title: "Fed by", text: "Titan's payer policy intelligence powers the policy and market section of every review.", label: "Titan", target: "titan", linkColor: TITAN_COLOR }} onNavigate={onNavigate} />
       </SolSection>
       <SolFooter strong="Hundreds of rep hours a quarter, redirected from slide-building to selling." text={"With 200+ accounts on quarterly cycles, " + PRACTICE_NAME + " turns QBR prep from hours into minutes."} onNavigate={onNavigate} />
@@ -5255,7 +5263,71 @@ function AccPage({ onNavigate }: { onNavigate: Navigate }) {
           ))}
         </div>
       </SolSection>
-      <SolFooter strong="Stage version next." text="Once marketing and legal sign off, this becomes the reference for the Bolt build in the McKesson design language." onNavigate={onNavigate} cta={{ label: "Bolt PaaS", target: "bolt", color: BOLT_COLOR }} />
+      <SolFooter strong="Stage version next." text="Once marketing and legal sign off, this becomes the reference for the Bolt build in the McKesson design language." onNavigate={onNavigate} cta={{ label: "Bolt Build", target: "bolt", color: BOLT_COLOR }} />
+    </SolPage>
+  );
+}
+
+
+// ============================================================
+// BOLT PAAS PRESENTATION (combined Build + Data deck)
+// ============================================================
+const paasDeck: { part: "Bolt Build" | "Bolt Data"; label: string; sub: string }[] = [
+  { part: "Bolt Build", label: "Build in weeks, not months", sub: "Title and layer stack" },
+  { part: "Bolt Build", label: "From ~6 months to 2–4 weeks", sub: "KPIs and drag-the-timeline" },
+  { part: "Bolt Build", label: "Nine applications in under 6 months", sub: "Proof timeline and snapshot" },
+  { part: "Bolt Build", label: "Watch a business owner build", sub: "Live build demo" },
+  { part: "Bolt Build", label: "Choose the ownership", sub: "Engagement models" },
+  { part: "Bolt Build", label: "Domain experts build the tools", sub: "Build close" },
+  { part: "Bolt Data", label: "Enterprise data, turned into capabilities", sub: "Data layer title" },
+  { part: "Bolt Data", label: "Value trapped in silos", sub: "Relay vs. one intent layer" },
+  { part: "Bolt Data", label: "A connected enterprise data foundation", sub: "Eight governed domains" },
+  { part: "Bolt Data", label: "Build once, use everywhere", sub: "Domains to capabilities" },
+  { part: "Bolt Data", label: "One request, apps and data", sub: "Intent demo" },
+  { part: "Bolt Data", label: "A connected, governed healthcare intelligence ecosystem", sub: "Close" },
+];
+
+function PaasPresentationPage({ onNavigate }: { onNavigate: Navigate }) {
+  const [presenting, setPresenting] = useState<number | null>(null);
+  const sections = [{ id: "paas-run", label: "Run of show" }, { id: "paas-keys", label: "Controls" }];
+  return (
+    <SolPage id="paas-presentation-page">
+      {presenting !== null && <BoltPresenter deck="full" start={presenting} onExit={() => setPresenting(null)} onNavigate={onNavigate} />}
+      <SolHero eyebrow="Bolt PaaS · Presentation" name="Bolt PaaS" color={BOLT_COLOR}
+        line1="One platform: Bolt Build for applications, Bolt Data for governed data."
+        line2="The strongest scenes from both layers in one full-screen deck, for leadership and partner briefings."
+        tiles={[{ head: "12 scenes", label: "Build, then Data", sub: "About 15–20 minutes" }, { head: "Live demos", label: "Build and intent", sub: "Animated, illustrative" }, { head: "Keyboard", label: "Clicker-friendly", sub: "Spotlight and zoom built in" }]}
+        sections={sections} />
+      <div style={{ marginTop: 20 }}>
+        <BoltButton onClick={() => setPresenting(0)} style={{ background: BOLT_COLOR, color: "#0B1A33", borderColor: BOLT_COLOR, fontSize: 18, padding: "12px 22px" }}><span>{"Start presenting"}</span><BoltIcon kind="arrow" /></BoltButton>
+      </div>
+      <SolSection id="paas-run" num="01" label="Run of show" title="Twelve scenes, two layers" sub="Select a scene to start presenting from there." icon="list" color={BOLT_COLOR}>
+        {(["Bolt Build", "Bolt Data"] as const).map((part) => {
+          const c = part === "Bolt Build" ? BOLT_COLOR : DP_COLOR;
+          return (
+            <div key={part} style={{ marginBottom: 18 }}>
+              <p style={{ margin: "0 0 10px", display: "flex", alignItems: "center", gap: 8, fontFamily: MONO, fontSize: 13, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", color: c }}><BoltGlyphIcon kind={part === "Bolt Build" ? "bolt" : "db"} size={16} color={c} />{part}</p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: 10 }}>
+                {paasDeck.map((d, i) => d.part !== part ? null : (
+                  <button key={d.label} type="button" onClick={() => setPresenting(i)} style={{ fontFamily: "inherit", textAlign: "left", cursor: "pointer", borderRadius: 12, padding: "14px 16px", border: `1px solid ${c}55`, background: "rgba(16,34,66,0.6)", color: "#FFFFFF" }}>
+                    <span style={{ fontFamily: MONO, fontSize: 13, color: c }}>{String(i + 1).padStart(2, "0")}</span>
+                    <span style={{ display: "block", fontSize: 17, fontWeight: 700, marginTop: 4 }}>{d.label}</span>
+                    <span style={{ display: "block", fontSize: 14, color: "#B8C8DA", marginTop: 2 }}>{d.sub}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </SolSection>
+      <SolSection id="paas-keys" num="02" label="Controls" title="Driving the deck" icon="sliders" color={BOLT_COLOR}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: 10 }}>
+          {[["→ or space", "Next scene"], ["←", "Previous scene"], ["Hold L", "Spotlight"], ["Z", "Zoom where the pointer is"], ["Esc", "Leave zoom, then exit"]].map(([k, v]) => (
+            <div key={k} style={{ borderRadius: 12, padding: "12px 14px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)" }}><p style={{ margin: 0, fontFamily: MONO, fontSize: 16, fontWeight: 700, color: BOLT_COLOR }}>{k}</p><p style={{ margin: "4px 0 0", fontSize: 15, color: "#D0DAE6" }}>{v}</p></div>
+          ))}
+        </div>
+      </SolSection>
+      <SolFooter strong="Two layers, one platform." text="Go deeper on either layer." onNavigate={onNavigate} cta={{ label: "Bolt Build", target: "bolt", color: BOLT_COLOR }} />
     </SolPage>
   );
 }
@@ -5265,9 +5337,10 @@ function AccPage({ onNavigate }: { onNavigate: Navigate }) {
 // ============================================================
 
 const navGroups = [
-  { label: "Glide Platform", items: [
-    { id: "bolt", label: "Bolt PaaS", desc: "Build fast with AI" },
-    { id: "dataplatform", label: "Data Platform", desc: "Governed data foundation" },
+  { label: "Bolt PaaS", items: [
+    { id: "bolt", label: "Bolt Build", desc: "Build fast with AI" },
+    { id: "dataplatform", label: "Bolt Data", desc: "Governed data foundation" },
+    { id: "paas", label: "Presentation", desc: "Build + Data, one deck" },
   ]},
   { label: "Solutions", items: [
     { id: "solutions", label: "Overview" },
@@ -5364,6 +5437,7 @@ export default function App() {
         {activePage === "retentioniq" && <RetentionIQPage onNavigate={navigate} />}
         {activePage === "bolt" && <BoltPaaSPage onNavigate={navigate} />}
         {activePage === "dataplatform" && <DataPlatformPage onNavigate={navigate} />}
+        {activePage === "paas" && <PaasPresentationPage onNavigate={navigate} />}
         {activePage === "roadmap" && <MptsRoadmapPage onNavigate={navigate} />}
         {activePage === "value" && <ValuePage onNavigate={navigate} />}
         {activePage === "timeline" && <TimelinePage onNavigate={navigate} />}
