@@ -2406,7 +2406,7 @@ function DpRelayCompare() {
 }
 
 // Hub and spoke: the eight governed domains around one foundation
-function DpDomainHub({ big = false }: { big?: boolean }) {
+function DpDomainHub({ big = false, hideDetail = false }: { big?: boolean; hideDetail?: boolean }) {
   const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
   const [active, setActive] = useState<number>(0);
   const n = dataLayer.length;
@@ -2446,12 +2446,12 @@ function DpDomainHub({ big = false }: { big?: boolean }) {
           <li key={d.id}><button type="button" onClick={() => setActive(i)} aria-pressed={i === active} style={{ width: "100%", textAlign: "left", fontFamily: "inherit", padding: "10px 12px", borderRadius: 10, cursor: "pointer", background: i === active ? `${d.color}2A` : "#0E2140", border: `1.5px solid ${i === active ? d.color : d.color + "66"}`, color: "#FFFFFF", fontSize: 14, fontWeight: 700 }}>{d.title}</button></li>
         ))}
       </ul>
-      <div aria-live="polite" key={sel.id} className="bolt-anim" style={{ marginTop: 14, borderRadius: 12, padding: "18px 22px", background: `${sel.color}12`, border: `1px solid ${sel.color}44`, animation: "boltIn 0.35s ease-out both" }}>
+      {!hideDetail && <div aria-live="polite" key={sel.id} className="bolt-anim" style={{ marginTop: 14, borderRadius: 12, padding: "18px 22px", background: `${sel.color}12`, border: `1px solid ${sel.color}44`, animation: "boltIn 0.35s ease-out both" }}>
         <p style={{ margin: "0 0 12px", fontFamily: MONO, fontSize: 13, fontWeight: 600, letterSpacing: 1.2, textTransform: "uppercase", color: sel.color }}>{sel.title}</p>
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: 8 }}>
           {sel.items.map((it, k) => <li key={it} className="bolt-anim" style={{ fontSize: 15, color: "#E2EAF2", padding: "6px 12px", borderRadius: 999, background: "rgba(16,34,66,0.7)", border: `1px solid ${sel.color}55`, animation: `boltPop 0.35s ease-out ${k * 0.05}s both` }}>{it}</li>)}
         </ul>
-      </div>
+      </div>}
     </div>
   );
 }
@@ -4896,7 +4896,7 @@ function AccFit({ w = 1240, children }: { w?: number; children: React.ReactNode 
 function AccIntent() {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <h1 className="bolt-anim" style={{ ...accIn(), margin: `0 0 ${U(24)}`, fontSize: U(64), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1 }}>{"One request, apps and data"}</h1>
+      <h1 className="bolt-anim" style={{ ...accIn(), margin: `0 0 ${U(24)}`, fontSize: U(64), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1 }}>{"An AI platform for accelerated solution delivery"}</h1>
       <AccFit><DpIntentDemo autoStart big labels={{ layer: "Intent layer", app: "Build translates intent into", data: "Data translates intent into" }} /></AccFit>
     </div>
   );
@@ -4904,8 +4904,8 @@ function AccIntent() {
 function AccHub() {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <h1 className="bolt-anim" style={{ ...accIn(), margin: `0 0 ${U(16)}`, fontSize: U(64), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1 }}>{"A connected enterprise data foundation"}</h1>
-      <AccFit><DpDomainHub big /></AccFit>
+      <h1 className="bolt-anim" style={{ ...accIn(), margin: `0 0 ${U(16)}`, fontSize: U(64), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1 }}>{"One data platform for every area of your practice"}</h1>
+      <AccFit><DpDomainHub big hideDetail /></AccFit>
     </div>
   );
 }
@@ -5269,8 +5269,8 @@ type AccSection = { id: string; label: string; plan: string; beats: number; rend
 const accSections: AccSection[] = [
   { id: "title", label: "Title", plan: "0:00–2:00", beats: 1, render: () => <AccTitle /> },
   { id: "timeline", label: "Shrinking timeline", plan: "2:00–7:00", beats: accEras.length + 2, render: (b) => <AccTimeline beat={b} /> },
-  { id: "intent", label: "One request, apps and data", plan: "7:00–8:00", beats: 1, render: () => <AccIntent /> },
-  { id: "hub", label: "Connected data foundation", plan: "8:00–8:30", beats: 1, render: () => <AccHub /> },
+  { id: "intent", label: "AI platform", plan: "7:00–8:00", beats: 1, render: () => <AccIntent /> },
+  { id: "hub", label: "Data platform", plan: "8:00–8:30", beats: 1, render: () => <AccHub /> },
   { id: "questions", label: "Question cards", plan: "8:30–9:00", beats: 1, render: () => <AccQuestions /> },
   { id: "ira", label: "IRA Part B model", plan: "≈ 4 min", beats: IRA_BEATS.length, render: (b) => <AccIra beat={b} /> },
   { id: "titan", label: "Titan", plan: "≈ 2.5–3 min", beats: accTitanChanges.length + 1, render: (b) => <AccTitan beat={b} /> },
