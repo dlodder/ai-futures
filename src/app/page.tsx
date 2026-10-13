@@ -2406,7 +2406,7 @@ function DpRelayCompare() {
 }
 
 // Hub and spoke: the eight governed domains around one foundation
-function DpDomainHub({ big = false, hideDetail = false }: { big?: boolean; hideDetail?: boolean }) {
+function DpDomainHub({ big = false, hideDetail = false, stage = false }: { big?: boolean; hideDetail?: boolean; stage?: boolean }) {
   const [ref, inView] = useInViewOnce<HTMLDivElement>(0.3);
   const [active, setActive] = useState<number>(0);
   const n = dataLayer.length;
@@ -2429,14 +2429,14 @@ function DpDomainHub({ big = false, hideDetail = false }: { big?: boolean; hideD
         </svg>
         <div className="bolt-anim" style={{ position: "absolute", left: "50%", top: "50%", width: big ? 190 : 210, height: big ? 190 : 210, marginLeft: big ? -95 : -105, marginTop: big ? -95 : -105, borderRadius: "50%", background: "radial-gradient(circle, #124236, #071226 72%)", border: `2px solid ${DP_COLOR}`, boxShadow: `0 0 40px ${DP_COLOR}44`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: 20, boxSizing: "border-box", ...(inView ? { animation: "boltPop 0.6s ease-out both" } : { opacity: 0 }) }}>
           <BoltGlyphIcon kind="db" size={30} color={DP_COLOR} />
-          <span style={{ fontSize: 17, fontWeight: 700, color: "#FFFFFF", marginTop: 8, lineHeight: 1.25 }}>Governed data foundation</span>
-          <span style={{ fontSize: 13, color: "#B8C8DA", marginTop: 4 }}>{"Shared by every app"}</span>
+          <span style={{ fontSize: stage ? 24 : 17, fontWeight: 700, color: "#FFFFFF", marginTop: 8, lineHeight: 1.2 }}>Governed data foundation</span>
+          {!stage && <span style={{ fontSize: 13, color: "#B8C8DA", marginTop: 4 }}>{"Shared by every app"}</span>}
         </div>
         {dataLayer.map((d, i) => (
           <div key={d.id} style={{ position: "absolute", left: `${pos[i].x}%`, top: `${pos[i].y}%`, transform: "translate(-50%, -50%)" }}>
-          <button type="button" onClick={() => setActive(i)} aria-pressed={i === active} className="bolt-anim" style={{ display: "block", width: big ? 196 : 206, padding: "10px 12px", borderRadius: 10, cursor: "pointer", fontFamily: "inherit", textAlign: "left", background: i === active ? `linear-gradient(${d.color}33, ${d.color}33), #0E2140` : "#0E2140", border: `1.5px solid ${i === active ? d.color : d.color + "66"}`, boxShadow: i === active ? `0 0 20px ${d.color}55` : "none", transition: "background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease", ...(inView ? { animation: `boltPop 0.45s ease-out ${0.3 + i * 0.1}s both` } : { opacity: 0 }) }}>
-            <span style={{ display: "block", fontSize: big ? 15 : 15, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.25 }}>{d.title}</span>
-            <span style={{ display: "block", fontSize: 12.5, color: d.color, marginTop: 3, fontWeight: 600 }}>{d.items.length + " data sets"}</span>
+          <button type="button" onClick={() => setActive(i)} aria-pressed={i === active} className="bolt-anim" style={{ display: stage ? "flex" : "block", alignItems: "center", minHeight: stage ? 78 : undefined, width: stage ? 236 : big ? 196 : 206, padding: stage ? "12px 16px" : "10px 12px", borderRadius: 10, cursor: "pointer", fontFamily: "inherit", textAlign: "left", background: i === active ? `linear-gradient(${d.color}33, ${d.color}33), #0E2140` : "#0E2140", border: `1.5px solid ${i === active ? d.color : d.color + "66"}`, boxShadow: i === active ? `0 0 20px ${d.color}55` : "none", transition: "background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease", ...(inView ? { animation: `boltPop 0.45s ease-out ${0.3 + i * 0.1}s both` } : { opacity: 0 }) }}>
+            <span style={{ display: "block", fontSize: stage ? 21 : 15, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.22 }}>{d.title}</span>
+            {!stage && <span style={{ display: "block", fontSize: 12.5, color: d.color, marginTop: 3, fontWeight: 600 }}>{d.items.length + " data sets"}</span>}
           </button>
           </div>
         ))}
@@ -4905,7 +4905,7 @@ function AccHub() {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <h1 className="bolt-anim" style={{ ...accIn(), margin: `0 0 ${U(16)}`, fontSize: U(64), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1 }}>{"One data platform for every area of your practice"}</h1>
-      <AccFit><DpDomainHub big hideDetail /></AccFit>
+      <AccFit><DpDomainHub big hideDetail stage /></AccFit>
     </div>
   );
 }
