@@ -4798,21 +4798,21 @@ const accStats = [
   { big: "~1 in 3", text: "have begun to scale AI across the enterprise", src: "McKinsey & Company, The State of AI in 2025 (Nov 2025). Global survey, 1,993 participants, June 25–July 29, 2025" },
   { big: "25%", text: "have moved 40% or more of their AI experiments into production", src: "Deloitte, The State of AI in the Enterprise (2026). Survey of 3,235 leaders, Aug–Sep 2025" },
 ];
-function AccTurn({ beat }: { beat: number }) {
+function AccTurn() {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-      <h1 className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(80), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1.5, lineHeight: 1.1 }}>{"When building is cheap, "}<span style={{ color: ACC_COLOR }}>{"small problems are worth solving."}</span></h1>
-      <p style={{ margin: `${U(36)} 0 ${U(18)}`, fontFamily: MONO, fontSize: U(22), letterSpacing: 2, color: "#E2EAF2", opacity: beat >= 1 ? 1 : 0 }}>{"LEADERS REPORT"}</p>
+      <h1 className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(76), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1.5, lineHeight: 1.1 }}>{"When building accelerates, innovation is unlocked, "}<span style={{ color: ACC_COLOR }}>{"and solutions reach practices faster."}</span></h1>
+      <p style={{ margin: `${U(36)} 0 ${U(18)}`, fontFamily: MONO, fontSize: U(22), letterSpacing: 2, color: "#E2EAF2" }}>{"LEADERS REPORT"}</p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: U(24) }}>
-        {accStats.map((s, i) => (
-          <div key={s.big} className="bolt-anim" style={{ borderRadius: U(18), padding: U(28), border: `${U(2)} solid rgba(226,234,242,0.35)`, background: "rgba(16,34,66,0.7)", ...(beat >= i + 1 ? accIn() : { opacity: 0 }) }}>
-            <p style={{ margin: 0, fontSize: U(100), fontWeight: 700, color: ACC_COLOR, lineHeight: 1 }}>{s.big}</p>
-            <p style={{ margin: `${U(12)} 0 ${U(14)}`, fontSize: U(30), color: "#FFFFFF", lineHeight: 1.3 }}>{s.text}</p>
-            <p style={{ margin: 0, fontSize: U(18), color: "#E2EAF2", lineHeight: 1.4 }}>{s.src}</p>
+        {accStats.map((st, i) => (
+          <div key={st.big} className="bolt-anim" style={{ ...accIn(0.05 + i * 0.05), borderRadius: U(18), padding: U(28), border: `${U(2)} solid rgba(226,234,242,0.35)`, background: "rgba(16,34,66,0.7)" }}>
+            <p style={{ margin: 0, fontSize: U(100), fontWeight: 700, color: ACC_COLOR, lineHeight: 1 }}>{st.big}</p>
+            <p style={{ margin: `${U(12)} 0 ${U(14)}`, fontSize: U(30), color: "#FFFFFF", lineHeight: 1.3 }}>{st.text}</p>
+            <p style={{ margin: 0, fontSize: U(18), color: "#E2EAF2", lineHeight: 1.4 }}>{st.src}</p>
           </div>
         ))}
       </div>
-      <p className="bolt-anim" style={{ margin: `${U(44)} 0 0`, fontSize: U(44), fontWeight: 700, color: "#FFFFFF", ...(beat >= 4 ? accIn() : { opacity: 0 }) }}>{"The bottleneck was getting to production. "}<span style={{ color: ACC_COLOR }}>{"That's what's changed."}</span></p>
+      <p className="bolt-anim" style={{ ...accIn(0.2), margin: `${U(44)} 0 0`, fontSize: U(44), fontWeight: 700, color: "#FFFFFF" }}>{"As AI adoption grows, "}<span style={{ color: ACC_COLOR }}>{"the efficiency gains compound."}</span></p>
     </div>
   );
 }
@@ -4820,9 +4820,9 @@ function AccTurn({ beat }: { beat: number }) {
 // ---------------- 2.4 QUESTION CARDS ----------------
 const accQuestions = [
   { q: "Will I get paid, and how much?", tools: [["ira", "IRA Part B economic model"], ["titan", "Titan"]] },
-  { q: "Where should we grow?", tools: [["meridian", "Meridian"]] },
   { q: "Are we keeping our patients?", tools: [["retentioniq", "RetentionIQ"]] },
   { q: "How is our partnership performing?", tools: [["practice", ACC_PRACTICE_NAME]] },
+  { q: "Where should we grow?", tools: [["meridian", "Meridian"]] },
 ];
 function AccQuestions() {
   return (
@@ -4842,94 +4842,59 @@ function AccQuestions() {
 }
 
 // ---------------- 2.5 IRA PART B ECONOMIC MODEL ----------------
-const IRA_DRUG = { wac: 10000, asp: 9500, mfp: 6000 };
-const IRA_BEATS: { basis: IraBasis; acq: number }[] = [
-  { basis: "actual", acq: 9000 }, { basis: "wac", acq: 9000 }, { basis: "asp", acq: 9000 }, { basis: "asp", acq: 9500 },
-  { basis: "asp", acq: 9700 }, { basis: "asp", acq: 9800 }, { basis: "asp", acq: 9900 }, { basis: "asp", acq: 9900 },
-];
+// Keytruda-like preset: ratios from part-b-mfp-model-v2.jsx (WAC/ASP/acquisition, MFP 40% off WAC), scaled to ASP $15,000
+const IRA_DRUG = { wac: 1570000, asp: 1500000, mfp: 942000, acq: 1460000 };
+const IRA_BEATS: IraBasis[] = ["actual", "asp"];
 const IRA_SCEN: Record<string, { name: string; sub: string }> = {
   A: { name: "Status quo", sub: "No negotiation" },
   B: { name: "Prospective", sub: "Practice buys at MFP" },
   C: { name: "Retrospective refund", sub: "Base case" },
   D: { name: "H.R. 4299", sub: "Pending legislation" },
 };
-const IRA_FACTS = [
-  { f: "Payment moves from ASP + 6% to MFP + 6% starting Jan 1, 2028", s: "IRA §11001; SSA §1847A" },
-  { f: "First Part B drugs: Botox, Cimzia, Orencia, Entyvio, Xolair", s: "CMS, Jan 27, 2026" },
-  { f: "MFPs published Nov 30, 2026, twelve days from today", s: "CMS / KFF" },
-  { f: "First Part D MFPs came in 38–79% below list", s: "CMS, IPAY 2026" },
-  { f: "Provider loss of $56.3B over 10 years, $26.9B of it in oncology", s: "Milliman, May 2025, commissioned for the ASP Coalition" },
-  { f: "About two-thirds of commercial payers benchmark to ASP, and commercial claims get no refund", s: "Avalere" },
-  { f: "H.R. 4299: 42 cosponsors (Aug 21), GOP Doctors Caucus endorsement (Sep 16). No markup, no CBO score, no Senate companion", s: "govtrack; GOP Doctors Caucus" },
-  { f: "Final effectuation guidance not yet issued", s: "CMS" },
-];
 function AccIra({ beat }: { beat: number }) {
-  const preset = IRA_BEATS[Math.min(beat, IRA_BEATS.length - 1)];
-  const [basis, setBasis] = useState<IraBasis>(preset.basis);
-  const [acq, setAcq] = useState(preset.acq);
-  useEffect(() => { setBasis(preset.basis); setAcq(preset.acq); }, [beat]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [basis, setBasis] = useState<IraBasis>(IRA_BEATS[Math.min(beat, IRA_BEATS.length - 1)]);
+  useEffect(() => { setBasis(IRA_BEATS[Math.min(beat, IRA_BEATS.length - 1)]); }, [beat]);
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowUp") { e.preventDefault(); setAcq((a) => Math.min(10000, a + 100)); }
-      else if (e.key === "ArrowDown") { e.preventDefault(); setAcq((a) => Math.max(6000, a - 100)); }
-      else if (e.key === "b" || e.key === "B") setBasis((b) => b === "actual" ? "wac" : b === "wac" ? "asp" : "actual");
-    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "b" || e.key === "B") setBasis((b) => b === "actual" ? "asp" : "actual"); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const cards = iraModel({ ...IRA_DRUG, acq, basis });
+  const cards = iraModel({ ...IRA_DRUG, basis });
   const c = ACC_PRODUCT_COLORS.ira;
-  const facts = beat >= IRA_BEATS.length - 1;
-  const btn = (on: boolean): React.CSSProperties => ({ fontFamily: "inherit", fontSize: U(24), fontWeight: 700, padding: `${U(8)} ${U(18)}`, borderRadius: U(10), cursor: "pointer", border: `${U(2)} solid ${on ? c : "rgba(226,234,242,0.4)"}`, background: on ? `${c}33` : "transparent", color: "#FFFFFF" });
+  const dollars = (cents: number) => `${cents < 0 ? "-" : ""}$${Math.round(Math.abs(cents) / 100).toLocaleString("en-US")}`;
+  const pill = (on: boolean): React.CSSProperties => ({ fontFamily: "inherit", fontSize: U(26), fontWeight: 700, padding: `${U(8)} ${U(20)}`, borderRadius: U(10), cursor: "pointer", border: `${U(2)} solid ${on ? c : "rgba(226,234,242,0.4)"}`, background: on ? `${c}33` : "transparent", color: "#FFFFFF", transition: "all 0.25s ease" });
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <AccHeader product="ira" name="IRA Part B economic model" problem="From 2028, Medicare pays the negotiated price plus 6%, not ASP plus 6%. Margins per dose shrink, and how much depends on rules still being written." does="Shows practice cost, Medicare payment and margin per dose under each path, for any drug and refund formula." />
-      {!facts ? (
-        <>
-          <div style={{ display: "flex", gap: U(14), alignItems: "center", marginBottom: U(18) }}>
-            <span style={{ fontSize: U(26), color: "#E2EAF2", whiteSpace: "nowrap" }}>{"Illustrative drug: WAC $100 · ASP $95 · MFP $60"}</span>
-            <span style={{ flex: 1 }} />
-            <span style={{ fontSize: U(24), color: "#E2EAF2", whiteSpace: "nowrap" }}>{"Refund basis"}</span>
-            {(["actual", "wac", "asp"] as IraBasis[]).map((b) => <button key={b} type="button" aria-pressed={basis === b} onClick={() => setBasis(b)} style={btn(basis === b)}>{b === "actual" ? "Actual cost" : b.toUpperCase()}</button>)}
-            <span style={{ fontSize: U(24), color: "#E2EAF2", marginLeft: U(20), whiteSpace: "nowrap" }}>{"Practice pays"}</span>
-            <button type="button" aria-label="Lower acquisition cost" onClick={() => setAcq((a) => Math.max(6000, a - 100))} style={btn(false)}>{"−"}</button>
-            <span key={acq} className="bolt-anim" style={{ ...accIn(), fontFamily: MONO, fontSize: U(36), fontWeight: 700, color: "#FFFFFF", minWidth: U(140), textAlign: "center" }}>{accMoney(acq)}</span>
-            <button type="button" aria-label="Raise acquisition cost" onClick={() => setAcq((a) => Math.min(10000, a + 100))} style={btn(false)}>{"+"}</button>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: U(18), flex: 1 }}>
-            {cards.map((k) => {
-              const bad = k.underwater;
-              const edge = bad ? "#EF4444" : k.id === "A" ? "rgba(226,234,242,0.45)" : c;
-              return (
-                <div key={k.id} style={{ borderRadius: U(18), padding: U(22), border: `${U(bad ? 4 : 2)} solid ${edge}`, background: bad ? "rgba(239,68,68,0.14)" : "rgba(16,34,66,0.75)", display: "flex", flexDirection: "column", transition: "all 0.25s ease" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                    <p style={{ margin: 0, fontSize: U(30), fontWeight: 700, color: "#FFFFFF" }}>{k.id + " · " + IRA_SCEN[k.id].name}</p>
-                  </div>
-                  <p style={{ margin: `${U(2)} 0 ${U(14)}`, fontSize: U(22), color: "#E2EAF2" }}>{IRA_SCEN[k.id].sub}</p>
-                  {[["Practice pays", accMoney(k.practicePays)], ["Medicare pays", accMoney(k.medicarePays)], ...(k.extra ? [[k.extraLabel, accMoney(k.extra)]] : [])].map(([l, v]) => (
-                    <div key={l} style={{ display: "flex", justifyContent: "space-between", gap: U(10), fontSize: U(24), color: "#E2EAF2", padding: `${U(4)} 0`, borderBottom: `${U(1)} solid rgba(226,234,242,0.15)` }}><span>{l}</span><span style={{ fontFamily: MONO, color: "#FFFFFF" }}>{v}</span></div>
-                  ))}
-                  <span style={{ flex: 1 }} />
-                  <p style={{ margin: `${U(14)} 0 0`, fontSize: U(20), fontFamily: MONO, letterSpacing: 1, color: "#E2EAF2" }}>{"PRACTICE MARGIN / DOSE"}</p>
-                  <p key={k.margin} className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(96), fontWeight: 700, lineHeight: 1, color: bad ? "#F87171" : "#FFFFFF", fontFamily: MONO, letterSpacing: -3 }}>{accMoney(k.margin)}</p>
-                  {bad && <p className="bolt-anim" style={{ ...accIn(), margin: `${U(8)} 0 0`, fontSize: U(26), fontWeight: 700, color: "#F87171" }}>{"Underwater"}</p>}
-                  <p style={{ margin: `${U(10)} 0 0`, fontSize: U(20), color: "#E2EAF2" }}>{"Patient coinsurance " + accMoney(k.coinsurance)}</p>
-                </div>
-              );
-            })}
-          </div>
-          <p style={{ margin: `${U(14)} 0 0`, fontSize: U(20), color: "#E2EAF2" }}>{"WAC: list price · ASP: average sales price, Medicare's benchmark · MFP: maximum fair price, set by negotiation · 6% add-on ≈ 4.3% after sequestration · Not actual prices"}</p>
-        </>
-      ) : (
-        <div className="bolt-anim" style={{ ...accIn(), display: "grid", gridTemplateColumns: "1fr 1fr", gap: U(14), flex: 1, alignContent: "start" }}>
-          {IRA_FACTS.map((x, i) => (
-            <div key={x.f} className="bolt-anim" style={{ ...accIn(i * 0.04), borderRadius: U(14), padding: `${U(16)} ${U(20)}`, border: `${U(2)} solid ${c}66`, background: "rgba(16,34,66,0.7)" }}>
-              <p style={{ margin: 0, fontSize: U(28), color: "#FFFFFF", lineHeight: 1.3 }}>{x.f}</p>
-              <p style={{ margin: `${U(6)} 0 0`, fontSize: U(18), color: "#E2EAF2" }}>{x.s + " · as of Oct 1, 2026"}</p>
+      <div style={{ display: "flex", gap: U(16), alignItems: "center", marginBottom: U(18) }}>
+        <span style={{ fontSize: U(30), fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{"Keytruda"}</span>
+        <span style={{ fontSize: U(26), color: "#E2EAF2", whiteSpace: "nowrap" }}>{"ASP $15,000 · MFP $9,420 · practice pays $14,600"}</span>
+        <span style={{ flex: 1 }} />
+        <span style={{ fontSize: U(26), color: "#E2EAF2", whiteSpace: "nowrap" }}>{"Refund based on"}</span>
+        <button type="button" aria-pressed={basis === "actual"} onClick={() => setBasis("actual")} style={pill(basis === "actual")}>{"Avg. cost"}</button>
+        <button type="button" aria-pressed={basis === "asp"} onClick={() => setBasis("asp")} style={pill(basis === "asp")}>{"ASP"}</button>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: U(18), flex: 1 }}>
+        {cards.map((k) => {
+          const bad = k.underwater;
+          const edge = bad ? "#EF4444" : k.id === "A" ? "rgba(226,234,242,0.45)" : c;
+          const live = k.id === "C";
+          return (
+            <div key={k.id} style={{ borderRadius: U(18), padding: U(24), border: `${U(bad || live ? 3 : 2)} solid ${edge}`, background: bad ? "rgba(239,68,68,0.14)" : live ? `${c}14` : "rgba(16,34,66,0.75)", display: "flex", flexDirection: "column", transition: "all 0.25s ease" }}>
+              <p style={{ margin: 0, fontSize: U(32), fontWeight: 700, color: "#FFFFFF" }}>{k.id + " · " + IRA_SCEN[k.id].name}</p>
+              <p style={{ margin: `${U(2)} 0 ${U(16)}`, fontSize: U(24), color: "#E2EAF2" }}>{IRA_SCEN[k.id].sub}</p>
+              {[["Practice pays", dollars(k.practicePays)], ["Medicare pays", dollars(k.medicarePays)], ...(k.extra ? [[k.id === "C" ? "Refund" : "Rebate to CMS", dollars(k.extra)]] : [])].map(([l, v]) => (
+                <div key={l} style={{ display: "flex", justifyContent: "space-between", gap: U(10), fontSize: U(26), color: "#E2EAF2", padding: `${U(6)} 0`, borderBottom: `${U(1)} solid rgba(226,234,242,0.15)` }}><span>{l}</span><span key={v} className="bolt-anim" style={{ ...accIn(), fontFamily: MONO, color: "#FFFFFF" }}>{v}</span></div>
+              ))}
+              <span style={{ flex: 1 }} />
+              <p style={{ margin: 0, fontSize: U(20), fontFamily: MONO, letterSpacing: 1, color: "#E2EAF2" }}>{"MARGIN / DOSE"}</p>
+              <p key={k.margin} className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(100), fontWeight: 700, lineHeight: 1, color: bad ? "#F87171" : "#FFFFFF", fontFamily: MONO, letterSpacing: -3 }}>{dollars(k.margin)}</p>
+              {bad && <p style={{ margin: `${U(8)} 0 0`, fontSize: U(26), fontWeight: 700, color: "#F87171" }}>{"Underwater"}</p>}
             </div>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
+      <p style={{ margin: `${U(14)} 0 0`, fontSize: U(20), color: "#E2EAF2" }}>{"ASP: average sales price · MFP: maximum fair price, set by negotiation · Starts Jan 1, 2028 (IRA §11001) · Illustrative approximation, not actual prices; Keytruda's selection is a forecast"}</p>
     </div>
   );
 }
@@ -5039,19 +5004,18 @@ const accRiqPatients = [
 function AccRetention({ beat }: { beat: number }) {
   const c = ACC_PRODUCT_COLORS.retentioniq;
   const factor = beat >= 1 ? 0 : null;
-  const saved = beat >= 4;
+  const saved = beat >= 2;
   const remaining = accRiqPatients.filter((p) => !(saved && p.id === "RX-1042"));
   const list = remaining.filter((p) => factor === null || p.f === factor).sort((a, b) => b.od - a.od);
-  const openId = beat >= 4 ? "RX-1187" : beat >= 2 ? "RX-1042" : null;
+  const openId = saved ? "RX-1187" : beat >= 1 ? "RX-1042" : null;
   const open = accRiqPatients.find((p) => p.id === openId) || null;
-  const logged = beat === 3;
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <AccHeader product="retentioniq" name="RetentionIQ" problem="A missed treatment window is a gap in care. Patients slip out of scheduled treatment quietly, and staff find out late." does="Finds patients falling behind on scheduled treatment, shows why each one is at risk, and helps staff reach them and record what happened." />
       <div role="note" style={{ display: "flex", alignItems: "center", gap: U(12), padding: `${U(10)} ${U(18)}`, borderRadius: U(10), border: `${U(2)} solid #93C5FD`, background: "rgba(147,197,253,0.12)", fontSize: U(24), fontWeight: 700, color: "#DBEAFE", marginBottom: U(16) }}>{"Illustrative — no real patient data. Initials and synthetic IDs only."}</div>
       <div style={{ display: "flex", gap: U(12), flexWrap: "wrap", marginBottom: U(16) }}>
         {accRiqFactors.map((f, i) => { const on = factor === i; const n = remaining.filter((p) => p.f === i).length; return (
-          <span key={f} style={{ display: "inline-flex", alignItems: "center", gap: U(12), fontSize: U(26), fontWeight: 700, padding: `${U(8)} ${U(16)}`, borderRadius: U(12), border: `${U(2)} solid ${on ? c : "rgba(226,234,242,0.35)"}`, background: on ? `${c}2E` : "rgba(16,34,66,0.7)", color: "#FFFFFF" }}>{f}<span key={n} className="bolt-anim" style={{ ...{ animation: "boltPop 0.3s ease-out both" }, fontFamily: MONO, fontSize: U(24), color: "#0B1A33", background: on ? c : "#E2EAF2", borderRadius: U(999), padding: `0 ${U(12)}` }}>{n}</span></span>
+          <span key={f} style={{ display: "inline-flex", alignItems: "center", gap: U(12), fontSize: U(26), fontWeight: 700, padding: `${U(8)} ${U(16)}`, borderRadius: U(12), border: `${U(2)} solid ${on ? c : "rgba(226,234,242,0.35)"}`, background: on ? `${c}2E` : "rgba(16,34,66,0.7)", color: "#FFFFFF", transition: "all 0.25s ease" }}>{f}<span key={n} className="bolt-anim" style={{ animation: "boltPop 0.3s ease-out both", fontFamily: MONO, fontSize: U(24), color: "#0B1A33", background: on ? c : "#E2EAF2", borderRadius: U(999), padding: `0 ${U(12)}` }}>{n}</span></span>
         ); })}
         <span style={{ flex: 1 }} />
         <span style={{ fontSize: U(20), color: "#E2EAF2", alignSelf: "center" }}>{"Risk factor names are examples"}</span>
@@ -5069,20 +5033,17 @@ function AccRetention({ beat }: { beat: number }) {
         </div>
         <div>
           <p style={{ margin: `0 0 ${U(10)}`, fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: "#E2EAF2" }}>{"PATIENT"}</p>
+          {saved && <div className="bolt-anim" style={{ ...accIn(), marginBottom: U(14), borderRadius: U(14), padding: `${U(14)} ${U(18)}`, border: `${U(2)} solid #34D399`, background: "rgba(52,211,153,0.12)", fontSize: U(26), color: "#FFFFFF" }}><strong style={{ color: "#34D399" }}>{"✓ J.M. logged"}</strong>{" · Outcome: Scheduled · Barrier: Transportation"}</div>}
           {open ? (
-            <div key={open.id} className="bolt-anim" style={{ ...accIn(), borderRadius: U(16), padding: U(22), border: `${U(2)} solid ${c}`, background: "rgba(16,34,66,0.8)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ fontSize: U(40), fontWeight: 700, color: "#FFFFFF" }}>{open.init}</span><span style={{ fontFamily: MONO, fontSize: U(24), color: "#E2EAF2" }}>{open.id}</span></div>
+            <div key={open.id} className="bolt-anim" style={{ ...accIn(saved ? 0.15 : 0), borderRadius: U(16), padding: U(22), border: `${U(2)} solid ${c}`, background: "rgba(16,34,66,0.8)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ fontSize: U(40), fontWeight: 700, color: "#FFFFFF" }}>{open.init}</span><span style={{ fontFamily: MONO, fontSize: U(24), color: "#E2EAF2" }}>{(saved ? "Next · " : "") + open.id}</span></div>
               <p style={{ margin: `${U(10)} 0 ${U(6)}`, fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: c }}>{"WHY FLAGGED"}</p>
               <p style={{ margin: 0, fontSize: U(28), color: "#FFFFFF", lineHeight: 1.4 }}>{accRiqFactors[open.f] + " · " + open.od + " days past the expected treatment interval"}</p>
-              <div style={{ display: "flex", gap: U(14), marginTop: U(18), flexWrap: "wrap" }}>
-                {[["Outcome", "Scheduled"], ["Barrier", "Transportation"]].map(([k, v]) => <span key={k} style={{ fontSize: U(26), padding: `${U(8)} ${U(16)}`, borderRadius: U(10), border: `${U(2)} solid ${logged ? c : "rgba(226,234,242,0.35)"}`, background: logged ? `${c}2E` : "transparent", color: "#FFFFFF", transition: "all 0.25s ease" }}>{k + ": "}<strong>{logged ? v : "—"}</strong></span>)}
-              </div>
-              <div style={{ marginTop: U(18), fontSize: U(28), fontWeight: 700, textAlign: "center", padding: U(12), borderRadius: U(12), background: logged ? c : "rgba(226,234,242,0.12)", color: logged ? "#0B1A33" : "#E2EAF2", transition: "all 0.25s ease" }}>{"Save & Next →"}</div>
+              <div style={{ marginTop: U(18), fontSize: U(28), fontWeight: 700, textAlign: "center", padding: U(12), borderRadius: U(12), background: `${c}`, color: "#0B1A33" }}>{"Log the call · Save & Next →"}</div>
             </div>
           ) : (
-            <div style={{ borderRadius: U(16), padding: U(24), border: `${U(3)} dashed rgba(226,234,242,0.35)`, fontSize: U(28), color: "#E2EAF2" }}>{beat === 0 ? "Eight patients are slipping past their treatment window. Pick a risk factor to focus the list." : "Open the most overdue patient."}</div>
+            <div style={{ borderRadius: U(16), padding: U(24), border: `${U(3)} dashed rgba(226,234,242,0.35)`, fontSize: U(28), color: "#E2EAF2" }}>{"Eight patients are slipping past their treatment window. Pick a risk factor to focus the list."}</div>
           )}
-          {saved && <p className="bolt-anim" style={{ ...accIn(), margin: `${U(14)} 0 0`, fontSize: U(28), fontWeight: 700, color: "#34D399" }}>{"J.M. logged: Scheduled · Transportation. Next patient opened."}</p>}
         </div>
       </div>
       <p style={{ margin: `${U(14)} 0 0`, fontSize: U(30), fontWeight: 600, color: "#FFFFFF" }}>{"First built for retina practices; oncology is next."}</p>
@@ -5091,34 +5052,35 @@ function AccRetention({ beat }: { beat: number }) {
 }
 
 // ---------------- 2.8 PRACTICE DASHBOARD ----------------
-function AccPractice({ beat }: { beat: number }) {
+function AccPractice() {
   const c = ACC_PRODUCT_COLORS.practice;
   const panel = (i: number, title: string, tells: string, body: React.ReactNode) => (
-    <div key={title} className="bolt-anim" style={{ borderRadius: U(18), padding: U(22), border: `${U(2)} solid ${c}77`, background: "rgba(16,34,66,0.75)", display: "flex", flexDirection: "column", ...(beat >= i ? accIn() : { opacity: 0.12 }) }}>
+    <div key={title} className="bolt-anim" style={{ ...accIn(i * 0.05), borderRadius: U(18), padding: U(22), border: `${U(2)} solid ${c}77`, background: "rgba(16,34,66,0.75)", display: "grid", gridTemplateRows: `auto ${U(230)} 1fr` }}>
       <p style={{ margin: 0, fontSize: U(30), fontWeight: 700, color: "#FFFFFF" }}>{title}</p>
-      <div style={{ flex: 1, display: "flex", alignItems: "center" }}>{body}</div>
-      <p style={{ margin: 0, fontSize: U(24), color: "#E2EAF2", lineHeight: 1.35 }}><strong style={{ color: c }}>{"What this tells you: "}</strong>{tells}</p>
+      <div style={{ display: "flex", alignItems: "center" }}>{body}</div>
+      <p style={{ margin: 0, fontSize: U(24), color: "#E2EAF2", lineHeight: 1.35, alignSelf: "start" }}><strong style={{ color: c }}>{"What this tells you: "}</strong>{tells}</p>
     </div>
   );
+  const big = (v: string, unit?: string) => <p style={{ margin: 0, fontSize: U(100), fontWeight: 700, color: "#FFFFFF", fontFamily: MONO, lineHeight: 1 }}>{v}{unit && <span style={{ fontSize: U(36) }}>{unit}</span>}</p>;
   const trend = [38, 44, 51, 57];
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <AccHeader product="practice" name={ACC_PRACTICE_NAME} problem="The quarterly business review (QBR) is a static slide deck, out of date the day after it's presented." does="One live view of the partnership: purchasing, savings and inventory, presented by your rep each quarter and open to you any day in between." />
+      <AccHeader product="practice" name={ACC_PRACTICE_NAME} problem="The quarterly business review (QBR) is a static slide deck, out of date the day after it's presented." does="One live view of the partnership: purchasing, rebates and inventory, presented by your rep each quarter and open to you any day in between." />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: U(18), flex: 1 }}>
         {panel(0, "Biosimilar adoption", "How much of your eligible volume has moved to lower-cost biosimilars.", (
-          <svg viewBox="0 0 300 160" width="100%" aria-hidden="true">{trend.map((v, i) => <g key={i}><rect x={20 + i * 70} y={150 - v * 2.2} width="44" height={v * 2.2} rx="6" fill={i === 3 ? c : "#64748B"} /><text x={42 + i * 70} y={140 - v * 2.2} textAnchor="middle" fontSize="20" fontWeight="700" fill="#FFFFFF">{v + "%"}</text></g>)}</svg>
+          <svg viewBox="0 0 300 170" width="100%" height="100%" aria-hidden="true">{trend.map((v, i) => <g key={i}><rect x={20 + i * 70} y={160 - v * 2.2} width="44" height={v * 2.2} rx="6" fill={i === 3 ? c : "#64748B"} /><text x={42 + i * 70} y={150 - v * 2.2} textAnchor="middle" fontSize="20" fontWeight="700" fill="#FFFFFF">{v + "%"}</text></g>)}</svg>
         ))}
-        {panel(1, "GPO savings", "What your group purchasing organization (GPO) membership returned this quarter.", <p style={{ margin: 0, fontSize: U(96), fontWeight: 700, color: "#FFFFFF", fontFamily: MONO }}>{"$120K"}</p>)}
-        {panel(2, "MID performance", "How much is filled by your medically integrated dispensing (MID) pharmacy, the one inside your practice.", <p style={{ margin: 0, fontSize: U(96), fontWeight: 700, color: "#FFFFFF", fontFamily: MONO }}>{"78%"}</p>)}
-        {panel(3, "Days of inventory", "Whether stock on the shelf matches what you use; target 14–21 days.", <p style={{ margin: 0, fontSize: U(96), fontWeight: 700, color: "#FFFFFF", fontFamily: MONO }}>{"18"}<span style={{ fontSize: U(36) }}>{" days"}</span></p>)}
+        {panel(1, "GPO rebate", "Rebates your group purchasing organization (GPO) membership returned this quarter.", big("$120K"))}
+        {panel(2, "MID performance", "How much is filled by your medically integrated dispensing (MID) pharmacy, the one inside your practice.", big("78%"))}
+        {panel(3, "Days of inventory", "Whether stock on the shelf matches what you use; target 14–21 days.", big("18", " days"))}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: U(18), marginTop: U(18), flexWrap: "wrap" }}>
-        <span style={{ fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: "#E2EAF2", border: `${U(2)} solid #E2EAF2`, borderRadius: U(8), padding: `${U(4)} ${U(12)}`, opacity: beat >= 4 ? 1 : 0 }}>{"COMING"}</span>
-        <span style={{ fontSize: U(28), color: "#FFFFFF", opacity: beat >= 4 ? 1 : 0 }}>{"Asking questions about your data in plain English"}</span>
+        <span style={{ fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: "#E2EAF2", border: `${U(2)} solid #E2EAF2`, borderRadius: U(8), padding: `${U(4)} ${U(12)}` }}>{"COMING"}</span>
+        <span style={{ fontSize: U(28), color: "#FFFFFF" }}>{"Asking questions about your data in plain English"}</span>
         <span style={{ flex: 1 }} />
         <span style={{ fontSize: U(20), color: "#E2EAF2" }}>{"Synthetic, rounded figures · most recent quarter"}</span>
       </div>
-      <p style={{ margin: `${U(14)} 0 0`, fontSize: U(30), fontWeight: 600, color: "#FFFFFF", opacity: beat >= 4 ? 1 : 0 }}>{"Your rep walks you through it every quarter, and you can open it yourself any day in between."}</p>
+      <p style={{ margin: `${U(14)} 0 0`, fontSize: U(30), fontWeight: 600, color: "#FFFFFF" }}>{"Your rep walks you through it every quarter, and you can open it yourself any day in between."}</p>
     </div>
   );
 }
@@ -5165,13 +5127,13 @@ type AccSection = { id: string; label: string; plan: string; beats: number; rend
 const accSections: AccSection[] = [
   { id: "title", label: "Title", plan: "0:00–2:00", beats: 1, render: () => <AccTitle /> },
   { id: "timeline", label: "Shrinking timeline", plan: "2:00–7:00", beats: accEras.length + 2, render: (b) => <AccTimeline beat={b} /> },
-  { id: "turn", label: "The Turn", plan: "7:00–9:00", beats: 5, render: (b) => <AccTurn beat={b} /> },
-  { id: "questions", label: "Question cards", plan: "9:00", beats: 1, render: () => <AccQuestions /> },
-  { id: "ira", label: "IRA Part B model", plan: "≈ 4–5 min", beats: IRA_BEATS.length, render: (b) => <AccIra beat={b} /> },
+  { id: "turn", label: "The Turn", plan: "7:00–8:30", beats: 1, render: () => <AccTurn /> },
+  { id: "questions", label: "Question cards", plan: "8:30–9:00", beats: 1, render: () => <AccQuestions /> },
+  { id: "ira", label: "IRA Part B model", plan: "≈ 4 min", beats: IRA_BEATS.length, render: (b) => <AccIra beat={b} /> },
   { id: "titan", label: "Titan", plan: "≈ 2.5–3 min", beats: accTitanChanges.length + 1, render: (b) => <AccTitan beat={b} /> },
-  { id: "meridian", label: "Meridian", plan: "≈ 2.5–3 min", beats: accWeightSets.length, render: (b) => <AccMeridian beat={b} /> },
-  { id: "retentioniq", label: "RetentionIQ", plan: "≈ 2.5–3 min", beats: 5, render: (b) => <AccRetention beat={b} /> },
-  { id: "practice", label: ACC_PRACTICE_NAME, plan: "≈ 2.5–3 min · to 23:00", beats: 5, render: (b) => <AccPractice beat={b} /> },
+  { id: "retentioniq", label: "RetentionIQ", plan: "≈ 2.5–3 min", beats: 3, render: (b) => <AccRetention beat={b} /> },
+  { id: "practice", label: ACC_PRACTICE_NAME, plan: "≈ 2 min", beats: 1, render: () => <AccPractice /> },
+  { id: "meridian", label: "Meridian", plan: "≈ 2.5–3 min · to 23:00", beats: accWeightSets.length, render: (b) => <AccMeridian beat={b} /> },
   { id: "built", label: "How we built this", plan: "23:00–26:00", beats: 3, render: (b) => <AccBuilt beat={b} /> },
   { id: "close", label: "Close and Q&A", plan: "26:00–30:00", beats: 2, render: (b) => <AccClose beat={b} /> },
 ];
@@ -5231,7 +5193,7 @@ function AccPresenter({ start, onExit }: { start: number; onExit: () => void }) 
               </button>
             ))}
           </div>
-          <p style={{ margin: `${U(26)} 0 0`, fontSize: U(22), color: "#E2EAF2" }}>{"→ / space next · ← back · 1–9, 0, − jump to a section · Esc this index · F full screen · in the IRA model: ↑↓ practice pays, B refund basis"}</p>
+          <p style={{ margin: `${U(26)} 0 0`, fontSize: U(22), color: "#E2EAF2" }}>{"→ / space next · ← back · 1–9, 0, − jump to a section · Esc this index · F full screen · in the IRA model: B switches the refund basis"}</p>
         </div>
       )}
     </div>
@@ -5241,8 +5203,7 @@ function AccPresenter({ start, onExit }: { start: number; onExit: () => void }) 
 // ---------------- SITE PAGE (internal landing) ----------------
 const accPendingList = [
   { item: "McKesson brand mark for the title slide", owner: "Marketing" },
-  { item: "IRA presets (Keytruda-like, Opdivo-like, Entyvio) and commercial model: part-b-mfp-model-v2.jsx", owner: "Dan" },
-  { item: "H.R. 4299 rebate multiplier: 1.06 (default, $37.10) or 1.043", owner: "Dan" },
+    { item: "H.R. 4299 rebate multiplier: 1.06 (default, $37.10) or 1.043", owner: "Dan" },
   { item: "RetentionIQ risk-factor names (currently examples)", owner: "Dan" },
   { item: "Build-log numbers and the 90-second time-lapse", owner: "Dan" },
   { item: "Follow-up route: marketing QR or contact slide", owner: "Marketing" },
@@ -5289,7 +5250,7 @@ function AccPage({ onNavigate }: { onNavigate: Navigate }) {
       </SolSection>
       <SolSection id="acc-keys" num="03" label="Controls" title="Driving the deck" icon="sliders" color={ACC_COLOR}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 10 }}>
-          {[["→ or space", "Next step"], ["←", "Previous step"], ["Esc", "Section index and clock"], ["1–9, 0, −", "Jump to section 1–11"], ["F", "Browser full screen"], ["↑ ↓ and B", "IRA model: practice pays and refund basis"]].map(([k, v]) => (
+          {[["→ or space", "Next step"], ["←", "Previous step"], ["Esc", "Section index and clock"], ["1–9, 0, −", "Jump to section 1–11"], ["F", "Browser full screen"], ["B", "IRA model: switch refund basis"]].map(([k, v]) => (
             <div key={k} style={{ borderRadius: 12, padding: "12px 14px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)" }}><p style={{ margin: 0, fontFamily: MONO, fontSize: 16, fontWeight: 700, color: ACC_COLOR }}>{k}</p><p style={{ margin: "4px 0 0", fontSize: 15, color: "#D0DAE6" }}>{v}</p></div>
           ))}
         </div>
