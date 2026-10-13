@@ -2569,7 +2569,7 @@ const dpOutAt = (i: number) => DP_TYPE_END + 900 + i * DP_STEP;
 const DP_DONE = dpOutAt(Math.max(dpAppOutputs.length, dpDataOutputs.length)) + 400;
 const DP_END = DP_DONE + 1500;
 
-function DpIntentDemo({ autoStart = false, big = false }: { autoStart?: boolean; big?: boolean }) {
+function DpIntentDemo({ autoStart = false, big = false, labels }: { autoStart?: boolean; big?: boolean; labels?: { layer?: string; app?: string; data?: string } }) {
   const [e, setE] = useState(0);
   const [run, setRun] = useState(0);
   useEffect(() => {
@@ -2627,12 +2627,12 @@ function DpIntentDemo({ autoStart = false, big = false }: { autoStart?: boolean;
       </div>
       <div style={{ display: "flex", justifyContent: "center", margin: "12px 0" }}>
         <span className="bolt-anim" style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "10px 18px", borderRadius: 999, fontSize: 16 * fs, fontWeight: 700, color: "#FFFFFF", background: layerOn ? "rgba(45,212,191,0.18)" : "rgba(184,200,218,0.05)", border: `1.5px solid ${layerOn ? BOLT_COLOR : "rgba(184,200,218,0.25)"}`, boxShadow: layerOn ? `0 0 26px ${BOLT_COLOR}55` : "none", transition: "all 0.4s ease", animation: layerOn && !done ? "boltPulse 1.2s ease-in-out infinite" : undefined }}>
-          <BoltGlyphIcon kind="bolt" size={18} color={layerOn ? BOLT_COLOR : "#7F93AE"} />Bolt intent layer
+          <BoltGlyphIcon kind="bolt" size={18} color={layerOn ? BOLT_COLOR : "#7F93AE"} />{labels?.layer ?? "Bolt intent layer"}
         </span>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: 12 }}>
-        {lane("Application layer", "Bolt translates intent into", dpAppOutputs, BOLT_COLOR, "app")}
-        {lane("Data layer", "Bolt Data translates intent into", dpDataOutputs, DP_COLOR, "db")}
+        {lane("Application layer", labels?.app ?? "Bolt translates intent into", dpAppOutputs, BOLT_COLOR, "app")}
+        {lane("Data layer", labels?.data ?? "Bolt Data translates intent into", dpDataOutputs, DP_COLOR, "db")}
       </div>
       <p aria-live="polite" style={{ margin: "14px 0 0", fontSize: 15 * fs, fontWeight: done ? 700 : 400, color: done ? DP_COLOR : "#D0DAE6" }}>
         {done ? "One request. The app and its governed data arrive together, with controls already applied." : started ? "Orchestrating application and data capabilities" : "Business experts describe the outcome, not the implementation."}
@@ -4871,6 +4871,45 @@ function AccTurn() {
   );
 }
 
+// ---------------- 2.3a INTENT + 2.3b DATA HUB (site components, fitted to the stage) ----------------
+// Renders px-sized site components at a fixed design width and scales them to fit the slide area
+function AccFit({ w = 1240, children }: { w?: number; children: React.ReactNode }) {
+  const outer = useRef<HTMLDivElement>(null);
+  const inner = useRef<HTMLDivElement>(null);
+  const [k, setK] = useState(1);
+  useEffect(() => {
+    const o = outer.current, i = inner.current;
+    if (!o || !i || typeof ResizeObserver === "undefined") return;
+    const fit = () => { const kw = o.clientWidth / w; const kh = i.scrollHeight ? o.clientHeight / i.scrollHeight : kw; setK(Math.min(kw, kh)); };
+    const ro = new ResizeObserver(fit);
+    ro.observe(o);
+    ro.observe(i);
+    fit();
+    return () => ro.disconnect();
+  }, [w]);
+  return (
+    <div ref={outer} style={{ flex: 1, minHeight: 0, position: "relative" }}>
+      <div ref={inner} style={{ position: "absolute", top: 0, left: "50%", width: w, transform: `translateX(-50%) scale(${k})`, transformOrigin: "top center" }}>{children}</div>
+    </div>
+  );
+}
+function AccIntent() {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <h1 className="bolt-anim" style={{ ...accIn(), margin: `0 0 ${U(24)}`, fontSize: U(64), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1 }}>{"One request, apps and data"}</h1>
+      <AccFit><DpIntentDemo autoStart big labels={{ layer: "Intent layer", app: "Build translates intent into", data: "Data translates intent into" }} /></AccFit>
+    </div>
+  );
+}
+function AccHub() {
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <h1 className="bolt-anim" style={{ ...accIn(), margin: `0 0 ${U(16)}`, fontSize: U(64), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1 }}>{"A connected enterprise data foundation"}</h1>
+      <AccFit><DpDomainHub big /></AccFit>
+    </div>
+  );
+}
+
 // ---------------- 2.4 QUESTION CARDS ----------------
 const accQuestions = [
   { q: "Will I get paid, and how much?", tools: [["ira", "IRA Part B economic model"], ["titan", "Titan"]] },
@@ -5230,7 +5269,8 @@ type AccSection = { id: string; label: string; plan: string; beats: number; rend
 const accSections: AccSection[] = [
   { id: "title", label: "Title", plan: "0:00–2:00", beats: 1, render: () => <AccTitle /> },
   { id: "timeline", label: "Shrinking timeline", plan: "2:00–7:00", beats: accEras.length + 2, render: (b) => <AccTimeline beat={b} /> },
-  { id: "turn", label: "The Turn", plan: "7:00–8:30", beats: 1, render: () => <AccTurn /> },
+  { id: "intent", label: "One request, apps and data", plan: "7:00–8:00", beats: 1, render: () => <AccIntent /> },
+  { id: "hub", label: "Connected data foundation", plan: "8:00–8:30", beats: 1, render: () => <AccHub /> },
   { id: "questions", label: "Question cards", plan: "8:30–9:00", beats: 1, render: () => <AccQuestions /> },
   { id: "ira", label: "IRA Part B model", plan: "≈ 4 min", beats: IRA_BEATS.length, render: (b) => <AccIra beat={b} /> },
   { id: "titan", label: "Titan", plan: "≈ 2.5–3 min", beats: accTitanChanges.length + 1, render: (b) => <AccTitan beat={b} /> },
@@ -5261,6 +5301,7 @@ function AccPresenter({ start, onExit }: { start: number; onExit: () => void }) 
       else if (e.key === "End") go(accSteps.length - 1);
       else if (/^[0-9]$/.test(e.key)) { const n = e.key === "0" ? 9 : Number(e.key) - 1; if (n < accSections.length) { setIndex(false); go(accFirstStep(n)); } }
       else if (e.key === "-") { setIndex(false); go(accFirstStep(10)); }
+      else if (e.key === "=") { setIndex(false); go(accFirstStep(11)); }
       else if (e.key === "f" || e.key === "F") { const d = document as Document & { fullscreenElement: Element | null }; if (d.fullscreenElement) document.exitFullscreen?.().catch(() => undefined); else document.documentElement.requestFullscreen?.().catch(() => undefined); }
     };
     window.addEventListener("keydown", onKey);
@@ -5291,12 +5332,12 @@ function AccPresenter({ start, onExit }: { start: number; onExit: () => void }) 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: U(14) }}>
             {accSections.map((s, i) => (
               <button key={s.id} type="button" onClick={() => { setIndex(false); setStep(accFirstStep(i)); }} style={{ fontFamily: "inherit", textAlign: "left", cursor: "pointer", borderRadius: U(14), padding: `${U(16)} ${U(20)}`, border: `${U(2)} solid ${i === si ? ACC_COLOR : "rgba(226,234,242,0.3)"}`, background: i === si ? `${ACC_COLOR}22` : "rgba(16,34,66,0.7)", color: "#FFFFFF" }}>
-                <span style={{ fontFamily: MONO, fontSize: U(22), color: ACC_COLOR }}>{(i === 9 ? "0" : i === 10 ? "-" : String(i + 1)) + "  "}</span><span style={{ fontSize: U(30), fontWeight: 700 }}>{s.label}</span>
+                <span style={{ fontFamily: MONO, fontSize: U(22), color: ACC_COLOR }}>{(i === 9 ? "0" : i === 10 ? "-" : i === 11 ? "=" : String(i + 1)) + "  "}</span><span style={{ fontSize: U(30), fontWeight: 700 }}>{s.label}</span>
                 <span style={{ display: "block", fontFamily: MONO, fontSize: U(20), color: "#E2EAF2", marginTop: U(4) }}>{s.plan}</span>
               </button>
             ))}
           </div>
-          <p style={{ margin: `${U(26)} 0 0`, fontSize: U(22), color: "#E2EAF2" }}>{"→ / space next · ← back · 1–9, 0, − jump to a section · Esc this index · F full screen · in the IRA model: B cycles the refund basis"}</p>
+          <p style={{ margin: `${U(26)} 0 0`, fontSize: U(22), color: "#E2EAF2" }}>{"→ / space next · ← back · 1–9, 0, −, = jump to a section · Esc this index · F full screen · in the IRA model: B cycles the refund basis"}</p>
         </div>
       )}
     </div>
@@ -5330,7 +5371,7 @@ function AccPage({ onNavigate }: { onNavigate: Navigate }) {
       <SolHero eyebrow="ACC · Accelerate 2026 · Nov 18" name="Building the Future" status="Prototype" statusColor="#FBBF24" color={ACC_COLOR}
         line1="Accelerating Care with Technical Innovation"
         line2="The 30-minute presenter deck for McKesson Accelerate. Full screen, driven from the keyboard or a clicker, synthetic data throughout. This version is the prototype and local fallback for the stage build."
-        tiles={[{ head: "11 sections", label: "Title to Q&A", sub: "Run of show from the feature spec" }, { head: "30 min", label: "Timed plan", sub: "Running clock in the section index" }, { head: "Keyboard", label: "No mouse needed", sub: "Clicker-friendly; reload resumes" }]}
+        tiles={[{ head: "12 sections", label: "Title to Q&A", sub: "Run of show from the feature spec" }, { head: "30 min", label: "Timed plan", sub: "Running clock in the section index" }, { head: "Keyboard", label: "No mouse needed", sub: "Clicker-friendly; reload resumes" }]}
         sections={sections} />
       <div style={{ marginTop: 20 }}>
         <BoltButton onClick={() => startAt(0)} style={{ background: ACC_COLOR, color: "#0B1A33", borderColor: ACC_COLOR, fontSize: 18, padding: "12px 22px" }}><span>{"Start presenting"}</span><BoltIcon kind="arrow" /></BoltButton>
@@ -5353,7 +5394,7 @@ function AccPage({ onNavigate }: { onNavigate: Navigate }) {
       </SolSection>
       <SolSection id="acc-keys" num="03" label="Controls" title="Driving the deck" icon="sliders" color={ACC_COLOR}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 10 }}>
-          {[["→ or space", "Next step"], ["←", "Previous step"], ["Esc", "Section index and clock"], ["1–9, 0, −", "Jump to section 1–11"], ["F", "Browser full screen"], ["B", "IRA model: cycle refund basis (avg. cost, WAC, ASP)"]].map(([k, v]) => (
+          {[["→ or space", "Next step"], ["←", "Previous step"], ["Esc", "Section index and clock"], ["1–9, 0, −, =", "Jump to section 1–12"], ["F", "Browser full screen"], ["B", "IRA model: cycle refund basis (avg. cost, WAC, ASP)"]].map(([k, v]) => (
             <div key={k} style={{ borderRadius: 12, padding: "12px 14px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)" }}><p style={{ margin: 0, fontFamily: MONO, fontSize: 16, fontWeight: 700, color: ACC_COLOR }}>{k}</p><p style={{ margin: "4px 0 0", fontSize: 15, color: "#D0DAE6" }}>{v}</p></div>
           ))}
         </div>
