@@ -4851,7 +4851,7 @@ function AccQuestions() {
 
 // ---------------- 2.5 IRA PART B ECONOMIC MODEL ----------------
 // Keytruda-like preset: ratios from part-b-mfp-model-v2.jsx (WAC/ASP/acquisition, MFP 40% off WAC), scaled to ASP $15,000
-const IRA_DRUG = { wac: 1570000, asp: 1500000, mfp: 942000, acq: 1460000 };
+const IRA_DRUG = { wac: 1570000, asp: 1500000, acq: 1460000 };
 const IRA_BEATS: IraBasis[] = ["actual", "asp"];
 const IRA_SCEN: Record<string, { name: string; sub: string }> = {
   A: { name: "Status quo", sub: "No negotiation" },
@@ -4861,48 +4861,72 @@ const IRA_SCEN: Record<string, { name: string; sub: string }> = {
 };
 function AccIra({ beat }: { beat: number }) {
   const [basis, setBasis] = useState<IraBasis>(IRA_BEATS[Math.min(beat, IRA_BEATS.length - 1)]);
+  const [disc, setDisc] = useState(40);
+  const [days, setDays] = useState(40);
   useEffect(() => { setBasis(IRA_BEATS[Math.min(beat, IRA_BEATS.length - 1)]); }, [beat]);
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "b" || e.key === "B") setBasis((b) => b === "actual" ? "asp" : "actual"); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "b" || e.key === "B") setBasis((b) => b === "actual" ? "wac" : b === "wac" ? "asp" : "actual"); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const cards = iraModel({ ...IRA_DRUG, basis });
+  const mfp = Math.round((IRA_DRUG.wac * (100 - disc)) / 100);
+  const cards = iraModel({ ...IRA_DRUG, mfp, basis });
   const c = ACC_PRODUCT_COLORS.ira;
   const dollars = (cents: number) => `${cents < 0 ? "-" : ""}$${Math.round(Math.abs(cents) / 100).toLocaleString("en-US")}`;
-  const pill = (on: boolean): React.CSSProperties => ({ fontFamily: "inherit", fontSize: U(26), fontWeight: 700, padding: `${U(8)} ${U(20)}`, borderRadius: U(10), cursor: "pointer", border: `${U(2)} solid ${on ? c : "rgba(226,234,242,0.4)"}`, background: on ? `${c}33` : "transparent", color: "#FFFFFF", transition: "all 0.25s ease" });
+  const pill = (on: boolean): React.CSSProperties => ({ fontFamily: "inherit", fontSize: U(24), fontWeight: 700, padding: `${U(6)} ${U(18)}`, borderRadius: U(10), cursor: "pointer", border: `${U(2)} solid ${on ? c : "rgba(226,234,242,0.4)"}`, background: on ? `${c}33` : "transparent", color: "#FFFFFF", transition: "all 0.25s ease" });
+  const lbl: React.CSSProperties = { fontSize: U(24), color: "#E2EAF2", whiteSpace: "nowrap" };
+  const val: React.CSSProperties = { fontFamily: MONO, fontSize: U(26), fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" };
+  const step = (label: string, v: string, dec: () => void, inc: () => void) => (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: U(10) }}>
+      <span style={lbl}>{label}</span>
+      <button type="button" aria-label={"Lower " + label} onClick={dec} style={pill(false)}>{"−"}</button>
+      <span style={{ ...val, minWidth: U(110), textAlign: "center" }}>{v}</span>
+      <button type="button" aria-label={"Raise " + label} onClick={inc} style={pill(false)}>{"+"}</button>
+    </span>
+  );
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <AccHeader product="ira" name="IRA Part B economic model" problem="From 2028, Medicare pays the negotiated price plus 6%, not ASP plus 6%. Margins per dose shrink, and how much depends on rules still being written." does="Shows practice cost, Medicare payment and margin per dose under each path, for any drug and refund formula." />
-      <div style={{ display: "flex", gap: U(16), alignItems: "center", marginBottom: U(18) }}>
+      <div style={{ display: "flex", gap: U(26), alignItems: "center", marginBottom: U(12) }}>
         <span style={{ fontSize: U(30), fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{"Keytruda"}</span>
-        <span style={{ fontSize: U(26), color: "#E2EAF2", whiteSpace: "nowrap" }}>{"ASP $15,000 · MFP $9,420 · practice pays $14,600"}</span>
+        <span style={lbl}>{"WAC "}<span style={val}>{"$15,700"}</span></span>
+        <span style={lbl}>{"ASP "}<span style={val}>{"$15,000"}</span></span>
+        <span style={lbl}>{"Cost "}<span style={val}>{"$14,600"}</span></span>
+        <span style={lbl}>{"MFP "}<span key={mfp} className="bolt-anim" style={{ ...val, ...accIn() }}>{dollars(mfp)}</span></span>
+      </div>
+      <div style={{ display: "flex", gap: U(30), alignItems: "center", marginBottom: U(16) }}>
+        {step("MFP discount", disc + "% off WAC", () => setDisc((d) => Math.max(20, d - 5)), () => setDisc((d) => Math.min(80, d + 5)))}
+        {step("Avg. days to get paid", days + " days", () => setDays((d) => Math.max(14, d - 5)), () => setDays((d) => Math.min(120, d + 5)))}
         <span style={{ flex: 1 }} />
-        <span style={{ fontSize: U(26), color: "#E2EAF2", whiteSpace: "nowrap" }}>{"Refund based on"}</span>
+        <span style={lbl}>{"Refund based on"}</span>
         <button type="button" aria-pressed={basis === "actual"} onClick={() => setBasis("actual")} style={pill(basis === "actual")}>{"Avg. cost"}</button>
+        <button type="button" aria-pressed={basis === "wac"} onClick={() => setBasis("wac")} style={pill(basis === "wac")}>{"WAC"}</button>
         <button type="button" aria-pressed={basis === "asp"} onClick={() => setBasis("asp")} style={pill(basis === "asp")}>{"ASP"}</button>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: U(18), flex: 1 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: U(18), flex: 1, minHeight: 0 }}>
         {cards.map((k) => {
           const bad = k.underwater;
           const edge = bad ? "#EF4444" : k.id === "A" ? "rgba(226,234,242,0.45)" : c;
           const live = k.id === "C";
+          const rows: string[][] = [["Cost", dollars(k.practicePays)], ["Medicare pays", dollars(k.medicarePays)]];
+          if (k.id === "C") rows.push(["Refund", dollars(k.extra)], ["Refund arrives", "~" + days + " days"]);
+          if (k.id === "D") rows.push(["Rebate to CMS", dollars(k.extra)]);
           return (
-            <div key={k.id} style={{ borderRadius: U(18), padding: U(24), border: `${U(bad || live ? 3 : 2)} solid ${edge}`, background: bad ? "rgba(239,68,68,0.14)" : live ? `${c}14` : "rgba(16,34,66,0.75)", display: "flex", flexDirection: "column", transition: "all 0.25s ease" }}>
-              <p style={{ margin: 0, fontSize: U(32), fontWeight: 700, color: "#FFFFFF" }}>{k.id + " · " + IRA_SCEN[k.id].name}</p>
-              <p style={{ margin: `${U(2)} 0 ${U(16)}`, fontSize: U(24), color: "#E2EAF2" }}>{IRA_SCEN[k.id].sub}</p>
-              {[["Practice pays", dollars(k.practicePays)], ["Medicare pays", dollars(k.medicarePays)], ...(k.extra ? [[k.id === "C" ? "Refund" : "Rebate to CMS", dollars(k.extra)]] : [])].map(([l, v]) => (
-                <div key={l} style={{ display: "flex", justifyContent: "space-between", gap: U(10), fontSize: U(26), color: "#E2EAF2", padding: `${U(6)} 0`, borderBottom: `${U(1)} solid rgba(226,234,242,0.15)` }}><span>{l}</span><span key={v} className="bolt-anim" style={{ ...accIn(), fontFamily: MONO, color: "#FFFFFF" }}>{v}</span></div>
+            <div key={k.id} style={{ borderRadius: U(18), padding: U(22), border: `${U(bad || live ? 3 : 2)} solid ${edge}`, background: bad ? "rgba(239,68,68,0.14)" : live ? `${c}14` : "rgba(16,34,66,0.75)", display: "flex", flexDirection: "column", transition: "all 0.25s ease" }}>
+              <p style={{ margin: 0, fontSize: U(30), fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{k.id + " · " + IRA_SCEN[k.id].name}</p>
+              <p style={{ margin: `${U(2)} 0 ${U(12)}`, fontSize: U(22), color: "#E2EAF2" }}>{IRA_SCEN[k.id].sub}</p>
+              {rows.map(([l, v]) => (
+                <div key={l} style={{ display: "flex", justifyContent: "space-between", gap: U(10), fontSize: U(24), color: "#E2EAF2", padding: `${U(5)} 0`, borderBottom: `${U(1)} solid rgba(226,234,242,0.15)` }}><span>{l}</span><span key={v} className="bolt-anim" style={{ ...accIn(), fontFamily: MONO, color: "#FFFFFF" }}>{v}</span></div>
               ))}
               <span style={{ flex: 1 }} />
-              <p style={{ margin: 0, fontSize: U(20), fontFamily: MONO, letterSpacing: 1, color: "#E2EAF2" }}>{"MARGIN / DOSE"}</p>
-              <p key={k.margin} className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(100), fontWeight: 700, lineHeight: 1, color: bad ? "#F87171" : "#FFFFFF", fontFamily: MONO, letterSpacing: -3 }}>{dollars(k.margin)}</p>
-              {bad && <p style={{ margin: `${U(8)} 0 0`, fontSize: U(26), fontWeight: 700, color: "#F87171" }}>{"Underwater"}</p>}
+              <p style={{ margin: 0, fontSize: U(20), fontFamily: MONO, letterSpacing: 1, color: "#E2EAF2" }}>{"DELTA / DOSE"}</p>
+              <p key={k.margin} className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(88), fontWeight: 700, lineHeight: 1, color: bad ? "#F87171" : "#FFFFFF", fontFamily: MONO, letterSpacing: -3 }}>{dollars(k.margin)}</p>
+              {bad && <p style={{ margin: `${U(6)} 0 0`, fontSize: U(24), fontWeight: 700, color: "#F87171" }}>{"Underwater"}</p>}
             </div>
           );
         })}
       </div>
-      <p style={{ margin: `${U(14)} 0 0`, fontSize: U(20), color: "#E2EAF2" }}>{"ASP: average sales price · MFP: maximum fair price, set by negotiation · Starts Jan 1, 2028 (IRA §11001) · Illustrative approximation, not actual prices; Keytruda's selection is a forecast"}</p>
+      <p style={{ margin: `${U(12)} 0 0`, fontSize: U(20), color: "#E2EAF2" }}>{"WAC: list price · ASP: average sales price · MFP: maximum fair price, set by negotiation · Delta: Medicare payment plus any refund, minus cost · Starts Jan 1, 2028 (IRA §11001) · Illustrative approximation, not actual prices; Keytruda's selection is a forecast"}</p>
     </div>
   );
 }
@@ -5201,7 +5225,7 @@ function AccPresenter({ start, onExit }: { start: number; onExit: () => void }) 
               </button>
             ))}
           </div>
-          <p style={{ margin: `${U(26)} 0 0`, fontSize: U(22), color: "#E2EAF2" }}>{"→ / space next · ← back · 1–9, 0, − jump to a section · Esc this index · F full screen · in the IRA model: B switches the refund basis"}</p>
+          <p style={{ margin: `${U(26)} 0 0`, fontSize: U(22), color: "#E2EAF2" }}>{"→ / space next · ← back · 1–9, 0, − jump to a section · Esc this index · F full screen · in the IRA model: B cycles the refund basis"}</p>
         </div>
       )}
     </div>
@@ -5258,7 +5282,7 @@ function AccPage({ onNavigate }: { onNavigate: Navigate }) {
       </SolSection>
       <SolSection id="acc-keys" num="03" label="Controls" title="Driving the deck" icon="sliders" color={ACC_COLOR}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 10 }}>
-          {[["→ or space", "Next step"], ["←", "Previous step"], ["Esc", "Section index and clock"], ["1–9, 0, −", "Jump to section 1–11"], ["F", "Browser full screen"], ["B", "IRA model: switch refund basis"]].map(([k, v]) => (
+          {[["→ or space", "Next step"], ["←", "Previous step"], ["Esc", "Section index and clock"], ["1–9, 0, −", "Jump to section 1–11"], ["F", "Browser full screen"], ["B", "IRA model: cycle refund basis (avg. cost, WAC, ASP)"]].map(([k, v]) => (
             <div key={k} style={{ borderRadius: 12, padding: "12px 14px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)" }}><p style={{ margin: 0, fontFamily: MONO, fontSize: 16, fontWeight: 700, color: ACC_COLOR }}>{k}</p><p style={{ margin: "4px 0 0", fontSize: 15, color: "#D0DAE6" }}>{v}</p></div>
           ))}
         </div>
