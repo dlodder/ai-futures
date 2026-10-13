@@ -5277,8 +5277,7 @@ const accSections: AccSection[] = [
   { id: "retentioniq", label: "RetentionIQ", plan: "≈ 2.5–3 min", beats: 3, render: (b) => <AccRetention beat={b} /> },
   { id: "practice", label: ACC_PRACTICE_NAME, plan: "≈ 2 min", beats: 1, render: () => <AccPractice /> },
   { id: "meridian", label: "Meridian", plan: "≈ 2.5–3 min · to 23:00", beats: accWeightSets.length, render: (b) => <AccMeridian beat={b} /> },
-  { id: "built", label: "How we built this", plan: "23:00–26:00", beats: 3, render: (b) => <AccBuilt beat={b} /> },
-  { id: "close", label: "Close and Q&A", plan: "26:00–30:00", beats: 2, render: (b) => <AccClose beat={b} /> },
+  { id: "close", label: "Close and Q&A", plan: "23:00–30:00", beats: 2, render: (b) => <AccClose beat={b} /> },
 ];
 const accSteps = accSections.flatMap((s, si) => Array.from({ length: s.beats }, (_, b) => ({ si, b })));
 const accFirstStep = (si: number) => accSteps.findIndex((x) => x.si === si);
@@ -5301,7 +5300,7 @@ function AccPresenter({ start, onExit }: { start: number; onExit: () => void }) 
       else if (e.key === "End") go(accSteps.length - 1);
       else if (/^[0-9]$/.test(e.key)) { const n = e.key === "0" ? 9 : Number(e.key) - 1; if (n < accSections.length) { setIndex(false); go(accFirstStep(n)); } }
       else if (e.key === "-") { setIndex(false); go(accFirstStep(10)); }
-      else if (e.key === "=") { setIndex(false); go(accFirstStep(11)); }
+      else if (e.key === "=" && accSections.length > 11) { setIndex(false); go(accFirstStep(11)); }
       else if (e.key === "f" || e.key === "F") { const d = document as Document & { fullscreenElement: Element | null }; if (d.fullscreenElement) document.exitFullscreen?.().catch(() => undefined); else document.documentElement.requestFullscreen?.().catch(() => undefined); }
     };
     window.addEventListener("keydown", onKey);
@@ -5337,7 +5336,7 @@ function AccPresenter({ start, onExit }: { start: number; onExit: () => void }) 
               </button>
             ))}
           </div>
-          <p style={{ margin: `${U(26)} 0 0`, fontSize: U(22), color: "#E2EAF2" }}>{"→ / space next · ← back · 1–9, 0, −, = jump to a section · Esc this index · F full screen · in the IRA model: B cycles the refund basis"}</p>
+          <p style={{ margin: `${U(26)} 0 0`, fontSize: U(22), color: "#E2EAF2" }}>{"→ / space next · ← back · 1–9, 0, − jump to a section · Esc this index · F full screen · in the IRA model: B cycles the refund basis"}</p>
         </div>
       )}
     </div>
@@ -5349,7 +5348,6 @@ const accPendingList = [
   { item: "McKesson brand mark for the title slide", owner: "Marketing" },
     { item: "H.R. 4299 rebate multiplier: 1.06 (default, $37.10) or 1.043", owner: "Dan" },
   { item: "RetentionIQ risk-factor names (currently examples)", owner: "Dan" },
-  { item: "Build-log numbers and the 90-second time-lapse", owner: "Dan" },
   { item: "Follow-up route: marketing QR or contact slide", owner: "Marketing" },
   { item: "Approval of era lines, talk lines and the ChatGPT mention", owner: "Marketing" },
   { item: "Titan monitoring cadence and verification step (on screen: continuous; structured with a source link)", owner: "Dan" },
@@ -5371,7 +5369,7 @@ function AccPage({ onNavigate }: { onNavigate: Navigate }) {
       <SolHero eyebrow="ACC · Accelerate 2026 · Nov 18" name="Building the Future" status="Prototype" statusColor="#FBBF24" color={ACC_COLOR}
         line1="Accelerating Care with Technical Innovation"
         line2="The 30-minute presenter deck for McKesson Accelerate. Full screen, driven from the keyboard or a clicker, synthetic data throughout. This version is the prototype and local fallback for the stage build."
-        tiles={[{ head: "12 sections", label: "Title to Q&A", sub: "Run of show from the feature spec" }, { head: "30 min", label: "Timed plan", sub: "Running clock in the section index" }, { head: "Keyboard", label: "No mouse needed", sub: "Clicker-friendly; reload resumes" }]}
+        tiles={[{ head: "11 sections", label: "Title to Q&A", sub: "Run of show from the feature spec" }, { head: "30 min", label: "Timed plan", sub: "Running clock in the section index" }, { head: "Keyboard", label: "No mouse needed", sub: "Clicker-friendly; reload resumes" }]}
         sections={sections} />
       <div style={{ marginTop: 20 }}>
         <BoltButton onClick={() => startAt(0)} style={{ background: ACC_COLOR, color: "#0B1A33", borderColor: ACC_COLOR, fontSize: 18, padding: "12px 22px" }}><span>{"Start presenting"}</span><BoltIcon kind="arrow" /></BoltButton>
@@ -5394,7 +5392,7 @@ function AccPage({ onNavigate }: { onNavigate: Navigate }) {
       </SolSection>
       <SolSection id="acc-keys" num="03" label="Controls" title="Driving the deck" icon="sliders" color={ACC_COLOR}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 10 }}>
-          {[["→ or space", "Next step"], ["←", "Previous step"], ["Esc", "Section index and clock"], ["1–9, 0, −, =", "Jump to section 1–12"], ["F", "Browser full screen"], ["B", "IRA model: cycle refund basis (avg. cost, WAC, ASP)"]].map(([k, v]) => (
+          {[["→ or space", "Next step"], ["←", "Previous step"], ["Esc", "Section index and clock"], ["1–9, 0, −", "Jump to section 1–11"], ["F", "Browser full screen"], ["B", "IRA model: cycle refund basis (avg. cost, WAC, ASP)"]].map(([k, v]) => (
             <div key={k} style={{ borderRadius: 12, padding: "12px 14px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)" }}><p style={{ margin: 0, fontFamily: MONO, fontSize: 16, fontWeight: 700, color: ACC_COLOR }}>{k}</p><p style={{ margin: "4px 0 0", fontSize: 15, color: "#D0DAE6" }}>{v}</p></div>
           ))}
         </div>
