@@ -2569,7 +2569,7 @@ const dpOutAt = (i: number) => DP_TYPE_END + 900 + i * DP_STEP;
 const DP_DONE = dpOutAt(Math.max(dpAppOutputs.length, dpDataOutputs.length)) + 400;
 const DP_END = DP_DONE + 1500;
 
-function DpIntentDemo({ autoStart = false, big = false, labels }: { autoStart?: boolean; big?: boolean; labels?: { layer?: string; app?: string; data?: string } }) {
+function DpIntentDemo({ autoStart = false, big = false, labels, stage = false }: { autoStart?: boolean; big?: boolean; labels?: { layer?: string; app?: string; data?: string; heading?: string }; stage?: boolean }) {
   const [e, setE] = useState(0);
   const [run, setRun] = useState(0);
   useEffect(() => {
@@ -2613,11 +2613,11 @@ function DpIntentDemo({ autoStart = false, big = false, labels }: { autoStart?: 
     <Card style={{ padding: big ? "24px 28px" : "clamp(16px, 2.5vw, 24px)" }}>
       <div style={{ display: "flex", gap: 16, alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <h3 style={{ margin: 0, fontSize: 20 * fs, color: "#FFFFFF" }}>One request, apps and data</h3>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative · sped up"}</span>
+          <h3 style={{ margin: 0, fontSize: 20 * fs, color: "#FFFFFF" }}>{labels?.heading ?? "One request, apps and data"}</h3>
+          {!stage && <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative · sped up"}</span>}
         </div>
         <div style={{ minHeight: 44, display: "flex", alignItems: "center" }}>
-          {(!started || done) && <BoltButton onClick={() => setRun((r) => r + 1)} style={started ? { background: "transparent" } : { background: DP_COLOR, color: "#0B1A33", borderColor: DP_COLOR }}><span>{started ? "Replay" : "Run the request"}</span>{!started && <BoltIcon kind="arrow" />}</BoltButton>}
+          {!stage && (!started || done) && <BoltButton onClick={() => setRun((r) => r + 1)} style={started ? { background: "transparent" } : { background: DP_COLOR, color: "#0B1A33", borderColor: DP_COLOR }}><span>{started ? "Replay" : "Run the request"}</span>{!started && <BoltIcon kind="arrow" />}</BoltButton>}
         </div>
       </div>
       <div style={{ background: "#050D1C", border: "1px solid rgba(184,200,218,0.18)", borderRadius: 12, padding: "14px 18px", fontFamily: MONO, fontSize: 14 * fs, lineHeight: 1.65, color: "#FFFFFF", minHeight: 74 }}>
@@ -4897,7 +4897,7 @@ function AccIntent() {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <h1 className="bolt-anim" style={{ ...accIn(), margin: `0 0 ${U(24)}`, fontSize: U(64), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1 }}>{"An AI platform for accelerated solution delivery"}</h1>
-      <AccFit><DpIntentDemo autoStart big labels={{ layer: "Intent layer", app: "Build translates intent into", data: "Data translates intent into" }} /></AccFit>
+      <AccFit><DpIntentDemo autoStart big stage labels={{ heading: "Build applications and connect data faster", layer: "Intent layer", app: "Build translates intent into", data: "Data translates intent into" }} /></AccFit>
     </div>
   );
 }
