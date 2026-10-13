@@ -531,6 +531,11 @@ const BOLT_CSS = `
 @keyframes litUp { from { transform: scaleY(0.15); opacity: 0; } to { transform: none; opacity: 1; } }
 @media (max-width: 760px) { .lit-3col { grid-template-columns: 1fr !important; } .lit-flow { grid-template-columns: 1fr !important; } .lit-flow-arrow { flex-direction: row !important; gap: 10px !important; padding: 2px 0; } .lit-flow-svg { transform: rotate(90deg); width: 34px; } }
 @media (max-width: 760px) { .xray-grid { grid-template-columns: 1fr !important; } }
+@keyframes accShrink { 0% { width: var(--acc-from); } 35% { width: var(--acc-from); } 100% { width: var(--acc-to); } }
+@keyframes accRing { 0% { box-shadow: 0 0 0 0 var(--acc-ring); } 100% { box-shadow: 0 0 0 calc(30 * var(--u)) transparent; } }
+@keyframes accMark { from { background-color: transparent; color: inherit; } to { background-color: var(--acc-mark); color: #FFFFFF; } }
+@keyframes accSlideIn { from { left: 0; } }
+@keyframes accOut { 0%, 40% { opacity: 1; transform: none; background: rgba(52,211,153,0.22); border-color: #34D399; max-height: calc(90 * var(--u)); } 85% { opacity: 0; transform: translateX(45%); max-height: calc(90 * var(--u)); } 100% { opacity: 0; transform: translateX(45%); max-height: 0; padding-top: 0; padding-bottom: 0; border-width: 0; } }
 @media (prefers-reduced-motion: reduce) { .bolt-anim { animation: none !important; transition: none !important; } }
 `;
 
@@ -4728,7 +4733,37 @@ function AccHeader({ product, name, problem, does, extra }: { product: string; n
   );
 }
 
-const accIn = (d = 0): React.CSSProperties => ({ animation: `boltIn 0.28s ease-out ${d}s both` });
+// Stage motion: one multiplier for every ACC duration and delay; tune after the projector test
+const ACC_MOTION = 1;
+const accDur = (s: number) => `${(s * ACC_MOTION).toFixed(2)}s`;
+const accIn = (d = 0): React.CSSProperties => ({ animation: `boltIn ${accDur(0.28)} ease-out ${accDur(d)} both` });
+// Tweens a number to its new target and settles; snaps straight to the target under reduced motion
+function useAccTween(target: number, duration = 0.8, startFrom?: number, delay = 0) {
+  const [v, setV] = useState(startFrom ?? target);
+  const cur = useRef(startFrom ?? target);
+  useEffect(() => {
+    if (prefersReducedMotion() || cur.current === target) { cur.current = target; setV(target); return; }
+    const a = cur.current;
+    const ms = duration * 1000 * ACC_MOTION;
+    let raf = 0;
+    let t0 = 0;
+    const tick = (now: number) => {
+      if (!t0) t0 = now;
+      const x = Math.min(1, (now - t0) / ms);
+      const val = a + (target - a) * (1 - Math.pow(1 - x, 3));
+      cur.current = val;
+      setV(val);
+      if (x < 1) raf = requestAnimationFrame(tick);
+    };
+    const timer = window.setTimeout(() => { raf = requestAnimationFrame(tick); }, delay * 1000 * ACC_MOTION);
+    return () => { window.clearTimeout(timer); cancelAnimationFrame(raf); };
+  }, [target, duration, delay]);
+  return v;
+}
+function AccNum({ to, fmt, from, duration = 0.8, delay = 0 }: { to: number; fmt: (n: number) => string; from?: number; duration?: number; delay?: number }) {
+  const v = useAccTween(to, duration, from, delay);
+  return <>{fmt(v)}</>;
+}
 
 // ---------------- 2.1 TITLE ----------------
 function AccTitle() {
@@ -4778,7 +4813,7 @@ function AccTimeline({ beat }: { beat: number }) {
             <div key={e.era} style={{ display: "grid", gridTemplateColumns: `${U(360)} 1fr`, gap: U(28), alignItems: "center", opacity: on ? 1 : 0.18, transition: "opacity 0.25s ease" }}>
               <div><p style={{ margin: 0, fontSize: U(32), fontWeight: 700, color: "#FFFFFF" }}>{e.era}</p><p style={{ margin: 0, fontFamily: MONO, fontSize: U(22), color: "#E2EAF2" }}>{e.years}</p></div>
               <div style={{ display: "flex", alignItems: "center", gap: U(20) }}>
-                <div style={{ height: U(56), width: `${e.w}%`, minWidth: U(28), borderRadius: U(10), background: last ? `linear-gradient(90deg, ${ACC_COLOR}, #FDE68A)` : "linear-gradient(90deg, #475569, #94A3B8)", boxShadow: last && on ? `0 0 ${U(30)} ${ACC_COLOR}` : "none", transformOrigin: "left", transform: on ? "scaleX(1)" : "scaleX(0)", transition: "transform 0.28s cubic-bezier(.2,.7,.2,1)" }} />
+                <div className={last ? "bolt-anim" : undefined} style={{ height: U(56), width: `${e.w}%`, minWidth: U(28), borderRadius: U(10), background: last ? `linear-gradient(90deg, ${ACC_COLOR}, #FDE68A)` : "linear-gradient(90deg, #475569, #94A3B8)", boxShadow: last && on ? `0 0 ${U(30)} ${ACC_COLOR}` : "none", transformOrigin: "left", transform: on ? "scaleX(1)" : "scaleX(0)", transition: "transform 0.28s cubic-bezier(.2,.7,.2,1)", ...(last && on ? { ["--acc-from" as string]: `${accEras[i - 1].w}%`, ["--acc-to" as string]: `${e.w}%`, ["--acc-ring" as string]: `${ACC_COLOR}CC`, animation: `accShrink ${accDur(1.1)} cubic-bezier(.6,0,.2,1) both, accRing ${accDur(0.8)} ease-out ${accDur(1.1)} 1` } : {}) }} />
                 <span style={{ fontSize: U(34), fontWeight: 700, color: last ? ACC_COLOR : "#FFFFFF", whiteSpace: "nowrap" }}>{e.ship}</span>
               </div>
             </div>
@@ -4802,9 +4837,9 @@ function AccTimeline({ beat }: { beat: number }) {
 
 // ---------------- 2.3 THE TURN ----------------
 const accStats = [
-  { big: "88%", text: "of organizations use AI in at least one business function", src: "McKinsey & Company, The State of AI in 2025 (Nov 2025). Global survey, 1,993 participants, June 25–July 29, 2025" },
+  { big: "88%", n: 88, text: "of organizations use AI in at least one business function", src: "McKinsey & Company, The State of AI in 2025 (Nov 2025). Global survey, 1,993 participants, June 25–July 29, 2025" },
   { big: "~1 in 3", text: "have begun to scale AI across the enterprise", src: "McKinsey & Company, The State of AI in 2025 (Nov 2025). Global survey, 1,993 participants, June 25–July 29, 2025" },
-  { big: "25%", text: "have moved 40% or more of their AI experiments into production", src: "Deloitte, The State of AI in the Enterprise (2026). Survey of 3,235 leaders, Aug–Sep 2025" },
+  { big: "25%", n: 25, text: "have moved 40% or more of their AI experiments into production", src: "Deloitte, The State of AI in the Enterprise (2026). Survey of 3,235 leaders, Aug–Sep 2025" },
 ];
 function AccTurn() {
   return (
@@ -4813,8 +4848,11 @@ function AccTurn() {
       <p style={{ margin: `${U(36)} 0 ${U(18)}`, fontFamily: MONO, fontSize: U(22), letterSpacing: 2, color: "#E2EAF2" }}>{"LEADERS REPORT"}</p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: U(24) }}>
         {accStats.map((st, i) => (
-          <div key={st.big} className="bolt-anim" style={{ ...accIn(0.05 + i * 0.05), borderRadius: U(18), padding: U(28), border: `${U(2)} solid rgba(226,234,242,0.35)`, background: "rgba(16,34,66,0.7)" }}>
-            <p style={{ margin: 0, fontSize: U(100), fontWeight: 700, color: ACC_COLOR, lineHeight: 1 }}>{st.big}</p>
+          <div key={st.big} className="bolt-anim" style={{ ...accIn(0.05 + i * 0.15), borderRadius: U(18), padding: U(28), border: `${U(2)} solid rgba(226,234,242,0.35)`, background: "rgba(16,34,66,0.7)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: U(20) }}>
+              <p style={{ margin: 0, fontSize: U(100), fontWeight: 700, color: ACC_COLOR, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{st.n !== undefined ? <AccNum to={st.n} from={0} duration={0.9} delay={0.15 + i * 0.15} fmt={(n) => Math.round(n) + "%"} /> : st.big}</p>
+              {st.n === undefined && <span aria-hidden="true" style={{ display: "flex", gap: U(10) }}>{[0, 1, 2].map((d) => <span key={d} className="bolt-anim" style={{ width: U(26), height: U(26), borderRadius: "50%", border: `${U(3)} solid ${ACC_COLOR}`, background: d === 0 ? ACC_COLOR : "transparent", animation: d === 0 ? `boltPop ${accDur(0.45)} ease-out ${accDur(0.5 + i * 0.15)} both` : undefined }} />)}</span>}
+            </div>
             <p style={{ margin: `${U(12)} 0 ${U(14)}`, fontSize: U(30), color: "#FFFFFF", lineHeight: 1.3 }}>{st.text}</p>
             <p style={{ margin: 0, fontSize: U(18), color: "#E2EAF2", lineHeight: 1.4 }}>{st.src}</p>
           </div>
@@ -4856,7 +4894,7 @@ const IRA_BEATS: IraBasis[] = ["actual", "asp"];
 const IRA_SCEN: Record<string, { name: string; sub: string }> = {
   A: { name: "Status quo", sub: "No negotiation" },
   B: { name: "Prospective", sub: "Practice buys at MFP" },
-  C: { name: "Retrospective refund", sub: "Base case" },
+  C: { name: "Retrospective refund", sub: "Buys at cost, refunded later" },
   D: { name: "H.R. 4299", sub: "Pending legislation" },
 };
 function AccIra({ beat }: { beat: number }) {
@@ -4894,7 +4932,7 @@ function AccIra({ beat }: { beat: number }) {
         <span style={lbl}>{"Cost "}<span style={val}>{"$14,600"}</span></span>
         <span style={lbl}>{"MFP "}<span key={mfp} className="bolt-anim" style={{ ...val, ...accIn() }}>{dollars(mfp)}</span></span>
       </div>
-      <div style={{ display: "flex", gap: U(30), alignItems: "center", marginBottom: U(16) }}>
+      <div style={{ display: "flex", gap: U(30), alignItems: "center", marginBottom: U(32) }}>
         {step("MFP discount", disc + "% off WAC", () => setDisc((d) => Math.max(20, d - 5)), () => setDisc((d) => Math.min(80, d + 5)))}
         {step("Avg. days to get paid", days + " days", () => setDays((d) => Math.max(14, d - 5)), () => setDays((d) => Math.min(120, d + 5)))}
         <span style={{ flex: 1 }} />
@@ -4912,7 +4950,9 @@ function AccIra({ beat }: { beat: number }) {
           if (k.id === "C") rows.push(["Refund", dollars(k.extra)], ["Refund arrives", "~" + days + " days"]);
           if (k.id === "D") rows.push(["Rebate to CMS", dollars(k.extra)]);
           return (
-            <div key={k.id} style={{ borderRadius: U(18), padding: U(22), border: `${U(bad || live ? 3 : 2)} solid ${edge}`, background: bad ? "rgba(239,68,68,0.14)" : live ? `${c}14` : "rgba(16,34,66,0.75)", display: "flex", flexDirection: "column", transition: "all 0.25s ease" }}>
+            <div key={k.id} style={{ position: "relative", borderRadius: U(18), padding: U(22), border: `${U(bad ? 3 : live ? 4 : 2)} solid ${edge}`, background: bad ? "rgba(239,68,68,0.14)" : live ? `linear-gradient(180deg, ${c}40, ${c}12)` : "rgba(16,34,66,0.75)", boxShadow: live ? `0 0 ${U(44)} ${bad ? "#EF4444" : c}66` : "none", transform: live ? `translateY(${U(-10)})` : "none", display: "flex", flexDirection: "column", transition: "all 0.25s ease" }}>
+              {live && <span style={{ position: "absolute", top: U(-20), left: U(20), fontFamily: MONO, fontSize: U(20), fontWeight: 700, letterSpacing: 1, color: "#0B1A33", background: c, borderRadius: U(8), padding: `${U(3)} ${U(12)}` }}>{"BASE CASE"}</span>}
+              {live && <span key={"ring" + basis + disc} aria-hidden="true" className="bolt-anim" style={{ position: "absolute", inset: 0, borderRadius: U(18), pointerEvents: "none", ["--acc-ring" as string]: `${c}CC`, animation: `accRing ${accDur(0.8)} ease-out 1` }} />}
               <p style={{ margin: 0, fontSize: U(30), fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{k.id + " · " + IRA_SCEN[k.id].name}</p>
               <p style={{ margin: `${U(2)} 0 ${U(12)}`, fontSize: U(22), color: "#E2EAF2" }}>{IRA_SCEN[k.id].sub}</p>
               {rows.map(([l, v]) => (
@@ -4920,7 +4960,7 @@ function AccIra({ beat }: { beat: number }) {
               ))}
               <span style={{ flex: 1 }} />
               <p style={{ margin: 0, fontSize: U(20), fontFamily: MONO, letterSpacing: 1, color: "#E2EAF2" }}>{"DELTA / DOSE"}</p>
-              <p key={k.margin} className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(88), fontWeight: 700, lineHeight: 1, color: bad ? "#F87171" : "#FFFFFF", fontFamily: MONO, letterSpacing: -3 }}>{dollars(k.margin)}</p>
+              <p style={{ margin: 0, fontSize: U(88), fontWeight: 700, lineHeight: 1, color: bad ? "#F87171" : "#FFFFFF", fontFamily: MONO, letterSpacing: -3 }}><AccNum to={k.margin} duration={0.7} fmt={(n) => dollars(n)} /></p>
               {bad && <p style={{ margin: `${U(6)} 0 0`, fontSize: U(24), fontWeight: 700, color: "#F87171" }}>{"Underwater"}</p>}
             </div>
           );
@@ -4933,11 +4973,26 @@ function AccIra({ beat }: { beat: number }) {
 
 // ---------------- 2.6 TITAN ----------------
 const accTitanChanges = [
-  { payer: "Northwind Health Plan", doc: "Section 4.2 (revised). Reference long-acting G-CSF products require documented trial and failure of a preferred biosimilar unless a clinical exception applies.", rule: [["Drug class", "Long-acting G-CSF"], ["Preferred", "Biosimilar products"], ["Step therapy", "Required before reference product"], ["Effective", "First of next month"]] },
-  { payer: "Lakeshore Mutual", doc: "Trastuzumab policy update. Preferred agents are the biosimilars listed in Appendix C. The reference product requires prior authorization.", rule: [["Drug class", "Trastuzumab"], ["Preferred", "Listed biosimilars"], ["Prior authorization", "Reference product only"], ["Effective", "Next quarter"]] },
-  { payer: "Summit Care Alliance", doc: "Bevacizumab coverage. Biosimilar agents are preferred for all covered indications; a reference product request needs a documented medical reason.", rule: [["Drug class", "Bevacizumab"], ["Preferred", "Biosimilar agents"], ["Exception", "Documented medical reason"], ["Effective", "In 30 days"]] },
-  { payer: "Bayview Health", doc: "Rituximab step therapy. Members must try a preferred biosimilar first. Members already on therapy may continue.", rule: [["Drug class", "Rituximab"], ["Step therapy", "Preferred biosimilar first"], ["Continuity", "Current patients exempt"], ["Effective", "First of next month"]] },
+  { payer: "Northwind Health Plan", hl: ["long-acting G-CSF", "preferred biosimilar", "documented trial and failure", null], doc: "Section 4.2 (revised). Reference long-acting G-CSF products require documented trial and failure of a preferred biosimilar unless a clinical exception applies.", rule: [["Drug class", "Long-acting G-CSF"], ["Preferred", "Biosimilar products"], ["Step therapy", "Required before reference product"], ["Effective", "First of next month"]] },
+  { payer: "Lakeshore Mutual", hl: ["Trastuzumab", "biosimilars listed in Appendix C", "reference product requires prior authorization", null], doc: "Trastuzumab policy update. Preferred agents are the biosimilars listed in Appendix C. The reference product requires prior authorization.", rule: [["Drug class", "Trastuzumab"], ["Preferred", "Listed biosimilars"], ["Prior authorization", "Reference product only"], ["Effective", "Next quarter"]] },
+  { payer: "Summit Care Alliance", hl: ["Bevacizumab", "Biosimilar agents are preferred", "documented medical reason", null], doc: "Bevacizumab coverage. Biosimilar agents are preferred for all covered indications; a reference product request needs a documented medical reason.", rule: [["Drug class", "Bevacizumab"], ["Preferred", "Biosimilar agents"], ["Exception", "Documented medical reason"], ["Effective", "In 30 days"]] },
+  { payer: "Bayview Health", hl: ["Rituximab", "try a preferred biosimilar first", "already on therapy may continue", null], doc: "Rituximab step therapy. Members must try a preferred biosimilar first. Members already on therapy may continue.", rule: [["Drug class", "Rituximab"], ["Step therapy", "Preferred biosimilar first"], ["Continuity", "Current patients exempt"], ["Effective", "First of next month"]] },
 ];
+// Each rule field lights up the phrase it came from, in field order (null = no matching phrase in the text)
+const ACC_TITAN_T = { mark: 0.45, row: 0.6, gap: 0.2 };
+function accMarkDoc(doc: string, hl: (string | null)[], c: string) {
+  const hits = hl.map((h, i) => (h ? { i, at: doc.indexOf(h), len: h.length } : null)).filter((x): x is { i: number; at: number; len: number } => !!x && x.at >= 0).sort((a, b) => a.at - b.at);
+  const out: React.ReactNode[] = [];
+  let pos = 0;
+  hits.forEach((h) => {
+    if (h.at < pos) return;
+    out.push(doc.slice(pos, h.at));
+    out.push(<span key={h.i} className="bolt-anim" style={{ borderRadius: U(4), backgroundColor: `${c}55`, color: "#FFFFFF", ["--acc-mark" as string]: `${c}55`, animation: `accMark ${accDur(0.3)} ease-out ${accDur(ACC_TITAN_T.mark + h.i * ACC_TITAN_T.gap)} both` }}>{doc.slice(h.at, h.at + h.len)}</span>);
+    pos = h.at + h.len;
+  });
+  out.push(doc.slice(pos));
+  return out;
+}
 function AccTitan({ beat }: { beat: number }) {
   const done = Math.min(beat, accTitanChanges.length);
   const cur = accTitanChanges[Math.min(Math.max(done - 1, 0), accTitanChanges.length - 1)];
@@ -4948,13 +5003,13 @@ function AccTitan({ beat }: { beat: number }) {
       <div style={{ display: "grid", gridTemplateColumns: "1.15fr auto 1fr", gap: U(24), alignItems: "stretch", flex: 1 }}>
         <div style={{ borderRadius: U(18), padding: U(24), border: `${U(2)} solid rgba(226,234,242,0.35)`, background: "#071226", position: "relative", overflow: "hidden" }}>
           <p style={{ margin: 0, fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: "#E2EAF2" }}>{"POLICY CHANGE DETECTED · " + cur.payer.toUpperCase()}</p>
-          <p key={cur.payer} className="bolt-anim" style={{ ...accIn(), margin: `${U(16)} 0 0`, fontFamily: MONO, fontSize: U(28), color: "#E2EAF2", lineHeight: 1.5 }}>{cur.doc}</p>
-          {done > 0 && <span key={"scan" + done} aria-hidden="true" className="bolt-anim" style={{ position: "absolute", left: 0, right: 0, height: U(70), background: `linear-gradient(transparent, ${c}44, transparent)`, animation: "titanScan 0.9s ease-in-out 1 both" }} />}
+          <p key={cur.payer} className="bolt-anim" style={{ ...accIn(), margin: `${U(16)} 0 0`, fontFamily: MONO, fontSize: U(28), color: "#E2EAF2", lineHeight: 1.5 }}>{done > 0 ? accMarkDoc(cur.doc, cur.hl, c) : cur.doc}</p>
+          {done > 0 && <span key={"scan" + done} aria-hidden="true" className="bolt-anim" style={{ position: "absolute", left: 0, right: 0, height: U(70), background: `linear-gradient(transparent, ${c}44, transparent)`, animation: `titanScan ${accDur(0.9)} ease-in-out 1 both` }} />}
         </div>
         <span aria-hidden="true" style={{ alignSelf: "center", fontSize: U(60), color: done ? c : "#475569" }}>{"→"}</span>
-        <div key={"rule" + done} className="bolt-anim" style={{ ...accIn(0.2), borderRadius: U(18), padding: U(24), border: `${U(2)} solid ${done ? c : "rgba(226,234,242,0.25)"}`, background: done ? `${c}14` : "rgba(16,34,66,0.5)" }}>
+        <div key={"rule" + done} className="bolt-anim" style={{ ...accIn(0), borderRadius: U(18), padding: U(24), border: `${U(2)} solid ${done ? c : "rgba(226,234,242,0.25)"}`, background: done ? `${c}14` : "rgba(16,34,66,0.5)" }}>
           <p style={{ margin: `0 0 ${U(14)}`, fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: done ? c : "#E2EAF2" }}>{"STRUCTURED RULE"}</p>
-          {done ? cur.rule.map(([k, v]) => <div key={k} style={{ display: "grid", gridTemplateColumns: `${U(260)} 1fr`, gap: U(12), padding: `${U(8)} 0`, borderBottom: `${U(1)} solid rgba(226,234,242,0.15)` }}><span style={{ fontSize: U(24), color: "#E2EAF2" }}>{k}</span><span style={{ fontSize: U(28), fontWeight: 700, color: "#FFFFFF" }}>{v}</span></div>) : <p style={{ margin: 0, fontSize: U(28), color: "#E2EAF2" }}>{"Waiting for the next change…"}</p>}
+          {done ? cur.rule.map(([k, v], j) => <div key={k} className="bolt-anim" style={{ ...accIn(ACC_TITAN_T.row + j * ACC_TITAN_T.gap), display: "grid", gridTemplateColumns: `${U(260)} 1fr`, gap: U(12), padding: `${U(8)} 0`, borderBottom: `${U(1)} solid rgba(226,234,242,0.15)` }}><span style={{ fontSize: U(24), color: "#E2EAF2" }}>{k}</span><span style={{ fontSize: U(28), fontWeight: 700, color: "#FFFFFF" }}>{v}</span></div>) : <p style={{ margin: 0, fontSize: U(28), color: "#E2EAF2" }}>{"Waiting for the next change…"}</p>}
         </div>
       </div>
       <div style={{ display: "flex", gap: U(14), marginTop: U(20), alignItems: "center", flexWrap: "wrap" }}>
@@ -5041,6 +5096,7 @@ function AccRetention({ beat }: { beat: number }) {
   const list = remaining.filter((p) => factor === null || p.f === factor).sort((a, b) => b.od - a.od);
   const openId = saved ? "RX-1187" : beat >= 1 ? "RX-1042" : null;
   const open = accRiqPatients.find((p) => p.id === openId) || null;
+  const exiting = saved && !prefersReducedMotion() ? accRiqPatients.find((p) => p.id === "RX-1042") : undefined;
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <AccHeader product="retentioniq" name="RetentionIQ" problem="A missed treatment window is a gap in care. Patients slip out of scheduled treatment quietly, and staff find out late." does="Finds patients falling behind on scheduled treatment, shows why each one is at risk, and helps staff reach them and record what happened." />
@@ -5054,20 +5110,20 @@ function AccRetention({ beat }: { beat: number }) {
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: U(24), flex: 1 }}>
         <div>
-          <p style={{ margin: `0 0 ${U(10)}`, fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: "#E2EAF2" }}>{"WORKLIST · "}<span key={list.length} className="bolt-anim" style={{ ...accIn(), color: c }}>{list.length + " AT RISK"}</span></p>
+          <p style={{ margin: `0 0 ${U(10)}`, fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: "#E2EAF2" }}>{"WORKLIST · "}<span key={list.length} className="bolt-anim" style={{ display: "inline-block", animation: `boltPop ${accDur(0.4)} ease-out ${saved ? accDur(0.75) : "0s"} both`, color: c }}>{list.length + " AT RISK"}</span></p>
           <div style={{ display: "grid", gap: U(8) }}>
-            {list.slice(0, 6).map((p) => (
-              <div key={p.id} className="bolt-anim" style={{ ...accIn(), display: "grid", gridTemplateColumns: `${U(90)} ${U(150)} 1fr auto`, gap: U(12), alignItems: "center", padding: `${U(10)} ${U(16)}`, borderRadius: U(12), border: `${U(2)} solid ${p.id === openId ? c : "rgba(226,234,242,0.25)"}`, background: p.id === openId ? `${c}22` : "rgba(16,34,66,0.7)", fontSize: U(26), color: "#FFFFFF" }}>
-                <strong>{p.init}</strong><span style={{ fontFamily: MONO, fontSize: U(22), color: "#E2EAF2" }}>{p.id}</span><span style={{ fontSize: U(22), color: "#E2EAF2" }}>{accRiqFactors[p.f]}</span><span style={{ fontWeight: 700, color: p.od >= 14 ? "#FCA5A5" : "#FDE68A" }}>{p.od + "d overdue"}</span>
+            {(exiting ? [exiting, ...list] : list).slice(0, 6).map((p) => (
+              <div key={p.id} className="bolt-anim" style={{ ...(p === exiting ? { animation: `accOut ${accDur(0.9)} ease-in-out both`, overflow: "hidden" } : accIn()), display: "grid", gridTemplateColumns: `${U(90)} ${U(150)} 1fr auto`, gap: U(12), alignItems: "center", padding: `${U(10)} ${U(16)}`, borderRadius: U(12), border: `${U(2)} solid ${p.id === openId ? c : "rgba(226,234,242,0.25)"}`, background: p.id === openId ? `${c}22` : "rgba(16,34,66,0.7)", fontSize: U(26), color: "#FFFFFF" }}>
+                <strong>{p.init}</strong><span style={{ fontFamily: MONO, fontSize: U(22), color: "#E2EAF2" }}>{p.id}</span><span style={{ fontSize: U(22), color: "#E2EAF2" }}>{accRiqFactors[p.f]}</span><span style={{ fontWeight: 700, color: p === exiting ? "#34D399" : p.od >= 14 ? "#FCA5A5" : "#FDE68A" }}>{p === exiting ? "✓ Scheduled" : p.od + "d overdue"}</span>
               </div>
             ))}
           </div>
         </div>
         <div>
           <p style={{ margin: `0 0 ${U(10)}`, fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: "#E2EAF2" }}>{"PATIENT"}</p>
-          {saved && <div className="bolt-anim" style={{ ...accIn(), marginBottom: U(14), borderRadius: U(14), padding: `${U(14)} ${U(18)}`, border: `${U(2)} solid #34D399`, background: "rgba(52,211,153,0.12)", fontSize: U(26), color: "#FFFFFF" }}><strong style={{ color: "#34D399" }}>{"✓ J.M. logged"}</strong>{" · Outcome: Scheduled · Barrier: Transportation"}</div>}
+          {saved && <div className="bolt-anim" style={{ ...accIn(0.6), marginBottom: U(14), borderRadius: U(14), padding: `${U(14)} ${U(18)}`, border: `${U(2)} solid #34D399`, background: "rgba(52,211,153,0.12)", fontSize: U(26), color: "#FFFFFF" }}><strong style={{ color: "#34D399" }}>{"✓ J.M. logged"}</strong>{" · Outcome: Scheduled · Barrier: Transportation"}</div>}
           {open ? (
-            <div key={open.id} className="bolt-anim" style={{ ...accIn(saved ? 0.15 : 0), borderRadius: U(16), padding: U(22), border: `${U(2)} solid ${c}`, background: "rgba(16,34,66,0.8)" }}>
+            <div key={open.id} className="bolt-anim" style={{ ...accIn(saved ? 0.75 : 0), borderRadius: U(16), padding: U(22), border: `${U(2)} solid ${c}`, background: "rgba(16,34,66,0.8)" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ fontSize: U(40), fontWeight: 700, color: "#FFFFFF" }}>{open.init}</span><span style={{ fontFamily: MONO, fontSize: U(24), color: "#E2EAF2" }}>{(saved ? "Next · " : "") + open.id}</span></div>
               <p style={{ margin: `${U(10)} 0 ${U(6)}`, fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: c }}>{"WHY FLAGGED"}</p>
               <p style={{ margin: 0, fontSize: U(28), color: "#FFFFFF", lineHeight: 1.4 }}>{accRiqFactors[open.f] + " · " + open.od + " days past the expected treatment interval"}</p>
@@ -5093,18 +5149,27 @@ function AccPractice() {
       <p style={{ margin: 0, fontSize: U(24), color: "#E2EAF2", lineHeight: 1.35, alignSelf: "start" }}><strong style={{ color: c }}>{"What this tells you: "}</strong>{tells}</p>
     </div>
   );
-  const big = (v: string, unit?: string) => <p style={{ margin: 0, fontSize: U(100), fontWeight: 700, color: "#FFFFFF", fontFamily: MONO, lineHeight: 1 }}>{v}{unit && <span style={{ fontSize: U(36) }}>{unit}</span>}</p>;
+  const big = (v: React.ReactNode, unit?: string) => <p style={{ margin: 0, fontSize: U(100), fontWeight: 700, color: "#FFFFFF", fontFamily: MONO, lineHeight: 1 }}>{v}{unit && <span style={{ fontSize: U(36) }}>{unit}</span>}</p>;
   const trend = [38, 44, 51, 57];
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <AccHeader product="practice" name={ACC_PRACTICE_NAME} problem="The quarterly business review (QBR) is a static slide deck, out of date the day after it's presented." does="One live view of the partnership: purchasing, rebates and inventory, presented by your rep each quarter and open to you any day in between." />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: U(18), flex: 1 }}>
         {panel(0, "Biosimilar adoption", "How much of your eligible volume has moved to lower-cost biosimilars.", (
-          <svg viewBox="0 0 300 170" width="100%" height="100%" aria-hidden="true">{trend.map((v, i) => <g key={i}><rect x={20 + i * 70} y={160 - v * 2.2} width="44" height={v * 2.2} rx="6" fill={i === 3 ? c : "#64748B"} /><text x={42 + i * 70} y={150 - v * 2.2} textAnchor="middle" fontSize="20" fontWeight="700" fill="#FFFFFF">{v + "%"}</text></g>)}</svg>
+          <svg viewBox="0 0 300 170" width="100%" height="100%" aria-hidden="true">{trend.map((v, i) => <g key={i}><rect className="bolt-anim" style={{ transformBox: "fill-box", transformOrigin: "bottom", animation: `litUp ${accDur(0.5)} cubic-bezier(.2,.7,.2,1) ${accDur(0.2 + i * 0.12)} both` }} x={20 + i * 70} y={160 - v * 2.2} width="44" height={v * 2.2} rx="6" fill={i === 3 ? c : "#64748B"} /><text className="bolt-anim" style={{ animation: `boltIn ${accDur(0.3)} ease-out ${accDur(0.45 + i * 0.12)} both` }} x={42 + i * 70} y={150 - v * 2.2} textAnchor="middle" fontSize="20" fontWeight="700" fill="#FFFFFF">{v + "%"}</text></g>)}</svg>
         ))}
-        {panel(1, "GPO rebate", "Rebates your group purchasing organization (GPO) membership returned this quarter.", big("$120K"))}
-        {panel(2, "MID performance", "How much is filled by your medically integrated dispensing (MID) pharmacy, the one inside your practice.", big("78%"))}
-        {panel(3, "Days of inventory", "Whether stock on the shelf matches what you use; target 14–21 days.", big("18", " days"))}
+        {panel(1, "GPO rebate", "Rebates your group purchasing organization (GPO) membership returned this quarter.", big(<AccNum to={120} from={0} delay={0.25} fmt={(n) => "$" + Math.round(n) + "K"} />))}
+        {panel(2, "MID performance", "How much is filled by your medically integrated dispensing (MID) pharmacy, the one inside your practice.", big(<AccNum to={78} from={0} delay={0.3} fmt={(n) => Math.round(n) + "%"} />))}
+        {panel(3, "Days of inventory", "Whether stock on the shelf matches what you use; target 14–21 days.", (
+          <div style={{ width: "100%" }}>
+            {big(<AccNum to={18} from={0} delay={0.35} fmt={(n) => String(Math.round(n))} />, " days")}
+            <div style={{ position: "relative", height: U(14), borderRadius: U(7), background: "rgba(226,234,242,0.15)", marginTop: U(26) }}>
+              <span style={{ position: "absolute", top: 0, bottom: 0, left: `${(14 / 30) * 100}%`, width: `${(7 / 30) * 100}%`, borderRadius: U(7), background: `${c}88` }} />
+              <span className="bolt-anim" style={{ position: "absolute", top: U(-9), width: U(6), height: U(32), marginLeft: U(-3), borderRadius: U(3), background: "#FFFFFF", left: `${(18 / 30) * 100}%`, animation: `accSlideIn ${accDur(0.9)} cubic-bezier(.2,.7,.2,1) ${accDur(0.35)} both` }} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: U(8), fontFamily: MONO, fontSize: U(18), color: "#E2EAF2" }}><span>{"0"}</span><span>{"Target 14–21"}</span><span>{"30"}</span></div>
+          </div>
+        ))}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: U(18), marginTop: U(18), flexWrap: "wrap" }}>
         <span style={{ fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: "#E2EAF2", border: `${U(2)} solid #E2EAF2`, borderRadius: U(8), padding: `${U(4)} ${U(12)}` }}>{"COMING"}</span>
