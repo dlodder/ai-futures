@@ -5145,7 +5145,7 @@ function AccBuilt({ beat }: { beat: number }) {
 function AccClose({ beat }: { beat: number }) {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-      <h1 className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(84), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1.5, lineHeight: 1.1, maxWidth: U(1600) }}>{"McKesson ships faster and better tools to support your practice and patients."}</h1>
+      <h1 className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(84), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1.5, lineHeight: 1.1, maxWidth: U(1600) }}>{"McKesson builds faster, so better tools reach your practice and patients sooner."}</h1>
       <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: U(40), alignItems: "center", marginTop: U(70), opacity: beat >= 1 ? 1 : 0, transition: "opacity 0.25s ease" }}>
         <p style={{ margin: 0, fontSize: U(72), fontWeight: 700, color: ACC_COLOR }}>{"Questions?"}</p>
         <div style={{ width: U(520) }}>{ACC_CONFIG.followUp ? <p style={{ margin: 0, fontSize: U(30), color: "#FFFFFF" }}>{ACC_CONFIG.followUp}</p> : <AccPending what="marketing follow-up QR or contact slide" h={220} />}</div>
