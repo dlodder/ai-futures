@@ -765,7 +765,7 @@ function BoltShipDemo({ autoStart = false, big = false, trigger = 0 }: { autoSta
 // Isometric stack: Applications on Bolt on the Data Platform
 type HeroLayer = "apps" | "bolt" | "data";
 
-function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer }: { onLayer?: (layer: HeroLayer) => void; autoExplode?: boolean; maxWidth?: number; litLayer?: HeroLayer }) {
+function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer, labels, ariaLabel }: { onLayer?: (layer: HeroLayer) => void; autoExplode?: boolean; maxWidth?: number; litLayer?: HeroLayer; labels?: Partial<Record<HeroLayer, { title: string; sub: string }>>; ariaLabel?: string }) {
   const [hover, setHover] = useState(false);
   const [focusLayer, setFocusLayer] = useState<HeroLayer | null>(null);
   const [auto, setAuto] = useState(false);
@@ -830,11 +830,11 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer 
       </g>
     );
   };
-  const layers: { id: HeroLayer; y: number; dy: number; title: string; sub: string; color: string; action: string }[] = [
+  const layers: { id: HeroLayer; y: number; dy: number; title: string; sub: string; color: string; action: string }[] = ([
     { id: "apps", y: 62, dy: -22, title: "Applications", sub: "Built by the business", color: "#60A5FA", action: "Open Solutions" },
     { id: "bolt", y: 126, dy: 0, title: "Bolt Build", sub: "Build fast with AI", color: "#22D3EE", action: "See how it works" },
     { id: "data", y: 190, dy: 20, title: "Bolt Data", sub: "Governed data", color: "#34D399", action: "Open Bolt Data" },
-  ];
+  ] as { id: HeroLayer; y: number; dy: number; title: string; sub: string; color: string; action: string }[]).map((l) => ({ ...l, ...(labels?.[l.id] || {}) }));
   const interactive = !!onLayer;
   const layerProps = (l: (typeof layers)[number]) => interactive ? {
     role: "button" as const, tabIndex: 0, "aria-label": `${l.title}: ${l.action}`,
@@ -845,7 +845,7 @@ function BoltHeroStack({ onLayer, autoExplode = false, maxWidth = 370, litLayer 
   } : { style: { transform: `translateY(${exploded ? l.dy : 0}px)`, transition: "transform 0.55s cubic-bezier(.2,.7,.2,1)" } as React.CSSProperties };
   const lit = (id: HeroLayer) => focusLayer === id || litLayer === id;
   return (
-    <svg role={interactive ? "group" : "img"} aria-label="Applications built with Bolt Build, which runs on Bolt Data" viewBox="0 -20 370 290" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{ width: "100%", maxWidth, height: "auto", display: "block", overflow: "visible" }}>
+    <svg role={interactive ? "group" : "img"} aria-label={ariaLabel || "Applications built with Bolt Build, which runs on Bolt Data"} viewBox="0 -20 370 290" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{ width: "100%", maxWidth, height: "auto", display: "block", overflow: "visible" }}>
       <defs>
         <radialGradient id="boltHeroGlow" cx="35%" cy="55%" r="55%">
           <stop offset="0%" stopColor={BOLT_COLOR} stopOpacity={0.28} />
@@ -4766,9 +4766,15 @@ function AccNum({ to, fmt, from, duration = 0.8, delay = 0 }: { to: number; fmt:
 }
 
 // ---------------- 2.1 TITLE ----------------
+const ACC_STACK_LABELS = {
+  apps: { title: "Applications", sub: "Solutions for your practice" },
+  bolt: { title: "Build", sub: "Build fast with AI" },
+  data: { title: "Data", sub: "Governed data" },
+};
 function AccTitle() {
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+    <div style={{ height: "100%", display: "grid", gridTemplateColumns: `1fr ${U(720)}`, gap: U(32), alignItems: "center" }}>
+    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
       <p className="bolt-anim" style={{ ...accIn(0), margin: 0, fontFamily: MONO, fontSize: U(26), fontWeight: 700, letterSpacing: 3, color: ACC_COLOR }}>{"McKESSON ACCELERATE 2026"}</p>
       <h1 className="bolt-anim" style={{ ...accIn(0.05), margin: `${U(18)} 0 0`, fontSize: U(128), fontWeight: 700, letterSpacing: -2, color: "#FFFFFF", lineHeight: 1 }}>{"Building the Future"}</h1>
       <p className="bolt-anim" style={{ ...accIn(0.1), margin: `${U(24)} 0 0`, fontSize: U(44), color: "#E2EAF2" }}>{"Accelerating Care with Technical Innovation"}</p>
@@ -4778,6 +4784,8 @@ function AccTitle() {
         <span style={{ flex: 1 }} />
         <div style={{ width: U(380) }}><AccPending what="McKesson brand mark (marketing asset)" h={90} /></div>
       </div>
+    </div>
+      <div className="bolt-anim" style={{ ...accIn(0.2) }}><BoltHeroStack autoExplode maxWidth={4000} labels={ACC_STACK_LABELS} ariaLabel="Applications built on a fast build layer, which runs on governed data" /></div>
     </div>
   );
 }
@@ -4975,8 +4983,6 @@ function AccIra({ beat }: { beat: number }) {
 const accTitanChanges = [
   { payer: "Northwind Health Plan", hl: ["long-acting G-CSF", "preferred biosimilar", "documented trial and failure", null], doc: "Section 4.2 (revised). Reference long-acting G-CSF products require documented trial and failure of a preferred biosimilar unless a clinical exception applies.", rule: [["Drug class", "Long-acting G-CSF"], ["Preferred", "Biosimilar products"], ["Step therapy", "Required before reference product"], ["Effective", "First of next month"]] },
   { payer: "Lakeshore Mutual", hl: ["Trastuzumab", "biosimilars listed in Appendix C", "reference product requires prior authorization", null], doc: "Trastuzumab policy update. Preferred agents are the biosimilars listed in Appendix C. The reference product requires prior authorization.", rule: [["Drug class", "Trastuzumab"], ["Preferred", "Listed biosimilars"], ["Prior authorization", "Reference product only"], ["Effective", "Next quarter"]] },
-  { payer: "Summit Care Alliance", hl: ["Bevacizumab", "Biosimilar agents are preferred", "documented medical reason", null], doc: "Bevacizumab coverage. Biosimilar agents are preferred for all covered indications; a reference product request needs a documented medical reason.", rule: [["Drug class", "Bevacizumab"], ["Preferred", "Biosimilar agents"], ["Exception", "Documented medical reason"], ["Effective", "In 30 days"]] },
-  { payer: "Bayview Health", hl: ["Rituximab", "try a preferred biosimilar first", "already on therapy may continue", null], doc: "Rituximab step therapy. Members must try a preferred biosimilar first. Members already on therapy may continue.", rule: [["Drug class", "Rituximab"], ["Step therapy", "Preferred biosimilar first"], ["Continuity", "Current patients exempt"], ["Effective", "First of next month"]] },
 ];
 // Each rule field lights up the phrase it came from, in field order (null = no matching phrase in the text)
 const ACC_TITAN_T = { mark: 0.45, row: 0.6, gap: 0.2 };
@@ -4999,7 +5005,7 @@ function AccTitan({ beat }: { beat: number }) {
   const c = ACC_PRODUCT_COLORS.titan;
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <AccHeader product="titan" name="Titan" problem="Payer drug policies are checked by hand each quarter, so mid-quarter changes get missed. That means denials and treatment delays." does="Continuously monitors payer policies for selected drugs and biosimilars, pulls out the rules, and delivers them as structured information, with a link back to the source policy." />
+      <AccHeader product="titan" name="Titan" problem="Payer policies are checked by hand each quarter. Mid-quarter changes get missed, causing denials and delays." does="Monitors payer policies continuously and turns each change into structured rules, linked to the source." />
       <div style={{ display: "grid", gridTemplateColumns: "1.15fr auto 1fr", gap: U(24), alignItems: "stretch", flex: 1 }}>
         <div style={{ borderRadius: U(18), padding: U(24), border: `${U(2)} solid rgba(226,234,242,0.35)`, background: "#071226", position: "relative", overflow: "hidden" }}>
           <p style={{ margin: 0, fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: "#E2EAF2" }}>{"POLICY CHANGE DETECTED · " + cur.payer.toUpperCase()}</p>
@@ -5040,7 +5046,7 @@ function AccMeridian({ beat }: { beat: number }) {
   const report = beat >= 3;
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <AccHeader product="meridian" name="Meridian" problem="Deciding where to open, acquire or consolidate sites takes months of manual market analysis." does="Scores about 2,500 ZIP codes across six states on four domains, with weights you can adjust, drive times by road, and AI-written market reports." />
+      <AccHeader product="meridian" name="Meridian" problem="Site decisions take months of manual market analysis." does="Scores ~2,500 ZIPs on four adjustable factors, with drive times and AI-written market reports." />
       <div style={{ display: "grid", gridTemplateColumns: "0.9fr 1.1fr", gap: U(30), flex: 1 }}>
         <div>
           <p style={{ margin: `0 0 ${U(14)}`, fontFamily: MONO, fontSize: U(22), fontWeight: 700, color: c }}>{"WEIGHTS · " + set.n.toUpperCase()}</p>
@@ -5099,7 +5105,7 @@ function AccRetention({ beat }: { beat: number }) {
   const exiting = saved && !prefersReducedMotion() ? accRiqPatients.find((p) => p.id === "RX-1042") : undefined;
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <AccHeader product="retentioniq" name="RetentionIQ" problem="A missed treatment window is a gap in care. Patients slip out of scheduled treatment quietly, and staff find out late." does="Finds patients falling behind on scheduled treatment, shows why each one is at risk, and helps staff reach them and record what happened." />
+      <AccHeader product="retentioniq" name="RetentionIQ" problem="A missed treatment window is a gap in care, and staff often find out too late." does="Flags patients falling behind, shows why, and helps staff reach them and log the outcome." />
       <div role="note" style={{ display: "flex", alignItems: "center", gap: U(12), padding: `${U(10)} ${U(18)}`, borderRadius: U(10), border: `${U(2)} solid #93C5FD`, background: "rgba(147,197,253,0.12)", fontSize: U(24), fontWeight: 700, color: "#DBEAFE", marginBottom: U(16) }}>{"Illustrative — no real patient data. Initials and synthetic IDs only."}</div>
       <div style={{ display: "flex", gap: U(12), flexWrap: "wrap", marginBottom: U(16) }}>
         {accRiqFactors.map((f, i) => { const on = factor === i; const n = remaining.filter((p) => p.f === i).length; return (
@@ -5210,7 +5216,7 @@ function AccBuilt({ beat }: { beat: number }) {
 function AccClose({ beat }: { beat: number }) {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-      <h1 className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(84), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1.5, lineHeight: 1.1, maxWidth: U(1600) }}>{"McKesson accelerates development, delivering innovative solutions to support your practice and patients."}</h1>
+      <h1 className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(84), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1.5, lineHeight: 1.1, maxWidth: U(1600) }}>{"McKesson accelerates development, delivering innovative solutions to "}<span style={{ color: ACC_COLOR }}>{"support your practice and patients."}</span></h1>
       <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: U(40), alignItems: "center", marginTop: U(70), opacity: beat >= 1 ? 1 : 0, transition: "opacity 0.25s ease" }}>
         <p style={{ margin: 0, fontSize: U(72), fontWeight: 700, color: ACC_COLOR }}>{"Questions?"}</p>
         <div style={{ width: U(520) }}>{ACC_CONFIG.followUp ? <p style={{ margin: 0, fontSize: U(30), color: "#FFFFFF" }}>{ACC_CONFIG.followUp}</p> : <AccPending what="marketing follow-up QR or contact slide" h={220} />}</div>
