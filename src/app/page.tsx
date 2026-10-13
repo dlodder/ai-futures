@@ -4886,7 +4886,7 @@ function AccIra({ beat }: { beat: number }) {
   );
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <AccHeader product="ira" name="IRA Part B economic model" problem="From 2028, Medicare pays the negotiated price plus 6%, not ASP plus 6%. Margins per dose shrink, and how much depends on rules still being written." does="Shows practice cost, Medicare payment and margin per dose under each path, for any drug and refund formula." />
+      <AccHeader product="ira" name="IRA Part B economic model" problem="From 2028, Medicare pays the negotiated price plus 6%, not ASP plus 6%. Margins shrink, and the rules aren't final." does="Compares cost, Medicare payment and margin per dose by path, drug and refund formula." />
       <div style={{ display: "flex", gap: U(26), alignItems: "center", marginBottom: U(12) }}>
         <span style={{ fontSize: U(30), fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>{"Keytruda"}</span>
         <span style={lbl}>{"WAC "}<span style={val}>{"$15,700"}</span></span>
