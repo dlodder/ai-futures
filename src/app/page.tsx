@@ -4910,6 +4910,77 @@ function AccHub() {
   );
 }
 
+// ---------------- 2.3 PLATFORM: build + data in one view ----------------
+// One request types in, the intent layer lights, then application capabilities and the practice data domains connect.
+const ACC_PF = { start: 400, char: 12, layer: 300, first: 350, buildGap: 180, dataGap: 140, done: 400 };
+const accPfTypeEnd = ACC_PF.start + DP_PROMPT.length * ACC_PF.char;
+const accPfLayer = accPfTypeEnd + ACC_PF.layer;
+const accPfBuildAt = (i: number) => accPfLayer + ACC_PF.first + i * ACC_PF.buildGap;
+const accPfDataAt = (j: number) => accPfLayer + ACC_PF.first + j * ACC_PF.dataGap;
+const accPfDone = Math.max(accPfBuildAt(dpAppOutputs.length - 1), accPfDataAt(dataLayer.length - 1)) + ACC_PF.done;
+const accGlyph = (kind: BoltGlyph, n: number, color: string) => (
+  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" style={{ width: U(n), height: U(n), flexShrink: 0 }}><path d={BOLT_GLYPHS[kind]} fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+);
+function AccPlatform() {
+  const [e, setE] = useState(0);
+  useEffect(() => {
+    if (prefersReducedMotion()) { setE(Number.MAX_SAFE_INTEGER); return; }
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (now: number) => { const v = (now - t0) / ACC_MOTION; setE(v); if (v < accPfDone + 600) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  const typing = e >= ACC_PF.start && e < accPfTypeEnd;
+  const typed = DP_PROMPT.slice(0, Math.max(0, Math.min(DP_PROMPT.length, Math.floor((e - ACC_PF.start) / ACC_PF.char))));
+  const layerOn = e >= accPfLayer;
+  const buildOn = e >= accPfBuildAt(0);
+  const dataOn = e >= accPfDataAt(0);
+  const done = e >= accPfDone;
+  const pop = (on: boolean): React.CSSProperties => (on ? { animation: `boltPop ${accDur(0.35)} ease-out both` } : {});
+  const panel = (on: boolean, color: string): React.CSSProperties => ({ borderRadius: U(20), padding: `${U(24)} ${U(28)}`, border: `${U(2)} solid ${on ? color : "rgba(226,234,242,0.2)"}`, background: on ? `linear-gradient(180deg, ${color}1F, rgba(16,34,66,0.75) 70%)` : "rgba(16,34,66,0.6)", boxShadow: on ? `0 0 ${U(36)} ${color}33` : "none", transition: "all 0.4s ease", display: "flex", flexDirection: "column", minHeight: 0 });
+  const head = (kind: BoltGlyph, color: string, title: string, sub: string) => (
+    <div style={{ marginBottom: U(18) }}>
+      <div style={{ display: "flex", alignItems: "center", gap: U(14) }}>{accGlyph(kind, 38, color)}<span style={{ fontSize: U(40), fontWeight: 700, color: "#FFFFFF" }}>{title}</span></div>
+      <p style={{ margin: `${U(6)} 0 0`, fontSize: U(26), color: "#E2EAF2" }}>{sub}</p>
+    </div>
+  );
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <h1 className="bolt-anim" style={{ ...accIn(), margin: 0, fontSize: U(64), fontWeight: 700, color: "#FFFFFF", letterSpacing: -1 }}>{"An AI platform for accelerated solution delivery"}</h1>
+      <p className="bolt-anim" style={{ ...accIn(0.05), margin: `${U(6)} 0 ${U(22)}`, fontSize: U(32), color: "#E2EAF2" }}>{"Build applications and connect data faster"}</p>
+      <div style={{ background: "#050D1C", border: `${U(2)} solid rgba(226,234,242,0.2)`, borderRadius: U(16), padding: `${U(18)} ${U(24)}`, fontFamily: MONO, fontSize: U(26), lineHeight: 1.55, color: "#FFFFFF", minHeight: U(120) }}>
+        <span style={{ color: DP_COLOR, fontWeight: 700 }}>{"> "}</span>{typed}
+        {typing && <span className="bolt-anim" style={{ display: "inline-block", width: U(12), height: "1.05em", verticalAlign: "text-bottom", background: DP_COLOR, marginLeft: U(3), animation: "boltBlink 1s steps(1) infinite" }} />}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: U(18), margin: `${U(18)} 0` }}>
+        <span style={{ height: U(3), borderRadius: U(2), background: buildOn ? BOLT_COLOR : "rgba(226,234,242,0.15)", transition: "background 0.4s ease" }} />
+        <span style={{ display: "inline-flex", alignItems: "center", gap: U(12), padding: `${U(12)} ${U(28)}`, borderRadius: U(999), fontSize: U(30), fontWeight: 700, color: "#FFFFFF", border: `${U(2)} solid ${layerOn ? BOLT_COLOR : "rgba(226,234,242,0.3)"}`, background: layerOn ? "rgba(45,212,191,0.18)" : "rgba(16,34,66,0.6)", boxShadow: layerOn ? `0 0 ${U(30)} rgba(45,212,191,0.45)` : "none", transition: "all 0.35s ease" }}>{accGlyph("bolt", 30, layerOn ? BOLT_COLOR : "#7F93AE")}{"Intent layer"}</span>
+        <span style={{ height: U(3), borderRadius: U(2), background: dataOn ? DP_COLOR : "rgba(226,234,242,0.15)", transition: "background 0.4s ease" }} />
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "0.82fr 1.18fr", gap: U(24), flex: 1, minHeight: 0 }}>
+        <div style={panel(buildOn, BOLT_COLOR)}>
+          {head("app", BOLT_COLOR, "Build", "Turns the request into a working application")}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: U(12), alignContent: "flex-start" }}>
+            {dpAppOutputs.map((it, i) => { const on = e >= accPfBuildAt(i); return (
+              <span key={it} className="bolt-anim" style={{ display: "inline-flex", alignItems: "center", gap: U(8), padding: `${U(10)} ${U(20)}`, borderRadius: U(999), fontSize: U(26), fontWeight: 600, color: on ? "#FFFFFF" : "#7F93AE", border: `${U(2)} solid ${on ? BOLT_COLOR : "rgba(226,234,242,0.2)"}`, background: on ? "rgba(45,212,191,0.16)" : "transparent", ...pop(on) }}>{on && accGlyph("check", 22, BOLT_COLOR)}{it}</span>
+            ); })}
+          </div>
+        </div>
+        <div style={panel(dataOn, DP_COLOR)}>
+          {head("db", DP_COLOR, "Data", "Connects it to governed data across your practice")}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: U(12) }}>
+            {dataLayer.map((d, j) => { const on = e >= accPfDataAt(j); return (
+              <span key={d.id} className="bolt-anim" style={{ display: "flex", alignItems: "center", gap: U(12), padding: `${U(12)} ${U(18)}`, borderRadius: U(12), fontSize: U(26), fontWeight: 700, color: on ? "#FFFFFF" : "#7F93AE", border: `${U(2)} solid ${on ? d.color : "rgba(226,234,242,0.2)"}`, background: on ? `${d.color}22` : "transparent", ...pop(on) }}><span aria-hidden="true" style={{ width: U(12), height: U(12), borderRadius: "50%", background: on ? d.color : "#475569", flexShrink: 0 }} />{d.title}</span>
+            ); })}
+          </div>
+        </div>
+      </div>
+      <p style={{ margin: `${U(16)} 0 0`, fontSize: U(30), fontWeight: 700, color: DP_COLOR, opacity: done ? 1 : 0, transition: "opacity 0.4s ease" }}>{"One request. The application and its governed data arrive together, with controls already applied."}</p>
+    </div>
+  );
+}
+
 // ---------------- 2.4 QUESTION CARDS ----------------
 const accQuestions = [
   { q: "Will I get paid, and how much?", tools: [["ira", "IRA Part B economic model"], ["titan", "Titan"]] },
@@ -5269,8 +5340,7 @@ type AccSection = { id: string; label: string; plan: string; beats: number; rend
 const accSections: AccSection[] = [
   { id: "title", label: "Title", plan: "0:00–2:00", beats: 1, render: () => <AccTitle /> },
   { id: "timeline", label: "Shrinking timeline", plan: "2:00–7:00", beats: accEras.length + 2, render: (b) => <AccTimeline beat={b} /> },
-  { id: "intent", label: "AI platform", plan: "7:00–8:00", beats: 1, render: () => <AccIntent /> },
-  { id: "hub", label: "Data platform", plan: "8:00–8:30", beats: 1, render: () => <AccHub /> },
+  { id: "platform", label: "AI platform: build + data", plan: "7:00–8:30", beats: 1, render: () => <AccPlatform /> },
   { id: "questions", label: "Question cards", plan: "8:30–9:00", beats: 1, render: () => <AccQuestions /> },
   { id: "ira", label: "IRA Part B model", plan: "≈ 4 min", beats: IRA_BEATS.length, render: (b) => <AccIra beat={b} /> },
   { id: "titan", label: "Titan", plan: "≈ 2.5–3 min", beats: accTitanChanges.length + 1, render: (b) => <AccTitan beat={b} /> },
@@ -5299,7 +5369,7 @@ function AccPresenter({ start, onExit }: { start: number; onExit: () => void }) 
       else if (e.key === "Home") go(0);
       else if (e.key === "End") go(accSteps.length - 1);
       else if (/^[0-9]$/.test(e.key)) { const n = e.key === "0" ? 9 : Number(e.key) - 1; if (n < accSections.length) { setIndex(false); go(accFirstStep(n)); } }
-      else if (e.key === "-") { setIndex(false); go(accFirstStep(10)); }
+      else if (e.key === "-" && accSections.length > 10) { setIndex(false); go(accFirstStep(10)); }
       else if (e.key === "=" && accSections.length > 11) { setIndex(false); go(accFirstStep(11)); }
       else if (e.key === "f" || e.key === "F") { const d = document as Document & { fullscreenElement: Element | null }; if (d.fullscreenElement) document.exitFullscreen?.().catch(() => undefined); else document.documentElement.requestFullscreen?.().catch(() => undefined); }
     };
@@ -5336,7 +5406,7 @@ function AccPresenter({ start, onExit }: { start: number; onExit: () => void }) 
               </button>
             ))}
           </div>
-          <p style={{ margin: `${U(26)} 0 0`, fontSize: U(22), color: "#E2EAF2" }}>{"→ / space next · ← back · 1–9, 0, − jump to a section · Esc this index · F full screen · in the IRA model: B cycles the refund basis"}</p>
+          <p style={{ margin: `${U(26)} 0 0`, fontSize: U(22), color: "#E2EAF2" }}>{"→ / space next · ← back · 1–9, 0 jump to a section · Esc this index · F full screen · in the IRA model: B cycles the refund basis"}</p>
         </div>
       )}
     </div>
@@ -5369,7 +5439,7 @@ function AccPage({ onNavigate }: { onNavigate: Navigate }) {
       <SolHero eyebrow="ACC · Accelerate 2026 · Nov 18" name="Building the Future" status="Prototype" statusColor="#FBBF24" color={ACC_COLOR}
         line1="Accelerating Care with Technical Innovation"
         line2="The 30-minute presenter deck for McKesson Accelerate. Full screen, driven from the keyboard or a clicker, synthetic data throughout. This version is the prototype and local fallback for the stage build."
-        tiles={[{ head: "11 sections", label: "Title to Q&A", sub: "Run of show from the feature spec" }, { head: "30 min", label: "Timed plan", sub: "Running clock in the section index" }, { head: "Keyboard", label: "No mouse needed", sub: "Clicker-friendly; reload resumes" }]}
+        tiles={[{ head: "10 sections", label: "Title to Q&A", sub: "Run of show from the feature spec" }, { head: "30 min", label: "Timed plan", sub: "Running clock in the section index" }, { head: "Keyboard", label: "No mouse needed", sub: "Clicker-friendly; reload resumes" }]}
         sections={sections} />
       <div style={{ marginTop: 20 }}>
         <BoltButton onClick={() => startAt(0)} style={{ background: ACC_COLOR, color: "#0B1A33", borderColor: ACC_COLOR, fontSize: 18, padding: "12px 22px" }}><span>{"Start presenting"}</span><BoltIcon kind="arrow" /></BoltButton>
@@ -5392,7 +5462,7 @@ function AccPage({ onNavigate }: { onNavigate: Navigate }) {
       </SolSection>
       <SolSection id="acc-keys" num="03" label="Controls" title="Driving the deck" icon="sliders" color={ACC_COLOR}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 240px), 1fr))", gap: 10 }}>
-          {[["→ or space", "Next step"], ["←", "Previous step"], ["Esc", "Section index and clock"], ["1–9, 0, −", "Jump to section 1–11"], ["F", "Browser full screen"], ["B", "IRA model: cycle refund basis (avg. cost, WAC, ASP)"]].map(([k, v]) => (
+          {[["→ or space", "Next step"], ["←", "Previous step"], ["Esc", "Section index and clock"], ["1–9, 0", "Jump to section 1–10"], ["F", "Browser full screen"], ["B", "IRA model: cycle refund basis (avg. cost, WAC, ASP)"]].map(([k, v]) => (
             <div key={k} style={{ borderRadius: 12, padding: "12px 14px", background: "rgba(16,34,66,0.6)", border: "1px solid rgba(184,200,218,0.2)" }}><p style={{ margin: 0, fontFamily: MONO, fontSize: 16, fontWeight: 700, color: ACC_COLOR }}>{k}</p><p style={{ margin: "4px 0 0", fontSize: 15, color: "#D0DAE6" }}>{v}</p></div>
           ))}
         </div>
