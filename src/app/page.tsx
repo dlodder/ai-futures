@@ -4779,10 +4779,8 @@ function AccTitle() {
       <h1 className="bolt-anim" style={{ ...accIn(0.05), margin: `${U(18)} 0 0`, fontSize: U(128), fontWeight: 700, letterSpacing: -2, color: "#FFFFFF", lineHeight: 1 }}>{"Building the Future"}</h1>
       <p className="bolt-anim" style={{ ...accIn(0.1), margin: `${U(24)} 0 0`, fontSize: U(44), color: "#E2EAF2" }}>{"Accelerating Care with Technical Innovation"}</p>
       <div className="bolt-anim" style={{ ...accIn(0.15), marginTop: U(70), display: "flex", alignItems: "center", gap: U(28) }}>
-        <span style={{ width: U(6), height: U(80), background: ACC_COLOR, borderRadius: U(3) }} />
-        <div><p style={{ margin: 0, fontSize: U(34), fontWeight: 700, color: "#FFFFFF" }}>{"Dan Lodder"}</p><p style={{ margin: `${U(4)} 0 0`, fontSize: U(28), color: "#E2EAF2" }}>{"McKesson"}</p></div>
-        <span style={{ flex: 1 }} />
-        <div style={{ width: U(380) }}><AccPending what="McKesson brand mark (marketing asset)" h={90} /></div>
+        <span style={{ width: U(6), height: U(118), background: ACC_COLOR, borderRadius: U(3) }} />
+        <div><p style={{ margin: 0, fontSize: U(34), fontWeight: 700, color: "#FFFFFF" }}>{"Dan Lodder"}</p><p style={{ margin: `${U(4)} 0 0`, fontSize: U(28), color: "#FFFFFF" }}>{"Vice President, Provider Technology"}</p><p style={{ margin: `${U(4)} 0 0`, fontSize: U(28), color: "#E2EAF2" }}>{"McKesson"}</p></div>
       </div>
     </div>
       <div className="bolt-anim" style={{ ...accIn(0.2) }}><BoltHeroStack autoExplode maxWidth={4000} labels={ACC_STACK_LABELS} ariaLabel="Applications built on a fast build layer, which runs on governed data" /></div>
@@ -5144,7 +5142,7 @@ const accZips = [
   { z: "ZIP A", s: [90, 40, 50, 60] }, { z: "ZIP B", s: [55, 90, 70, 50] }, { z: "ZIP C", s: [70, 70, 60, 70] }, { z: "ZIP D", s: [40, 95, 80, 40] }, { z: "ZIP E", s: [85, 50, 30, 80] },
   { z: "ZIP F", s: [60, 60, 90, 55] }, { z: "ZIP G", s: [75, 35, 40, 90] }, { z: "ZIP H", s: [50, 80, 55, 65] }, { z: "ZIP I", s: [95, 30, 45, 50] }, { z: "ZIP J", s: [45, 65, 75, 75] },
 ];
-const accWeightSets = [{ n: "Product defaults", w: [35, 30, 20, 15] }, { n: "Demand first", w: [55, 20, 15, 10] }, { n: "Access first", w: [20, 55, 15, 10] }, { n: "Product defaults", w: [35, 30, 20, 15] }];
+const accWeightSets = [{ n: "Product defaults", w: [35, 30, 20, 15] }, { n: "Demand first", w: [55, 20, 15, 10] }, { n: "Product defaults", w: [35, 30, 20, 15] }];
 function AccMeridian({ beat }: { beat: number }) {
   const set = accWeightSets[Math.min(beat, accWeightSets.length - 1)];
   const scored = accZips.map((z) => ({ ...z, score: Math.round(z.s.reduce((t, v, i) => t + v * set.w[i], 0) / 100) })).sort((a, b) => b.score - a.score);
@@ -5153,7 +5151,7 @@ function AccMeridian({ beat }: { beat: number }) {
   const c = ACC_PRODUCT_COLORS.meridian;
   const lo = scored[scored.length - 1].score, hi = scored[0].score;
   const heat = (s: number) => { const t = hi === lo ? 1 : (s - lo) / (hi - lo); return `hsl(${Math.round(250 - t * 225)}, 78%, ${Math.round(30 + t * 14)}%)`; };
-  const report = beat >= 3;
+  const report = beat >= accWeightSets.length - 1;
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <AccHeader product="meridian" name="Meridian" problem="Site decisions take months of manual market analysis." does="Scores ~2,500 ZIPs on four adjustable factors, with drive times and AI-written market reports." />
@@ -5415,7 +5413,6 @@ function AccPresenter({ start, onExit }: { start: number; onExit: () => void }) 
 
 // ---------------- SITE PAGE (internal landing) ----------------
 const accPendingList = [
-  { item: "McKesson brand mark for the title slide", owner: "Marketing" },
     { item: "H.R. 4299 rebate multiplier: 1.06 (default, $37.10) or 1.043", owner: "Dan" },
   { item: "RetentionIQ risk-factor names (currently examples)", owner: "Dan" },
   { item: "Follow-up route: marketing QR or contact slide", owner: "Marketing" },
