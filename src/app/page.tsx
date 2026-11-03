@@ -4666,7 +4666,7 @@ const ACC_COLOR = "#FB923C";
 const ACC_STATUS: Record<string, string> = { ira: "Building", titan: "Live", meridian: "Live", retentioniq: "Building", practice: "Pilot" };
 const ACC_PRACTICE_NAME = PRACTICE_NAME; // driven from the site-wide product name; flip in one place
 // Stage switches. showPlaceholders = true marks every pending input on screen; set false for the real stage
-const ACC_CONFIG: { showPlaceholders: boolean; followUp: string | null; buildStats: { k: string; v: string }[] | null } = { showPlaceholders: true, followUp: null, buildStats: null };
+const ACC_CONFIG: { showPlaceholders: boolean; followUp: string | null; buildStats: { k: string; v: string }[] | null } = { showPlaceholders: false, followUp: null, buildStats: null };
 
 const ACC_PRODUCT_COLORS: Record<string, string> = { ira: "#60A5FA", titan: "#F59E0B", meridian: "#A78BFA", retentioniq: "#F472B6", practice: "#F87171" };
 const accStatusColor = (s: string) => s === "Live" ? "#34D399" : s === "Pilot" ? "#A78BFA" : "#FBBF24";
