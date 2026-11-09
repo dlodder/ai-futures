@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 // SHARED STYLES & COMPONENTS
 // ============================================================
 
-const PRACTICE_NAME = "PracticeIQ";
+const PRACTICE_NAME = "PracticeEdge";
 
 const FONT_LINK = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap";
 
@@ -474,7 +474,7 @@ const boltEngagementRoles = ["Business Owner", "Product Builder", "App Engineer"
 
 const boltEngagementModels: { id: string; name: string; abbr: string; desc: string; cells: EngCell[]; examples: string[] }[] = [
   { id: "ownership", name: "Product Ownership", abbr: "", desc: "Bolt owns the product end to end, from vision to platform.", cells: ["bolt", "bolt", "bolt", "bolt"], examples: ["Lynx", "Glide RI", "RetentionIQ"] },
-  { id: "paas", name: "Product as a Service", abbr: "PaaS", desc: "The business owns the product vision; Bolt builds, engineers, and runs it.", cells: ["partner", "bolt", "bolt", "bolt"], examples: ["SavingsIQ", "NOVA", "PracticeIQ"] },
+  { id: "paas", name: "Product as a Service", abbr: "PaaS", desc: "The business owns the product vision; Bolt builds, engineers, and runs it.", cells: ["partner", "bolt", "bolt", "bolt"], examples: ["SavingsIQ", "NOVA", PRACTICE_NAME] },
   { id: "daas", name: "Development as a Service", abbr: "DaaS", desc: "Partner and Bolt build together; Bolt engineers and runs it.", cells: ["partner", "shared", "bolt", "bolt"], examples: ["Strategy", "GPO", "Other partner apps"] },
   { id: "iaas", name: "Infrastructure as a Service", abbr: "IaaS", desc: "The partner team builds and engineers its own app; Bolt provides the platform.", cells: ["partner", "partner", "partner", "bolt"], examples: ["Generics Team"] },
 ];
@@ -3662,7 +3662,7 @@ function MeridianPage({ onNavigate }: { onNavigate: Navigate }) {
 }
 
 // ============================================================
-// PRACTICEIQ PAGE (modern; formerly Skynet)
+// PRACTICEEDGE PAGE (modern; formerly Skynet)
 // ============================================================
 
 const PIQ_COLOR = "#F87171";
