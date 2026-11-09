@@ -537,6 +537,21 @@ const BOLT_CSS = `
 @keyframes accSlideIn { from { left: 0; } }
 @keyframes accOut { 0%, 40% { opacity: 1; transform: none; background: rgba(52,211,153,0.22); border-color: #34D399; max-height: calc(90 * var(--u)); } 85% { opacity: 0; transform: translateX(45%); max-height: calc(90 * var(--u)); } 100% { opacity: 0; transform: translateX(45%); max-height: 0; padding-top: 0; padding-bottom: 0; border-width: 0; } }
 @media (prefers-reduced-motion: reduce) { .bolt-anim { animation: none !important; transition: none !important; } }
+@media print { .bolt-pdf-link { display: none !important; } }
+`;
+
+// Print view: one 1920×1080 page per scene, colors kept, controls and demo replays hidden.
+const BOLT_PRINT_CSS = `
+@page { size: 1920px 1080px; margin: 0; }
+html, body { margin: 0 !important; padding: 0 !important; background: #071021 !important; }
+.bolt-print, .bolt-print * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.bolt-print .bolt-anim { animation: none !important; transition: none !important; }
+.bolt-print [data-demo-control] { visibility: hidden !important; }
+.bolt-print-page { position: relative; width: 1920px; height: 1080px; overflow: hidden; break-after: page; page-break-after: always; }
+.bolt-print-page:last-of-type { break-after: auto; page-break-after: auto; }
+.bolt-print-footer { position: absolute; right: 32px; bottom: 22px; font-size: 14px; line-height: 1; color: rgba(255,255,255,0.6); }
+.bolt-print-toolbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px; padding: 10px 24px; background: #0B1A33; border-bottom: 1px solid rgba(184,200,218,0.25); color: #D0DAE6; font-size: 15px; }
+@media print { .bolt-print-toolbar { display: none !important; } }
 `;
 
 type BoltGlyph = "bolt" | "layers" | "people" | "cert" | "briefcase" | "code" | "app" | "server" | "chart" | "trend" | "target" | "box" | "shield" | "eye" | "repeat" | "check" | "list" | "link" | "commit" | "person" | "db" | "pulse" | "sliders";
@@ -575,7 +590,10 @@ function BoltGlyphIcon({ kind, size = 22, color = BOLT_COLOR }: { kind: BoltGlyp
   );
 }
 
-const prefersReducedMotion = () => typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Print view of the Bolt PaaS presentation (?print=bolt-paas): renders every scene at its final state.
+const PRINT_PARAM = "bolt-paas";
+const isPrintView = () => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("print") === PRINT_PARAM;
+const prefersReducedMotion = () => typeof window !== "undefined" && (isPrintView() || (!!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches));
 
 function useInViewOnce<T extends Element>(threshold = 0.25) {
   const ref = useRef<T>(null);
@@ -992,7 +1010,7 @@ function BoltTimeBar({ big = false }: { big?: boolean }) {
           <span aria-hidden="true" style={{ fontFamily: MONO, fontSize: big ? 34 : 26, fontWeight: 700, color: "#FFFFFF", fontVariantNumeric: "tabular-nums", minWidth: big ? 170 : 128 }}>{"Week " + wk}</span>
           <span style={{ fontSize: big ? 17 : 15, color: "#B8C8DA" }}>Drag the timeline to compare</span>
         </div>
-        <button type="button" onClick={replay} style={{ background: "transparent", border: "1px solid rgba(184,200,218,0.35)", borderRadius: 8, cursor: "pointer", color: "#D0DAE6", fontSize: 14, fontWeight: 600, fontFamily: "inherit", padding: "6px 12px", display: "inline-flex", alignItems: "center", gap: 6 }}>
+        <button type="button" data-demo-control onClick={replay} style={{ background: "transparent", border: "1px solid rgba(184,200,218,0.35)", borderRadius: 8, cursor: "pointer", color: "#D0DAE6", fontSize: 14, fontWeight: 600, fontFamily: "inherit", padding: "6px 12px", display: "inline-flex", alignItems: "center", gap: 6 }}>
           <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24"><path d="M7 4v16l13-8L7 4Z" fill="currentColor" /></svg>
           Play
         </button>
@@ -1178,7 +1196,7 @@ function BoltLiveBuild({ autoStart = false, big = false, onShip }: { autoStart?:
           <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative · sped up"}</span>
         </div>
         <div style={{ minHeight: 44, display: "flex", alignItems: "center" }}>
-          {(!started || done) && <BoltButton onClick={() => setRun((r) => r + 1)} style={started ? { background: "transparent" } : { background: BOLT_COLOR, color: "#0B1A33", borderColor: BOLT_COLOR }}><span>{started ? "Replay" : "Start building"}</span>{!started && <BoltIcon kind="arrow" />}</BoltButton>}
+          {(!started || done) && <BoltButton data-demo-control onClick={() => setRun((r) => r + 1)} style={started ? { background: "transparent" } : { background: BOLT_COLOR, color: "#0B1A33", borderColor: BOLT_COLOR }}><span>{started ? "Replay" : "Start building"}</span>{!started && <BoltIcon kind="arrow" />}</BoltButton>}
         </div>
       </div>
 
@@ -1526,7 +1544,7 @@ function BoltBuilders({ autoFill = false }: { autoFill?: boolean }) {
   );
 }
 
-function BoltPresenter({ onExit, onNavigate, deck = "bolt", start = 0 }: { onExit: () => void; onNavigate: Navigate; deck?: "bolt" | "data" | "full"; start?: number }) {
+function BoltPresenter({ onExit, onNavigate, deck = "bolt", start = 0, print = false }: { onExit: () => void; onNavigate: Navigate; deck?: "bolt" | "data" | "full"; start?: number; print?: boolean }) {
   const [scene, setScene] = useState(start);
   const boxRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -1691,9 +1709,10 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt", start = 0 }: { onExi
     ...pick(dataScenes, ["title", "why", "domains", "reuse", "intent", "close"], "d-"),
   ];
   const scenes = deck === "full" ? fullScenes : deck === "data" ? dataScenes : boltScenes;
-  const isData = deck === "data" || (deck === "full" && scenes[scene].id.startsWith("d-"));
+  const isDataAt = (i: number) => deck === "data" || (deck === "full" && scenes[i].id.startsWith("d-"));
   const last = scenes.length - 1;
   useEffect(() => {
+    if (print) return;
     boxRef.current?.focus();
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -1706,8 +1725,9 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt", start = 0 }: { onExi
       document.removeEventListener("fullscreenchange", onFs);
       if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
     };
-  }, [onExit]);
+  }, [onExit, print]);
   useEffect(() => {
+    if (print) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); setScene((v) => Math.min(last, v + 1)); }
       else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); setScene((v) => Math.max(0, v - 1)); }
@@ -1723,31 +1743,60 @@ function BoltPresenter({ onExit, onNavigate, deck = "bolt", start = 0 }: { onExi
     window.addEventListener("keyup", onUp);
     window.addEventListener("blur", onBlurWin);
     return () => { window.removeEventListener("keydown", onKey); window.removeEventListener("keyup", onUp); window.removeEventListener("blur", onBlurWin); };
-  }, [last, onExit]);
+  }, [last, onExit, print]);
   useEffect(() => { setZoom(false); }, [scene]);
+  const shell: React.CSSProperties = { background: "radial-gradient(ellipse at 70% 20%, #12305A 0%, #0B1A33 55%, #071021 100%)", color: "#E2EAF2", display: "flex", flexDirection: "column", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" };
+  // One presenter frame for scene i. The live overlay shows the current scene; print mode stacks every scene with controls hidden (layout kept).
+  const frame = (i: number, live: boolean) => {
+    const dataI = isDataAt(i);
+    const hide: React.CSSProperties | undefined = live ? undefined : { visibility: "hidden" };
+    return (
+      <>
+        <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.14) 1px, transparent 1.2px)", backgroundSize: "26px 26px", WebkitMaskImage: "radial-gradient(ellipse at 75% 25%, black 0%, transparent 70%)", maskImage: "radial-gradient(ellipse at 75% 25%, black 0%, transparent 70%)" }} />
+        <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 32px" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 600, color: "#B8C8DA" }}><BoltGlyphIcon kind={dataI ? "db" : "bolt"} size={20} color={dataI ? DP_COLOR : BOLT_COLOR} />{deck === "full" ? "Bolt PaaS \u00B7 " + (dataI ? "Bolt Data" : "Bolt Build") : dataI ? "Bolt Data" : "Bolt Build"}</span>
+          <BoltButton onClick={onExit} aria-label="Exit presentation" style={{ background: "transparent", padding: "8px 12px", ...hide }}><span style={{ fontSize: 14, fontWeight: 500, color: "#B8C8DA" }}>Esc</span><BoltIcon kind="close" /></BoltButton>
+        </div>
+        <div ref={live ? stageRef : undefined} style={{ position: "relative", flex: 1, display: "flex", alignItems: "center", overflowY: live && zoom ? "hidden" : "auto", overflowX: "hidden" }}>
+          <div ref={live ? zoomRef : undefined} style={{ width: "100%", transform: live && zoom ? "scale(1.8)" : "none", transformOrigin: origin, transition: "transform 0.35s cubic-bezier(.2,.7,.2,1)" }}>
+            <div key={scenes[i].id} style={{ width: "100%", maxWidth: 1240, margin: "0 auto", padding: "8px 48px 32px", boxSizing: "border-box" }}>{scenes[i].render()}</div>
+          </div>
+        </div>
+        {live && <div aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 1001, pointerEvents: "none", opacity: spot ? 1 : 0, transition: "opacity 0.2s ease", background: `radial-gradient(circle at ${mouse.x}px ${mouse.y}px, transparent 0, transparent 130px, rgba(2,6,16,0.86) 190px)` }} />}
+        <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 32px 24px", gap: 16, ...hide }}>
+          <BoltButton onClick={() => setScene((v) => Math.max(0, v - 1))} disabled={i === 0} aria-label="Previous scene" style={{ background: "transparent", opacity: i === 0 ? 0.35 : 1, padding: "8px 12px" }}><span style={{ display: "inline-flex", transform: "rotate(180deg)" }}><BoltIcon kind="arrow" /></span></BoltButton>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {scenes.map((sc, j) => (
+              <button key={sc.id} type="button" aria-label={`Go to scene ${j + 1}`} aria-current={j === i ? "step" : undefined} onClick={() => setScene(j)} style={{ width: j === i ? 30 : 10, height: 10, borderRadius: 5, border: "none", padding: 0, cursor: "pointer", background: j === i ? (deck === "full" && sc.id.startsWith("d-") ? DP_COLOR : BOLT_COLOR) : "rgba(184,200,218,0.35)", transition: "width 0.3s ease, background 0.3s ease" }} />
+            ))}
+            <span style={{ marginLeft: 12, fontSize: 14, color: "#7F93AE", fontVariantNumeric: "tabular-nums" }}>{`${i + 1} / ${scenes.length} · ← → navigate · hold L spotlight · Z zoom`}</span>
+          </div>
+          <BoltButton onClick={() => setScene((v) => Math.min(last, v + 1))} disabled={i === last} aria-label="Next scene" style={{ background: "transparent", opacity: i === last ? 0.35 : 1, padding: "8px 12px" }}><BoltIcon kind="arrow" /></BoltButton>
+        </div>
+      </>
+    );
+  };
+  if (print) {
+    const month = new Date().toLocaleDateString("en-US", { month: "short", year: "numeric" });
+    return (
+      <div className="bolt-print">
+        <style>{BOLT_PRINT_CSS}</style>
+        <div className="bolt-print-toolbar">
+          <BoltButton onClick={() => window.print()} style={{ background: BOLT_COLOR, color: "#0B1A33", borderColor: BOLT_COLOR }}><span>Print / Save as PDF</span></BoltButton>
+          <span>In Chrome: Destination → Save as PDF. Margins and headers are set automatically.</span>
+        </div>
+        {scenes.map((sc, i) => (
+          <section key={sc.id} className="bolt-print-page" aria-label={`Page ${i + 1} of ${scenes.length}`} style={shell}>
+            {frame(i, false)}
+            <div className="bolt-print-footer">{`McKesson Internal · Bolt PaaS · ${month} · ${i + 1} / ${scenes.length}`}</div>
+          </section>
+        ))}
+      </div>
+    );
+  }
   return (
-    <div ref={boxRef} onMouseMove={onMove} role="dialog" aria-modal="true" aria-label={deck === "full" ? "Bolt PaaS presentation" : deck === "data" ? "Bolt Data presentation" : "Bolt Build presentation"} tabIndex={-1} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "radial-gradient(ellipse at 70% 20%, #12305A 0%, #0B1A33 55%, #071021 100%)", color: "#E2EAF2", display: "flex", flexDirection: "column", outline: "none", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
-      <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none", backgroundImage: "radial-gradient(rgba(184,200,218,0.14) 1px, transparent 1.2px)", backgroundSize: "26px 26px", WebkitMaskImage: "radial-gradient(ellipse at 75% 25%, black 0%, transparent 70%)", maskImage: "radial-gradient(ellipse at 75% 25%, black 0%, transparent 70%)" }} />
-      <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 32px" }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 600, color: "#B8C8DA" }}><BoltGlyphIcon kind={isData ? "db" : "bolt"} size={20} color={isData ? DP_COLOR : BOLT_COLOR} />{deck === "full" ? "Bolt PaaS \u00B7 " + (isData ? "Bolt Data" : "Bolt Build") : isData ? "Bolt Data" : "Bolt Build"}</span>
-        <BoltButton onClick={onExit} aria-label="Exit presentation" style={{ background: "transparent", padding: "8px 12px" }}><span style={{ fontSize: 14, fontWeight: 500, color: "#B8C8DA" }}>Esc</span><BoltIcon kind="close" /></BoltButton>
-      </div>
-      <div ref={stageRef} style={{ position: "relative", flex: 1, display: "flex", alignItems: "center", overflowY: zoom ? "hidden" : "auto", overflowX: "hidden" }}>
-        <div ref={zoomRef} style={{ width: "100%", transform: zoom ? "scale(1.8)" : "none", transformOrigin: origin, transition: "transform 0.35s cubic-bezier(.2,.7,.2,1)" }}>
-          <div key={scenes[scene].id} style={{ width: "100%", maxWidth: 1240, margin: "0 auto", padding: "8px 48px 32px", boxSizing: "border-box" }}>{scenes[scene].render()}</div>
-        </div>
-      </div>
-      <div aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 1001, pointerEvents: "none", opacity: spot ? 1 : 0, transition: "opacity 0.2s ease", background: `radial-gradient(circle at ${mouse.x}px ${mouse.y}px, transparent 0, transparent 130px, rgba(2,6,16,0.86) 190px)` }} />
-      <div style={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 32px 24px", gap: 16 }}>
-        <BoltButton onClick={() => setScene((v) => Math.max(0, v - 1))} disabled={scene === 0} aria-label="Previous scene" style={{ background: "transparent", opacity: scene === 0 ? 0.35 : 1, padding: "8px 12px" }}><span style={{ display: "inline-flex", transform: "rotate(180deg)" }}><BoltIcon kind="arrow" /></span></BoltButton>
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          {scenes.map((sc, i) => (
-            <button key={sc.id} type="button" aria-label={`Go to scene ${i + 1}`} aria-current={i === scene ? "step" : undefined} onClick={() => setScene(i)} style={{ width: i === scene ? 30 : 10, height: 10, borderRadius: 5, border: "none", padding: 0, cursor: "pointer", background: i === scene ? (deck === "full" && sc.id.startsWith("d-") ? DP_COLOR : BOLT_COLOR) : "rgba(184,200,218,0.35)", transition: "width 0.3s ease, background 0.3s ease" }} />
-          ))}
-          <span style={{ marginLeft: 12, fontSize: 14, color: "#7F93AE", fontVariantNumeric: "tabular-nums" }}>{`${scene + 1} / ${scenes.length} · ← → navigate · hold L spotlight · Z zoom`}</span>
-        </div>
-        <BoltButton onClick={() => setScene((v) => Math.min(last, v + 1))} disabled={scene === last} aria-label="Next scene" style={{ background: "transparent", opacity: scene === last ? 0.35 : 1, padding: "8px 12px" }}><BoltIcon kind="arrow" /></BoltButton>
-      </div>
+    <div ref={boxRef} onMouseMove={onMove} role="dialog" aria-modal="true" aria-label={deck === "full" ? "Bolt PaaS presentation" : deck === "data" ? "Bolt Data presentation" : "Bolt Build presentation"} tabIndex={-1} style={{ position: "fixed", inset: 0, zIndex: 1000, ...shell, outline: "none" }}>
+      {frame(scene, true)}
     </div>
   );
 }
@@ -2617,7 +2666,7 @@ function DpIntentDemo({ autoStart = false, big = false, labels, stage = false }:
           {!stage && <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 0.8, textTransform: "uppercase", color: "#93C5FD", border: "1px solid rgba(147,197,253,0.4)", borderRadius: 5, padding: "2px 8px" }}>{"Illustrative · sped up"}</span>}
         </div>
         <div style={{ minHeight: 44, display: "flex", alignItems: "center" }}>
-          {!stage && (!started || done) && <BoltButton onClick={() => setRun((r) => r + 1)} style={started ? { background: "transparent" } : { background: DP_COLOR, color: "#0B1A33", borderColor: DP_COLOR }}><span>{started ? "Replay" : "Run the request"}</span>{!started && <BoltIcon kind="arrow" />}</BoltButton>}
+          {!stage && (!started || done) && <BoltButton data-demo-control onClick={() => setRun((r) => r + 1)} style={started ? { background: "transparent" } : { background: DP_COLOR, color: "#0B1A33", borderColor: DP_COLOR }}><span>{started ? "Replay" : "Run the request"}</span>{!started && <BoltIcon kind="arrow" />}</BoltButton>}
         </div>
       </div>
       <div style={{ background: "#050D1C", border: "1px solid rgba(184,200,218,0.18)", borderRadius: 12, padding: "14px 18px", fontFamily: MONO, fontSize: 14 * fs, lineHeight: 1.65, color: "#FFFFFF", minHeight: 74 }}>
@@ -5501,6 +5550,7 @@ function PaasPresentationPage({ onNavigate }: { onNavigate: Navigate }) {
         sections={sections} />
       <div style={{ marginTop: 20 }}>
         <BoltButton onClick={() => setPresenting(0)} style={{ background: BOLT_COLOR, color: "#0B1A33", borderColor: BOLT_COLOR, fontSize: 18, padding: "12px 22px" }}><span>{"Start presenting"}</span><BoltIcon kind="arrow" /></BoltButton>
+        <BoltButton className="bolt-pdf-link" onClick={() => window.open(`${window.location.pathname}?print=${PRINT_PARAM}`, "_blank", "noopener")} style={{ background: "transparent", fontSize: 18, padding: "12px 22px", marginLeft: 12 }}><span>{"Download PDF"}</span><BoltIcon kind="down" /></BoltButton>
       </div>
       <SolSection id="paas-run" num="01" label="Run of show" title="Twelve scenes, two layers" sub="Select a scene to start presenting from there." icon="list" color={BOLT_COLOR}>
         {(["Bolt Build", "Bolt Data"] as const).map((part) => {
@@ -5565,16 +5615,44 @@ const navGroups = [
   ]},
 ];
 
+const APP_CSS = `@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } } * { box-sizing: border-box; } @media (max-width: 760px) { .app-nav { padding: 0 6px !important; } .app-nav-by { display: none !important; } .app-nav-btn { padding: 8px 5px !important; gap: 4px !important; } .app-nav-btn > span { font-size: 13.5px !important; } .app-nav-btn > svg { display: none; } .app-nav-groups { gap: 0 !important; } .app-nav-groups > div:nth-child(n+3) .app-nav-menu { left: auto !important; right: 0; } .app-nav-menu { min-width: 190px !important; max-width: calc(100vw - 12px); } .app-nav-menu span { white-space: normal !important; } }`;
+
 export default function App() {
   const [activePage, setActivePage] = useState("bolt");
   useEffect(() => { if (typeof window !== "undefined" && window.location.hash.startsWith("#acc")) setActivePage("acc"); }, []);
   const navigate: Navigate = (id) => { setActivePage(id); setOpenMenu(null); if (typeof window !== "undefined") window.scrollTo(0, 0); };
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [printView, setPrintView] = useState(false);
+  useEffect(() => { if (isPrintView()) setPrintView(true); }, []);
+  useEffect(() => {
+    if (!printView) return;
+    // Next's metadata title can be re-applied after mount; keep the print title (it names the saved PDF).
+    const TITLE = "Bolt PaaS — Build + Data";
+    const keepTitle = () => { if (document.title !== TITLE) document.title = TITLE; };
+    keepTitle();
+    const titleWatch = new MutationObserver(keepTitle);
+    titleWatch.observe(document.head, { subtree: true, childList: true, characterData: true });
+    let cancelled = false;
+    // Open the print dialog once fonts are in and the final states have settled (≤ 3 s).
+    document.fonts.ready.then(() => window.setTimeout(() => { if (!cancelled) { keepTitle(); window.print(); } }, 1500));
+    return () => { cancelled = true; titleWatch.disconnect(); };
+  }, [printView]);
+
+  if (printView) {
+    return (
+      <div style={{ background: "#071021", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
+        <link href={FONT_LINK} rel="stylesheet" />
+        <style>{APP_CSS}</style>
+        <style>{BOLT_CSS}</style>
+        <BoltPresenter deck="full" print onExit={() => undefined} onNavigate={navigate} />
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#0B1A33", fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
       <link href={FONT_LINK} rel="stylesheet" />
-      <style>{`@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } } * { box-sizing: border-box; } @media (max-width: 760px) { .app-nav { padding: 0 6px !important; } .app-nav-by { display: none !important; } .app-nav-btn { padding: 8px 5px !important; gap: 4px !important; } .app-nav-btn > span { font-size: 13.5px !important; } .app-nav-btn > svg { display: none; } .app-nav-groups { gap: 0 !important; } .app-nav-groups > div:nth-child(n+3) .app-nav-menu { left: auto !important; right: 0; } .app-nav-menu { min-width: 190px !important; max-width: calc(100vw - 12px); } .app-nav-menu span { white-space: normal !important; } }`}</style>
+      <style>{APP_CSS}</style>
       <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(7,16,33,0.95)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(148,163,184,0.08)" }}>
         <div className="app-nav" style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56 }}>
           <div className="app-nav-groups" style={{ display: "flex", gap: 2, alignItems: "center" }}>
